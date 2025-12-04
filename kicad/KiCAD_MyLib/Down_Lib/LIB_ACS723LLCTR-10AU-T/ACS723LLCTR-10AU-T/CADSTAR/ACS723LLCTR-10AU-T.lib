@@ -1,0 +1,18 @@
+.ACS723LLCTR-10AU-T :1 ;High Accuracy 5V Optimized Current Sensor IC
+SOIC127P600X175-8N
+*STM IC
+*NGS
+*PLB 1="IP+_1" 2="IP+_2" 3="IP-_1" 4="IP-_2" 5="GND" 6="BW_SEL" 7="VIOUT" 8="VCC"
+*MXP 8
+*DFN ACS723LLCTR-10AU-T
+~!Manufacturer_Name (Allegro Microsystems)
+~!Manufacturer_Part_Number (ACS723LLCTR-10AU-T)
+~!Mouser Part Number (250-723LLCTR10AUT)
+~!Link Mouser Price/Stock (https://www.mouser.co.uk/ProductDetail/Allegro-MicroSystems/ACS723LLCTR-10AU-T?qs=pUKx8fyJudBwQc%2FSh6J%2FyA%3D%3D)
+~!Arrow Part Number (ACS723LLCTR-10AU-T)
+~!Link Arrow Price/Stock (https://www.arrow.com/en/products/acs723llctr-10au-t/allegro-microsystems?region=europe)
+~!Link Datasheet (https://www.allegromicro.com/-/media/files/datasheets/acs723-datasheet.ashx)
+~!Height (1.75mm)
+~!3D_Model (ACS723LLCTR-10AU-T)
+ACS723LLCTR-10AU-T
+1.1!U 2.1!U 3.1!U 4.1!U 8.1!U 7.1!U 6.1!U 5.1!U 

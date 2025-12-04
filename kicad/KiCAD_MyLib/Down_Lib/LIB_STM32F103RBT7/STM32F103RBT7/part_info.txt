@@ -1,0 +1,9 @@
+Manufacturer=STMicroelectronics
+PartNumber=STM32F103RBT7
+PartCategory=Integrated Circuit
+PackageCategory=Quad Flat Packages
+PinCount=64
+Version=3.2
+Released=2015-04-16 09:48:08
+Downloaded=2025-11-20 15:42:52
+3D=Y

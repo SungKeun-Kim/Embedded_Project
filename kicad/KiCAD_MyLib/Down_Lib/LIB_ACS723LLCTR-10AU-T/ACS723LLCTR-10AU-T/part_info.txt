@@ -1,0 +1,9 @@
+Manufacturer=Allegro Microsystems
+PartNumber=ACS723LLCTR-10AU-T
+PartCategory=Integrated Circuit
+PackageCategory=Small Outline Packages
+PinCount=8
+Version=10.1
+Released=2019-10-09 12:37:11
+Downloaded=2025-11-20 17:09:45
+3D=Y

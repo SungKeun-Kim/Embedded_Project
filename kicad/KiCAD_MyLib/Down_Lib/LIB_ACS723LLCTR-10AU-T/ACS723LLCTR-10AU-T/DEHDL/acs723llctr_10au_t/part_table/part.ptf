@@ -1,0 +1,11 @@
+FILE_TYPE = MULTI_PHYS_TABLE;
+
+PART 'ACS723LLCTR_10AU_T'
+CLASS = IC
+{========================================================================================}
+:"MANUFACTURER_NAME", "MANUFACTURER_PART_NUMBER"= "PART_NUMBER", "JEDEC_TYPE", "PACK_TYPE", "MOUSER_PART_NUMBER", "MOUSER_PRICE/STOCK", "ARROW_PART_NUMBER", "ARROW_PRICE/STOCK", "DESCRIPTION", "DATASHEET", "HEIGHT";
+{========================================================================================}
+ "Allegro Microsystems", "ACS723LLCTR-10AU-T" (!) = "", "SOIC127P600X175-8N", "Small Outline Packages", "250-723LLCTR10AUT", "https://www.mouser.co.uk/ProductDetail/Allegro-MicroSystems/ACS723LLCTR-10AU-T?qs=pUKx8fyJudBwQc%2FSh6J%2FyA%3D%3D", "ACS723LLCTR-10AU-T", "https://www.arrow.com/en/products/acs723llctr-10au-t/allegro-microsystems?region=europe", "High Accuracy 5V Optimized Current Sensor IC", "https://www.allegromicro.com/-/media/files/datasheets/acs723-datasheet.ashx", "1.75 mm"
+END_PART
+
+END.
