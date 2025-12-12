@@ -27,3 +27,6 @@ Release/
 
 # 디버그 파일
 *.dSYM/
+
+# Exclude specific project folder
+PWM_CDS_CLCD_TEST_01/
