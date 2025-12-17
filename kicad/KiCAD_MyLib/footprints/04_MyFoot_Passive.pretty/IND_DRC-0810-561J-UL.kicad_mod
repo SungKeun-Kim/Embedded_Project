@@ -1,0 +1,116 @@
+(footprint "IND_DRC-0810-561J-UL"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(property "Reference" "L**"
+		(at 0 -6.35 0)
+		(layer "F.SilkS")
+		(uuid "82852804-ffe7-4792-915b-9d2403ee447b")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "IND_DRC-0810-561J-UL"
+		(at 9.525 6.35 0)
+		(layer "F.Fab")
+		(uuid "8613e8be-e709-4e78-85b1-fa0018cfcdc2")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "47bb34e6-ac29-4dca-91f9-0e81a5f81a61")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "6d0cdff1-5ae1-4570-a08d-3283f3ec1e32")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr through_hole)
+	(fp_circle
+		(center 0 0)
+		(end 5 0)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "0ab162dd-2119-4d64-92fe-60e25ebeab6f")
+	)
+	(fp_circle
+		(center 0 0)
+		(end 5.25 0)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "9851355d-296d-450f-a2f5-399d1a96f32c")
+	)
+	(fp_circle
+		(center 0 0)
+		(end 5 0)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "7abf78b9-1f19-44d9-ab9c-0e133f262c62")
+	)
+	(pad "1" thru_hole circle
+		(at -2.5 0)
+		(size 1.408 1.408)
+		(drill 0.9)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(solder_mask_margin 0.102)
+		(uuid "d1011b28-98bb-4cb4-aea7-4bc5c8456755")
+	)
+	(pad "2" thru_hole circle
+		(at 2.5 0)
+		(size 1.408 1.408)
+		(drill 0.9)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(solder_mask_margin 0.102)
+		(uuid "f596e8be-b74d-4b97-a788-2a7def19d29f")
+	)
+	(embedded_fonts no)
+	(model "${KICAD_3DMODEL_DIR}/INDUC_CAP_5P_10D.STEP"
+		(offset
+			(xyz 0 0 12)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 90 -90 -0)
+		)
+	)
+)

@@ -1,0 +1,232 @@
+(footprint "SHDR11W64P0X250_1X03"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at -2.373 -3.937 0)
+		(layer "F.SilkS")
+		(uuid "a928ab40-e290-44b6-9782-7f1ca863e05c")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "SHDR11W64P0X250_1X03"
+		(at -1.992 4.064 0)
+		(layer "F.Fab")
+		(uuid "1d9fc58e-f410-4750-9fb6-d951faf86e7a")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "d5838f3e-440c-4c60-bec6-f06a11d1996f")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "7298e4d7-fda4-4909-81cb-990e03df7db6")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr through_hole)
+	(fp_line
+		(start -4.95 -2.9)
+		(end -4.95 -0.03)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "76dac73e-fb22-45e2-aa9a-483435678c76")
+	)
+	(fp_line
+		(start -4.95 -0.03)
+		(end -4.95 0)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "109f4b05-93e8-4e11-a962-558814c92f29")
+	)
+	(fp_line
+		(start -4.95 0)
+		(end -4.95 2.9)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "9e47bfcc-1e7a-4665-83bd-ad78d1582029")
+	)
+	(fp_line
+		(start -4.95 2.9)
+		(end 4.95 2.9)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "edda13b6-0678-425b-b3df-e6e455c07cdc")
+	)
+	(fp_line
+		(start 4.95 -2.9)
+		(end -4.95 -2.9)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "a7ede17b-58a1-4ee2-b5ed-9b5b484ee638")
+	)
+	(fp_line
+		(start 4.95 2.9)
+		(end 4.95 -2.9)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "2b690d12-d97f-4d7d-b750-c96afc7c87d2")
+	)
+	(fp_line
+		(start -5.2 -3.15)
+		(end 5.2 -3.15)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "89708be0-9d70-4fca-a9d0-b64a179fffc6")
+	)
+	(fp_line
+		(start -5.2 3.15)
+		(end -5.2 -3.15)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "8b3e23a3-578d-4f52-ab64-e23d0854b9e8")
+	)
+	(fp_line
+		(start -4.95 -2.9)
+		(end 4.95 -2.9)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "fa45509b-6545-45e7-a083-63b22f4f5bbd")
+	)
+	(fp_line
+		(start -4.95 2.9)
+		(end -4.95 -2.9)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "da5f3666-78f6-4b26-b85e-8554abd10e6e")
+	)
+	(fp_line
+		(start 4.95 -2.9)
+		(end 4.95 2.9)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "3994417d-2b26-45d2-820d-7bb37cafe347")
+	)
+	(fp_line
+		(start 4.95 2.9)
+		(end -4.95 2.9)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "49f954ae-491f-4f88-b43f-3ed02ab6c2f5")
+	)
+	(fp_line
+		(start 5.2 -3.15)
+		(end 5.2 3.15)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "8fea6ef9-b4ae-47b5-a96c-14a88f89b112")
+	)
+	(fp_line
+		(start 5.2 3.15)
+		(end -5.2 3.15)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "a2f01aae-a41e-4e53-83f4-e0d5cb517e35")
+	)
+	(pad "1" thru_hole rect
+		(at -2.5 0)
+		(size 1.65 1.65)
+		(drill 1.1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(solder_mask_margin 0.102)
+		(uuid "ec95b6a0-b9a1-4fab-9336-bc88c3fb3dce")
+	)
+	(pad "2" thru_hole circle
+		(at 0 0)
+		(size 1.65 1.65)
+		(drill 1.1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(solder_mask_margin 0.102)
+		(uuid "8cf6f7a7-ee37-4351-8479-c1596a6dbd36")
+	)
+	(pad "3" thru_hole circle
+		(at 2.5 0)
+		(size 1.65 1.65)
+		(drill 1.1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(solder_mask_margin 0.102)
+		(uuid "f6c75299-29d4-4ce8-ba28-bcc219164d54")
+	)
+	(embedded_fonts no)
+	(model "${KICAD_3DMODEL_DIR}/SMW250-03P.step"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -90 -0 -0)
+		)
+	)
+)
