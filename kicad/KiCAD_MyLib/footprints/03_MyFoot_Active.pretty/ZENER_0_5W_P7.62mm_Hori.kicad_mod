@@ -1,0 +1,228 @@
+(footprint "ZENER_0_5W_P7.62mm_Hori"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(descr "Diode, DO-35_SOD27 series, Axial, Horizontal, pin pitch=7.62mm, length*diameter=4*2mm^2, http://www.diodes.com/_files/packages/DO-35.pdf")
+	(tags "Diode DO-35_SOD27 series Axial Horizontal pin pitch 7.62mm  length 4mm diameter 2mm")
+	(property "Reference" "REF**"
+		(at 0 -2.12 0)
+		(layer "F.SilkS")
+		(uuid "4ea3841d-b02b-4c03-8e03-a7f9ecd4c1a2")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "ZENER_0_5W_P7.62mm_Hori"
+		(at 0 2.12 0)
+		(layer "F.Fab")
+		(uuid "bc757eb0-c92a-45bc-89d6-e1d7e00bab07")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "d55eb4ec-c4e0-4c9c-b8dc-5db577c7a61e")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "7b7ffb1b-4039-418f-94e0-ca6442a3317d")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr through_hole)
+	(fp_line
+		(start -2.77 0)
+		(end -2.12 0)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "4c434d1b-696a-45bc-8fea-e9ce6029dfe7")
+	)
+	(fp_line
+		(start -1.52 -1.12)
+		(end -1.52 1.12)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "978f5e73-0135-467a-9822-4a315fb119c4")
+	)
+	(fp_line
+		(start -1.4 -1.12)
+		(end -1.4 1.12)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "5e3bc2f2-af08-48b2-b287-ae8fe5ec9307")
+	)
+	(fp_line
+		(start -1.28 -1.12)
+		(end -1.28 1.12)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "66eb27ca-5d5b-411e-a0f0-65a86d3c4a72")
+	)
+	(fp_line
+		(start 2.77 0)
+		(end 2.12 0)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "8ef74d9c-9ec3-472e-bb94-a285201a35ee")
+	)
+	(fp_rect
+		(start -2.12 -1.12)
+		(end 2.12 1.12)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "fffe1bbe-fb9e-4ecd-bfcf-0b47b4eb3e3a")
+	)
+	(fp_rect
+		(start -4.86 -1.25)
+		(end 4.86 1.25)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "3d71a1fa-b0ce-4e47-b400-e4449a7f1c7a")
+	)
+	(fp_line
+		(start -3.81 0)
+		(end -2 0)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "d9c27367-ba48-46fe-9288-a588c8150317")
+	)
+	(fp_line
+		(start -1.5 -1)
+		(end -1.5 1)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "e2349768-0d6f-40a2-95aa-fde98f72c5e1")
+	)
+	(fp_line
+		(start -1.4 -1)
+		(end -1.4 1)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "9cdf92d7-2fec-4d48-b96a-53ae875b2651")
+	)
+	(fp_line
+		(start -1.3 -1)
+		(end -1.3 1)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "0b273631-02a8-49f1-b320-cf1ef77a8839")
+	)
+	(fp_line
+		(start 3.81 0)
+		(end 2 0)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "18c3bad1-d871-482e-a910-8d8fd4326f8c")
+	)
+	(fp_rect
+		(start -2 -1)
+		(end 2 1)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "f7e8a297-fb7a-4a05-bd7f-0c851f897ffa")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0.3 0 0)
+		(layer "F.Fab")
+		(uuid "797636a8-2287-45b6-8007-a28f201b4a42")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(pad "1" thru_hole roundrect
+		(at -3.81 0)
+		(size 1.7 1.7)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(roundrect_rratio 0.15625)
+		(uuid "a0b1e6e5-5fda-43ea-90fc-89ca95a1fcef")
+	)
+	(pad "2" thru_hole circle
+		(at 3.81 0)
+		(size 1.7 1.7)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "7ca37d74-3724-4cbc-8aed-79dde7232e90")
+	)
+	(embedded_fonts no)
+	(model "${KICAD_3DMODEL_DIR}/ZENER_0_5W_P7.62mm_Horizontal.step"
+		(offset
+			(xyz -3.81 0 -0.5)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -0 -0 -0)
+		)
+	)
+)
