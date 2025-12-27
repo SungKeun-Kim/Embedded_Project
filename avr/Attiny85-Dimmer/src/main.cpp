@@ -50,9 +50,6 @@
 //    - 8MHz / 8 / 50 = 20,000Hz (50μs 주기)
 // ========================================
 
-// 함수 프로토타입 선언
-void zeroCrossDetect();
-
 // 전역 변수
 volatile int counter = 0;                    // 타이머 카운터 변수
 volatile bool zeroCrossDetected = false;     // 제로크로스 감지 플래그
@@ -61,10 +58,10 @@ volatile int triggerPulseCounter = 0;        // 트리거 펄스 카운터 (50μ
 volatile unsigned long lastZeroCrossTime = 0; // 마지막 제로크로스 시간 (디바운싱용)
 const int triacPin = 0;                      // PB0 (5번 핀) - 트라이악 제어
 const int potPin = 3;                        // PB3 (2번 핀) - 가변저항 (ADC3)
-volatile int dimValue;                                // 조광 값, 0 = 최대밝기(100%) ; 158 = 최소밝기(5%)
 int potValue;                                // 가변저항 읽기 값
 const int MIN_DIM = 0;                       // 최소 딤 값 (최대 밝기 100%)
 const int MAX_DIM = 158;                     // 최대 딤 값 (최소 밝기 5%)
+volatile int dimValue = MAX_DIM;             // 조광 값, 0 = 최대밝기(100%) ; 158 = 최소밝기(5%) - 꺼진 상태로 시작
 
 void setup() {
   // 트라이악 제어 핀을 출력으로 설정
@@ -109,7 +106,7 @@ ISR(INT0_vect) {
     lastZeroCrossTime = currentTime;         // 현재 시간 저장
     counter = 0;                             // 카운터를 0으로 리셋
     triacTriggered = false;                  // 트라이악 트리거 상태 리셋
-    digitalWrite(triacPin, LOW);             // 트라이악 출력을 LOW로 설정
+    PORTB &= ~(1 << triacPin);               // 트라이악 출력을 LOW로 설정 (직접 레지스터)
   }
 }
 
@@ -120,7 +117,7 @@ ISR(TIMER1_COMPA_vect) {
     if (triacTriggered == true) {
       triggerPulseCounter++;
       if (triggerPulseCounter >= 1) {        // 50μs 펄스 폭 (1 × 50μs)
-        digitalWrite(triacPin, LOW);         // 펄스 종료
+        PORTB &= ~(1 << triacPin);           // 펄스 종료 (직접 레지스터)
         triacTriggered = false;              // 트리거 완료
         zeroCrossDetected = false;           // 다음 제로크로스 대기
         triggerPulseCounter = 0;
@@ -128,7 +125,7 @@ ISR(TIMER1_COMPA_vect) {
     }
     // 위상 지연 카운트 및 트리거
     else if (counter >= dimValue) {
-      digitalWrite(triacPin, HIGH);          // 설정된 지연 후 트라이악 트리거
+      PORTB |= (1 << triacPin);              // 설정된 지연 후 트라이악 트리거 (직접 레지스터)
       triacTriggered = true;                 // 트리거 시작
       triggerPulseCounter = 0;               // 펄스 카운터 초기화
     }
@@ -141,9 +138,14 @@ ISR(TIMER1_COMPA_vect) {
 void loop() {
   // 가변저항 값 읽기 (ADC3)
   potValue = analogRead(potPin);                          // PB3(ADC3)에서 아날로그 값 읽기
-  dimValue = map(potValue, 0, 1023, MIN_DIM, MAX_DIM);    // 0-1023 범위를 0-158 조광 값으로 매핑
+  int tempDimValue = map(potValue, 0, 1023, MIN_DIM, MAX_DIM);  // 임시 변수에 먼저 계산
                                                           // 0 = 최대밝기 100% (즉시 트리거)
                                                           // 158 = 최소밝기 5% (7.9ms 지연)
+  
+  // 원자성 보장: 2바이트 변수 쓰기 중 인터럽트 방지
+  cli();                                                  // 인터럽트 비활성화
+  dimValue = tempDimValue;                                // 0-158 조광 값 업데이트
+  sei();                                                  // 인터럽트 재활성화
   
   delay(50);                                              // 50ms 지연 (ADC 읽기 부하 감소)
 }
@@ -159,5 +161,3 @@ int main(void) {
   
   return 0;
 }
-
-
