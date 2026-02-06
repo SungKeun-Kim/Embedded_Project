@@ -312,7 +312,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(property "Reference" "U"
-			(at 48.768 10.414 0)
+			(at 43.18 9.652 0)
 			(effects
 				(font
 					(size 1.524 1.524)
@@ -320,7 +320,7 @@
 			)
 		)
 		(property "Value" "ATTINY85-20PU_1"
-			(at 48.768 7.874 0)
+			(at 43.18 7.112 0)
 			(effects
 				(font
 					(size 1.524 1.524)
@@ -397,7 +397,7 @@
 			)
 			(polyline
 				(pts
-					(xy 7.62 -12.7) (xy 93.98 -12.7)
+					(xy 7.62 -12.7) (xy 76.2 -12.7)
 				)
 				(stroke
 					(width 0.127)
@@ -409,7 +409,7 @@
 			)
 			(polyline
 				(pts
-					(xy 93.98 5.08) (xy 7.62 5.08)
+					(xy 76.2 5.08) (xy 7.62 5.08)
 				)
 				(stroke
 					(width 0.127)
@@ -421,7 +421,7 @@
 			)
 			(polyline
 				(pts
-					(xy 93.98 -12.7) (xy 93.98 5.08)
+					(xy 76.2 -12.7) (xy 76.2 5.08)
 				)
 				(stroke
 					(width 0.127)
@@ -504,7 +504,7 @@
 				)
 			)
 			(pin power_in line
-				(at 101.6 0 180)
+				(at 83.82 0 180)
 				(length 7.62)
 				(name "VCC"
 					(effects
@@ -522,7 +522,7 @@
 				)
 			)
 			(pin bidirectional line
-				(at 101.6 -2.54 180)
+				(at 83.82 -2.54 180)
 				(length 7.62)
 				(name "PB2_(SCK/USCK/SCL/ADC1/T0/INT0/PCINT2)"
 					(effects
@@ -540,7 +540,7 @@
 				)
 			)
 			(pin bidirectional line
-				(at 101.6 -5.08 180)
+				(at 83.82 -5.08 180)
 				(length 7.62)
 				(name "PB1_(MISO/DO/AIN1/OC0B/OC1A*/PCINT1)"
 					(effects
@@ -558,7 +558,7 @@
 				)
 			)
 			(pin bidirectional line
-				(at 101.6 -7.62 180)
+				(at 83.82 -7.62 180)
 				(length 7.62)
 				(name "PB0_(MOSI/DI/SDA/AIN0/OC0A/OC1A/AREF/PCINT0)"
 					(effects

@@ -63,6 +63,11 @@ const int MIN_DIM = 0;                       // 최소 딤 값 (최대 밝기 10
 const int MAX_DIM = 158;                     // 최대 딤 값 (최소 밝기 5%)
 volatile int dimValue = MAX_DIM;             // 조광 값, 0 = 최대밝기(100%) ; 158 = 최소밝기(5%) - 꺼진 상태로 시작
 
+// ADC 보정 상수 (트랜지스터 인버터 포화전압 보정용)
+// NPN 트랜지스터 포화전압 ~0.2V로 인해 ADC 최저값이 약 41 (0.2V/5V * 1023)
+const int ADC_MIN = 41;                      // 트랜지스터 포화전압으로 인한 ADC 최소값
+const int ADC_MAX = 1023;                    // ADC 최대값
+
 void setup() {
   // 트라이악 제어 핀을 출력으로 설정
   pinMode(triacPin, OUTPUT);
@@ -138,7 +143,19 @@ ISR(TIMER1_COMPA_vect) {
 void loop() {
   // 가변저항 값 읽기 (ADC3)
   potValue = analogRead(potPin);                          // PB3(ADC3)에서 아날로그 값 읽기
-  int tempDimValue = map(potValue, 0, 1023, MIN_DIM, MAX_DIM);  // 임시 변수에 먼저 계산
+  
+  // ADC 선형 스케일링 보정 (트랜지스터 인버터 포화전압 보정)
+  // NPN 트랜지스터 포화전압 ~0.2V로 인해 실제 ADC 범위는 41~1023
+  // 이를 0~1023으로 선형 확장하여 부드러운 조광 구현
+  int potScaled;
+  if (potValue < ADC_MIN) {
+    potScaled = 0;                                        // 하한 클리핑
+  } else {
+    // 선형 스케일링: 41~1023 → 0~1023
+    potScaled = (long)(potValue - ADC_MIN) * 1023 / (ADC_MAX - ADC_MIN);
+  }
+  
+  int tempDimValue = map(potScaled, 0, 1023, MIN_DIM, MAX_DIM);  // 보정된 값으로 매핑
                                                           // 0 = 최대밝기 100% (즉시 트리거)
                                                           // 158 = 최소밝기 5% (7.9ms 지연)
   
