@@ -1,0 +1,129 @@
+(footprint "SPARK_KILLER"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at 0.35 -5 0)
+		(layer "F.SilkS")
+		(uuid "2f717b06-c0d9-4653-af77-aa7992b131f1")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.2)
+			)
+		)
+	)
+	(property "Value" "SPARK_KILLER"
+		(at 8.001 4.6243 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "3b7697ab-96c0-4531-8c22-f490b4d968b1")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "1574b32e-0a23-4210-b63b-84878f2bc5df")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "c4b36b72-fe3b-401c-9d41-238ce433d9b3")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(fp_rect
+		(start -9.7 -3.7)
+		(end 9.7 3.7)
+		(stroke
+			(width 0.2)
+			(type default)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "ff8f4a71-a2aa-4e39-96ae-04c81c868e81")
+	)
+	(fp_rect
+		(start -9.85 -3.85)
+		(end 9.85 3.85)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "cb42d6a0-82a4-4856-9082-1d2e3a98811b")
+	)
+	(fp_rect
+		(start -9.7 -3.7)
+		(end 9.7 3.7)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "f80df71d-a985-4354-9ff9-096c6731696c")
+	)
+	(fp_text user "${REFERENCE}"
+		(at -4.55 -0.75 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "c0c9a390-3b08-49ad-afd2-10469448d7eb")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify left bottom)
+		)
+	)
+	(pad "1" thru_hole circle
+		(at -8 0)
+		(size 2.2 2.2)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(thermal_bridge_angle 90)
+		(uuid "43ae4b8d-0489-489f-9736-5c681102e0c8")
+	)
+	(pad "2" thru_hole circle
+		(at 8 0)
+		(size 2.2 2.2)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(thermal_bridge_angle 90)
+		(uuid "912757c0-0f4b-4645-adc9-ef2cc055c58d")
+	)
+	(embedded_fonts no)
+	(model "${KICAD_3DMODEL_DIR}/AU1201.stp"
+		(offset
+			(xyz -8.75 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -0 -0 -0)
+		)
+	)
+)

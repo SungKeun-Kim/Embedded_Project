@@ -1,0 +1,75 @@
+(footprint "MTHole_3.5mm_7.5mmPad_GND"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at 0 -4.45 0)
+		(layer "F.SilkS")
+		(uuid "81ad8e14-74b5-40dd-b0b7-947ee2c021aa")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.2)
+			)
+		)
+	)
+	(property "Value" "MTHole_3.5mm_7.5mmPad_GND"
+		(at 0 4.45 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "040133f5-ca2c-4ad5-9ff7-fbbf2181bc0f")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "9644fb3f-4434-4f15-bbbf-c61248cd0807")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "2188074e-05da-437e-ba32-f82881bd54e7")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr exclude_from_pos_files exclude_from_bom)
+	(fp_circle
+		(center 0 0)
+		(end 3.7 0)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "1748e005-70fe-457b-8c77-2f10419b09ed")
+	)
+	(pad "1" thru_hole circle
+		(at 0 0)
+		(size 7.3 7.3)
+		(drill 3.5)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(zone_connect 2)
+		(uuid "c5e20e1a-6162-4e4f-aa5e-f8d282d03daa")
+	)
+	(embedded_fonts no)
+)

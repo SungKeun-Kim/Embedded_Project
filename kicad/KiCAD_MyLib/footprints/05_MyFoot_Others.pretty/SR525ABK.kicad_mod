@@ -1,36 +1,199 @@
-(module "SR525ABK" (layer F.Cu)
-  (descr "SR-5-2-5A-BK-1")
-  (tags "Fuse")
-  (fp_text reference F** (at 2.540 -0) (layer F.SilkS)
-    (effects (font (size 1.27 1.27) (thickness 0.254)))
-  )
-  (fp_text user %R (at 2.540 -0) (layer F.Fab)
-    (effects (font (size 1.27 1.27) (thickness 0.254)))
-  )
-  (fp_text value "SR525ABK" (at 2.540 -0) (layer F.SilkS) hide
-    (effects (font (size 1.27 1.27) (thickness 0.254)))
-  )
-  (fp_line (start -2.71 -5.25) (end 7.79 -5.25) (layer F.CrtYd) (width 0.1))
-  (fp_line (start 7.79 -5.25) (end 7.79 5.25) (layer F.CrtYd) (width 0.1))
-  (fp_line (start 7.79 5.25) (end -2.71 5.25) (layer F.CrtYd) (width 0.1))
-  (fp_line (start -2.71 5.25) (end -2.71 -5.25) (layer F.CrtYd) (width 0.1))
-  (fp_line (start 2.54 -4.25) (end 2.54 -4.25) (layer F.Fab) (width 0.1))
-  (fp_line (start 2.54 4.25) (end 2.54 4.25) (layer F.Fab) (width 0.1))
-  (fp_line (start 2.54 -4.25) (end 2.54 -4.25) (layer F.SilkS) (width 0.2))
-  (fp_line (start 2.54 4.25) (end 2.54 4.25) (layer F.SilkS) (width 0.2))
-  (fp_line (start -2.2 -0) (end -2.2 -0) (layer F.SilkS) (width 0.1))
-  (fp_line (start -2.3 -0) (end -2.3 -0) (layer F.SilkS) (width 0.1))
-  (fp_arc (start 2.54 -0) (end 2.540 -4.25) (angle -180) (layer F.Fab) (width 0.1))
-  (fp_arc (start 2.54 -0) (end 2.540 4.25) (angle -180) (layer F.Fab) (width 0.1))
-  (fp_arc (start 2.54 -0) (end 2.540 -4.25) (angle -180) (layer F.SilkS) (width 0.2))
-  (fp_arc (start 2.54 -0) (end 2.540 4.25) (angle -180) (layer F.SilkS) (width 0.2))
-  (fp_arc (start -2.25 -0) (end -2.200 -0) (angle -180) (layer F.SilkS) (width 0.1))
-  (fp_arc (start -2.25 -0) (end -2.300 -0) (angle -180) (layer F.SilkS) (width 0.1))
-  (pad 1 thru_hole rect (at 0.000 -0) (size 1.500 1.500) (drill 1) (layers *.Cu *.Mask))
-  (pad 2 thru_hole circle (at 5.080 -0) (size 1.500 1.500) (drill 1) (layers *.Cu *.Mask))
-  (model SR-5-2-5A-BK.stp
-    (at (xyz 0.099999998498151 0 0.013385826912452))
-    (scale (xyz 1 1 1))
-    (rotate (xyz 0 0 0))
-  )
+(footprint "SR525ABK"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(property "Reference" "F**"
+		(at 0.1 -5.4 0)
+		(layer "F.SilkS")
+		(uuid "ab2371d0-28b6-4820-b26b-0c922780816b")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.2)
+			)
+		)
+	)
+	(property "Value" "SR525ABK"
+		(at 2.54 0 0)
+		(layer "F.SilkS")
+		(hide yes)
+		(uuid "75c7a01f-cd14-465f-9c2e-a2089949d06e")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.254)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "305f0d29-7e42-4d83-bd90-4ca920728031")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "24db34d7-8c26-4971-8a3b-62c3c64387ba")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr through_hole)
+	(fp_line
+		(start 0 -4.25)
+		(end 0 -4.25)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "b430dcd3-e578-4f3c-8f75-5cea863ffac0")
+	)
+	(fp_line
+		(start 0 4.25)
+		(end 0 4.25)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "e314e049-e07c-4f6d-aecf-c50ee720420c")
+	)
+	(fp_arc
+		(start 0 -4.25)
+		(mid 4.25 0)
+		(end 0 4.25)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "927ed946-38a3-44ae-b446-06042f6407db")
+	)
+	(fp_arc
+		(start 0 4.25)
+		(mid -4.25 0)
+		(end 0 -4.25)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "0592901e-166b-49dd-8e9b-cac7b41eee69")
+	)
+	(fp_rect
+		(start -4.4 -4.4)
+		(end 4.4 4.4)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "019c4d41-3745-4c8c-8687-6001cabda200")
+	)
+	(fp_line
+		(start 0 -4.25)
+		(end 0 -4.25)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "de9271b1-f28a-4c53-bd4e-e129f6fe2512")
+	)
+	(fp_line
+		(start 0 4.25)
+		(end 0 4.25)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "6c50bb7e-e53d-490b-828d-a94766b79f50")
+	)
+	(fp_arc
+		(start 0 -4.25)
+		(mid 4.25 0)
+		(end 0 4.25)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "fabc5ea5-5f4b-48ff-8f26-11446529d5cd")
+	)
+	(fp_arc
+		(start 0 4.25)
+		(mid -4.25 0)
+		(end 0 -4.25)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "baeb44c5-cfc1-4097-b0a4-c92c02b85416")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "ad54636a-1f75-4f22-a9c9-fbf46df5515d")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" thru_hole circle
+		(at -2.54 0)
+		(size 1.6 1.6)
+		(drill 0.85)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "65aee85e-226a-4bc4-97b1-33c3ca953a30")
+	)
+	(pad "2" thru_hole circle
+		(at 2.54 0)
+		(size 1.6 1.6)
+		(drill 0.85)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "de9bbef2-f4ca-4cf4-8881-ea7df2c36819")
+	)
+	(embedded_fonts no)
+	(model "SR-5-2-5A-BK.stp"
+		(offset
+			(xyz 2.539999924 0 0.3399999985)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+	(model "${KICAD_3DMODEL_DIR}/SR-5-2-5A-BK.stp"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
 )

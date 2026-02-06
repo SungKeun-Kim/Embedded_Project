@@ -1,0 +1,173 @@
+(footprint "TO220_P2.54mm"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(property "Reference" "D**"
+		(at 0.2 -3.8 0)
+		(layer "F.SilkS")
+		(uuid "34b06b37-9f27-47cc-b93e-d282a01e9905")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.2)
+			)
+		)
+	)
+	(property "Value" "TO220_P2.54mm"
+		(at 0 0 0)
+		(layer "F.SilkS")
+		(hide yes)
+		(uuid "d83fcb41-aaeb-408d-9fca-34c83c0f1f57")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.254)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "da23b221-07ed-4c56-95d2-ad3909440dd3")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "e107ef93-a740-402c-b79f-87a992108a61")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr through_hole)
+	(fp_line
+		(start -5.1 -2.6)
+		(end -5.1 1.8)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "7953d804-0c92-4dcb-bd56-088bfb500d6a")
+	)
+	(fp_line
+		(start -5.1 -2)
+		(end 5.1 -2)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "27633883-931e-4377-b543-e337928f6058")
+	)
+	(fp_line
+		(start -5.1 1.8)
+		(end 5.1 1.8)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "8d22dd2e-1a27-490f-8252-10c4f33a455e")
+	)
+	(fp_line
+		(start 5.1 -2.6)
+		(end -5.1 -2.6)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "89a20f43-10f0-4d2f-ae44-6963c3c8d9ae")
+	)
+	(fp_line
+		(start 5.1 1.8)
+		(end 5.1 -2.6)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "0159159e-002d-4b53-ab3b-e508321c5880")
+	)
+	(fp_rect
+		(start -5.25 -2.75)
+		(end 5.25 1.95)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "ccbc2cc4-626f-4eda-9c9e-2735e88959c3")
+	)
+	(fp_rect
+		(start -5.1 -2.6)
+		(end 5.15 1.8)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "6e075d68-9fbd-4c68-8838-e712c7c3b234")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0.2 0.1 0)
+		(layer "F.Fab")
+		(uuid "337ad8f9-c5a1-473d-9e18-89848fe22554")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" thru_hole circle
+		(at -2.54 0)
+		(size 2.2 2.2)
+		(drill 1.1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "f6d4bbe0-417d-4152-b7e3-31c2fc194026")
+	)
+	(pad "2" thru_hole circle
+		(at 0 0)
+		(size 2.2 2.2)
+		(drill 1.1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "3cd5105b-e637-4215-bdcb-1c8356fe7d9c")
+	)
+	(pad "3" thru_hole circle
+		(at 2.54 0)
+		(size 2.2 2.2)
+		(drill 1.1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "7ea3eb0b-4b99-4e9d-9075-c7de5f6d312c")
+	)
+	(embedded_fonts no)
+	(model "${KICAD_3DMODEL_DIR}/TO220AB_P2.55.stp"
+		(offset
+			(xyz 10 1.5 8.5)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -0 -90 180)
+		)
+	)
+)

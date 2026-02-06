@@ -1,0 +1,128 @@
+(footprint "104K_275V"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at -4.8 -4.1 0)
+		(layer "F.SilkS")
+		(uuid "086387f9-bb5e-4535-a0c3-b09679f000f2")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.2)
+			)
+		)
+	)
+	(property "Value" "104K_275V"
+		(at 7.51 3.585 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "cae6d700-20cc-484c-a0cb-590d7d0d793d")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "c94fae2a-4d16-470c-8916-1b8da52bc75d")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "772b5d51-ad92-4bd8-be1a-fd39dc37a9e0")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr through_hole)
+	(fp_rect
+		(start -9 -2.8)
+		(end 9 2.8)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "e7e44021-eca8-4291-9db6-a2a6870ea5e3")
+	)
+	(fp_rect
+		(start -9.2 -3)
+		(end 9.2 3)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "2ac13f15-6e1b-45ae-8a7f-856c6680517b")
+	)
+	(fp_rect
+		(start -9 -2.8)
+		(end 9 2.8)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "4f9377ef-75c4-432e-997a-6e3e68dca4fa")
+	)
+	(fp_text user "${REFERENCE}"
+		(at -5.3 0.8 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "240aa6ba-79fd-480c-96f8-1d73ca90f3f0")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify left bottom)
+		)
+	)
+	(pad "1" thru_hole circle
+		(at -7.5 0)
+		(size 1.85 1.85)
+		(drill 0.93)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "7bedb5fe-30a2-4aeb-87b1-fefcc0af4125")
+	)
+	(pad "2" thru_hole circle
+		(at 7.5 0)
+		(size 1.85 1.85)
+		(drill 0.93)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "6d79b001-39b8-48c2-a28e-410d50ff5740")
+	)
+	(embedded_fonts no)
+	(model "${KICAD_3DMODEL_DIR}/ECQUAAF104T1.STEP"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -90 -0 -0)
+		)
+	)
+)

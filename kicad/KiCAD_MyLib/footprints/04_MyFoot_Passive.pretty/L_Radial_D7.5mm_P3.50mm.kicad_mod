@@ -1,0 +1,125 @@
+(footprint "L_Radial_D7.5mm_P3.50mm"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at 0 -5 0)
+		(layer "F.SilkS")
+		(uuid "46ce4323-a73d-4ec5-bed2-9754621c12a2")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.2)
+			)
+		)
+	)
+	(property "Value" "L_Radial_D7.5mm_P3.50mm"
+		(at 0 5 0)
+		(layer "F.Fab")
+		(uuid "62abb97c-4433-4a25-9efc-3131b045f9ca")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "51064097-8dd9-40e8-a2b7-f1ec3d956216")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "5f7a64b3-9d47-4b77-bf18-6d79f7dc77d1")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr through_hole)
+	(fp_circle
+		(center 0 0)
+		(end 3.7 0)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "879db971-50cc-4491-8d28-2ed902d5a2ee")
+	)
+	(fp_circle
+		(center 0 0)
+		(end 3.8 0)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "1724df0b-5e07-481d-95f9-055ee4617cfc")
+	)
+	(fp_circle
+		(center 0 0)
+		(end 3.75 0)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "21b1bcc2-5e7e-4cf5-b91b-6e3dc3930011")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "96a48777-c362-405e-9e09-30f7084ff53b")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" thru_hole circle
+		(at -1.75 0)
+		(size 2.2 2.2)
+		(drill 0.95)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "11ddf2e9-374f-4add-a3b1-9bcaf8163ffb")
+	)
+	(pad "2" thru_hole circle
+		(at 1.75 0)
+		(size 2.2 2.2)
+		(drill 0.95)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "241f7393-2af7-4d72-a64e-88b39ce3def7")
+	)
+	(embedded_fonts no)
+	(model "${KICAD_3DMODEL_DIR}/L_Radial_D7.5mm_P3.50mm_Fastron_07P.step"
+		(offset
+			(xyz -1.75 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -0 -0 -0)
+		)
+	)
+)
