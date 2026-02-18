@@ -68,9 +68,9 @@ const uint8_t SAFETY_TIMEOUT = 210;          // 10.5ms (50Hz 대응, ZC 미검�
 const uint8_t MIN_ZC_PERIOD = 140;           // 7ms (노이즈 필터)
 const uint8_t MIN_DIM_DEFAULT = 62;          // 기본값 (60Hz, 8MHz 기준)
 const uint8_t MIN_DIM_BASE = 62;             // 비율 계산 기준 (166틱 대비 62틱 = 37.3%)
-const uint8_t MAX_DIM_DEFAULT = 161;         // 기본값 (부팅 시, 보수적)
-const uint8_t MAX_DIM_MARGIN = 5;            // maxDim 계산 시 여유 (측정주기 - margin)
-                                             // 166 - 5 = 161
+const uint8_t MAX_DIM_DEFAULT = 160;         // 기본값 (부팅 시, 보수적)
+const uint8_t MAX_DIM_MARGIN = 6;            // maxDim 계산 시 여유 (측정주기 - margin)
+                                             // 166 - 6 = 160
 const uint8_t MAX_DIM_MIN = 156;             // maxDim 하한 (느린칩 대응)
 const uint8_t MAX_DIM_MAX = 195;             // maxDim 상한 (50Hz 대응)
 const uint8_t MIN_DIM_MIN = 50;              // minDim 하한 (느린칩 대응)
