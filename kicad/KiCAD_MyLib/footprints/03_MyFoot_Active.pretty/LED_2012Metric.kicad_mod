@@ -1,0 +1,229 @@
+(footprint "LED_2012Metric"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC-7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
+	(tags "resistor handsolder")
+	(property "Reference" "REF**"
+		(at 0 -1.65 0)
+		(layer "F.SilkS")
+		(uuid "5d9cd87c-5f44-4b42-bb70-7dcceb545ffb")
+		(effects
+			(font
+				(size 1.1 1.1)
+				(thickness 0.18)
+				(bold yes)
+			)
+		)
+	)
+	(property "Value" "LED_2012Metric"
+		(at 0 1.65 0)
+		(layer "F.Fab")
+		(uuid "ef22c9d3-f693-4c75-b73f-b6ed43ca0057")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "6d29c2c0-eee7-4671-981d-12bb4ae02c2c")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "cb6b0a99-22e5-47e9-a934-2b7b82236fcd")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(fp_line
+		(start -2.05 0)
+		(end -1.78 0.18)
+		(stroke
+			(width 0.18)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "2b62009d-3223-4a3a-81b1-860c6bd6757f")
+	)
+	(fp_line
+		(start -1.78 -0.62)
+		(end -1.78 -0.18)
+		(stroke
+			(width 0.18)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "3067d4a5-a0da-4a9c-9f14-5b0040bf3e6a")
+	)
+	(fp_line
+		(start -1.78 -0.18)
+		(end -2.05 0)
+		(stroke
+			(width 0.18)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "fedfc842-3bea-4f97-83a2-12703d7bfffa")
+	)
+	(fp_line
+		(start -1.78 0.62)
+		(end -1.78 0.18)
+		(stroke
+			(width 0.18)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "4ec83aed-a009-4571-8fe1-b4166b813d2e")
+	)
+	(fp_line
+		(start -1.58 -0.82)
+		(end 1.58 -0.82)
+		(stroke
+			(width 0.18)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "a2528f6d-b815-4880-82f5-55305dede482")
+	)
+	(fp_line
+		(start -1.58 0.82)
+		(end 1.58 0.82)
+		(stroke
+			(width 0.18)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "c3fcc291-7a35-4968-9820-4b41ec95641b")
+	)
+	(fp_line
+		(start 1.78 -0.62)
+		(end 1.78 0.62)
+		(stroke
+			(width 0.18)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "089ef5e5-1945-4341-9298-e56021f1edf4")
+	)
+	(fp_arc
+		(start -1.78 -0.62)
+		(mid -1.721421 -0.761421)
+		(end -1.58 -0.82)
+		(stroke
+			(width 0.18)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "c098e7c1-0c42-4b90-8342-e30f5b1ff190")
+	)
+	(fp_arc
+		(start -1.58 0.82)
+		(mid -1.721421 0.761421)
+		(end -1.78 0.62)
+		(stroke
+			(width 0.18)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "d7432624-3427-4625-937a-91c08d9b429b")
+	)
+	(fp_arc
+		(start 1.58 -0.82)
+		(mid 1.721421 -0.761421)
+		(end 1.78 -0.62)
+		(stroke
+			(width 0.18)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "6a15cacb-08d2-4ef4-827a-f6e1cd449cfd")
+	)
+	(fp_arc
+		(start 1.78 0.62)
+		(mid 1.721421 0.761421)
+		(end 1.58 0.82)
+		(stroke
+			(width 0.18)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "aa9928b4-5fcc-4c72-91af-7ea93bd31be6")
+	)
+	(fp_rect
+		(start -1.88 -0.92)
+		(end 1.88 0.92)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "8983cd9b-c797-4aac-b797-d9660dead5e8")
+	)
+	(fp_rect
+		(start -1 -0.625)
+		(end 1 0.625)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "42756cbe-71e6-477d-a122-535168d82eec")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "5384e4df-6f44-432a-b89e-7801162d5178")
+		(effects
+			(font
+				(size 0.5 0.5)
+				(thickness 0.08)
+			)
+		)
+	)
+	(pad "1" smd roundrect
+		(at -1.03 0)
+		(size 1.26 1.4)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(roundrect_rratio 0.119047619)
+		(uuid "62b8882a-a223-4184-be52-afa213f21b4e")
+	)
+	(pad "2" smd roundrect
+		(at 1.03 0)
+		(size 1.26 1.4)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(roundrect_rratio 0.119047619)
+		(uuid "4e4663ac-d4d5-4516-adfb-5189d98d22ba")
+	)
+	(embedded_fonts no)
+	(model "${KICAD_3DMODEL_DIR}/LED_2012Metric.step"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)

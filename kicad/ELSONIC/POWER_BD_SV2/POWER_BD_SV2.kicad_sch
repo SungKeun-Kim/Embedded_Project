@@ -12624,7 +12624,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_0.25W_P10.16mm"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 110.744 172.466 90)
 			(effects
 				(font
@@ -12693,7 +12693,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_0.25W_P10.16mm"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 126.746 87.884 90)
 			(effects
 				(font
@@ -13174,7 +13174,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_0.25W_P10.16mm"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 272.796 195.834 90)
 			(effects
 				(font
@@ -13313,7 +13313,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_0.25W_P10.16mm"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 132.334 92.964 90)
 			(effects
 				(font
@@ -13381,7 +13381,7 @@
 				)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:C_Disc_D4.7mm_P5.00mm"
+		(property "Footprint" "04_MyFoot_Passive:C_3216Metric"
 			(at 232.41 132.3848 0)
 			(effects
 				(font
@@ -14324,7 +14324,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_0.25W_P10.16mm"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 147.574 171.196 90)
 			(effects
 				(font
@@ -14901,7 +14901,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_0.25W_P10.16mm"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 65.024 175.514 90)
 			(effects
 				(font
@@ -14969,7 +14969,7 @@
 				)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:C_Disc_D4.7mm_P5.00mm"
+		(property "Footprint" "04_MyFoot_Passive:C_3216Metric"
 			(at 215.9 123.4948 0)
 			(effects
 				(font
@@ -15108,7 +15108,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:C_Disc_D4.7mm_T3.0mm_P5.00mm"
+		(property "Footprint" "04_MyFoot_Passive:C_3216Metric"
 			(at 147.6248 181.61 0)
 			(effects
 				(font
@@ -15176,7 +15176,7 @@
 				)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:C_Disc_D4.7mm_T3.0mm_P5.00mm"
+		(property "Footprint" "04_MyFoot_Passive:C_3216Metric"
 			(at 95.25 110.7948 0)
 			(effects
 				(font
@@ -16520,7 +16520,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_0.25W_P10.16mm"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 147.574 213.614 90)
 			(effects
 				(font
@@ -16659,7 +16659,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "03_MyFoot_Active:LED_D3.0mm"
+		(property "Footprint" "03_MyFoot_Active:LED_2012Metric"
 			(at 274.32 105.41 0)
 			(effects
 				(font
@@ -16668,7 +16668,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "~"
+		(property "Datasheet" ""
 			(at 274.32 105.41 0)
 			(effects
 				(font
@@ -16677,7 +16677,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Light emitting diode"
+		(property "Description" ""
 			(at 274.32 105.41 0)
 			(effects
 				(font
@@ -16686,7 +16686,7 @@
 				(hide yes)
 			)
 		)
-		(property "Sim.Pins" "1=K 2=A"
+		(property "Sim.Pins" ""
 			(at 274.32 105.41 0)
 			(effects
 				(font
@@ -17436,7 +17436,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:C_Disc_D4.7mm_T3.0mm_P5.00mm"
+		(property "Footprint" "04_MyFoot_Passive:C_3216Metric"
 			(at 261.9248 92.71 0)
 			(effects
 				(font
@@ -17640,7 +17640,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_0.25W_P10.16mm"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 273.304 93.726 90)
 			(effects
 				(font
@@ -17709,7 +17709,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_0.25W_P10.16mm"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 205.994 25.654 90)
 			(effects
 				(font
@@ -18396,7 +18396,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:C_Disc_D4.7mm_P5.00mm"
+		(property "Footprint" "04_MyFoot_Passive:C_3216Metric"
 			(at 110.7948 113.03 0)
 			(effects
 				(font
@@ -18596,7 +18596,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:C_Disc_D4.7mm_P5.00mm"
+		(property "Footprint" "04_MyFoot_Passive:C_3216Metric"
 			(at 117.1448 184.15 0)
 			(effects
 				(font
@@ -19157,7 +19157,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_0.25W_P10.16mm"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 136.144 206.756 90)
 			(effects
 				(font
@@ -19435,7 +19435,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:C_Disc_D6.0mm_P5.00mm"
+		(property "Footprint" "04_MyFoot_Passive:C_3216Metric"
 			(at 136.1948 218.44 0)
 			(effects
 				(font
@@ -19603,7 +19603,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:C_Disc_D4.7mm_T3.0mm_P5.00mm"
+		(property "Footprint" "04_MyFoot_Passive:C_3216Metric"
 			(at 124.7648 113.03 0)
 			(effects
 				(font
@@ -19738,7 +19738,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_0.25W_P10.16mm"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 278.384 185.674 90)
 			(effects
 				(font
@@ -19807,7 +19807,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_0.25W_P10.16mm"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 183.134 132.334 90)
 			(effects
 				(font
@@ -19876,7 +19876,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_0.25W_P10.16mm"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 212.344 132.334 90)
 			(effects
 				(font
@@ -20012,7 +20012,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "03_MyFoot_Active:LED_D3.0mm"
+		(property "Footprint" "03_MyFoot_Active:LED_2012Metric"
 			(at 271.78 205.74 0)
 			(effects
 				(font
@@ -20091,7 +20091,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:C_Disc_D6.0mm_P5.00mm"
+		(property "Footprint" "04_MyFoot_Passive:C_3216Metric"
 			(at 155.2448 218.44 0)
 			(effects
 				(font
@@ -20727,7 +20727,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_0.25W_P10.16mm"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 239.014 148.336 90)
 			(effects
 				(font
@@ -21329,7 +21329,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_0.25W_P10.16mm"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 205.994 87.884 90)
 			(effects
 				(font
@@ -21398,7 +21398,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_0.25W_P10.16mm"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 205.994 61.214 90)
 			(effects
 				(font
@@ -21548,7 +21548,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:C_Disc_D4.7mm_T3.0mm_P5.00mm"
+		(property "Footprint" "04_MyFoot_Passive:C_3216Metric"
 			(at 319.0748 91.44 0)
 			(effects
 				(font
@@ -22225,7 +22225,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_0.25W_P10.16mm"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 195.834 124.206 90)
 			(effects
 				(font
@@ -22295,7 +22295,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:C_Disc_D4.7mm_T3.0mm_P5.00mm"
+		(property "Footprint" "04_MyFoot_Passive:C_3216Metric"
 			(at 261.9248 30.48 0)
 			(effects
 				(font
@@ -22365,7 +22365,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:C_Disc_D4.7mm_T3.0mm_P5.00mm"
+		(property "Footprint" "04_MyFoot_Passive:C_3216Metric"
 			(at 261.9248 66.04 0)
 			(effects
 				(font
