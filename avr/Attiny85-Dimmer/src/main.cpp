@@ -126,25 +126,24 @@ void setup() {
   // ==========================================
   {
     uint16_t periodSum = 0;
-    uint8_t lastPin = 0;
     uint8_t samples = 0;
     
-    // 첫 ZC 대기 (동기화)
-    while (!((PINB >> ZC_PIN) & 1));  // HIGH 대기
-    while ((PINB >> ZC_PIN) & 1);     // LOW 대기
-    
-    // 8회 측정
+    // 8회 측정 (상승 엣지 → 상승 엣지 정확 측정)
     while (samples < 8) {
+      // 상승 엣지 대기 (정확한 시작점)
+      while ((PINB >> ZC_PIN) & 1);   // HIGH→LOW 대기
+      while (!((PINB >> ZC_PIN) & 1)); // LOW→HIGH 대기 (상승 엣지)
+      
       uint16_t ticks = 0;
       
-      // 상승 엣지 대기 + 틱 카운트
-      while (!((PINB >> ZC_PIN) & 1)) {
+      // HIGH 구간 카운트
+      while ((PINB >> ZC_PIN) & 1) {
         delayMicroseconds(50);
         ticks++;
         if (ticks > 250) break;  // 타임아웃
       }
-      // 하강 엣지 대기
-      while ((PINB >> ZC_PIN) & 1) {
+      // LOW 구간 카운트 (다음 상승 엣지까지)
+      while (!((PINB >> ZC_PIN) & 1)) {
         delayMicroseconds(50);
         ticks++;
         if (ticks > 250) break;
@@ -164,8 +163,8 @@ void setup() {
     if (calcMax > MAX_DIM_MAX) calcMax = MAX_DIM_MAX;
     maxDim = (uint8_t)calcMax;
     
-    // minDim 계산 (비율 기반: avgPeriod × 62 / 166 - 5)
-    int16_t calcMin = (int16_t)avgPeriod * MIN_DIM_BASE / 166 - 5;
+    // minDim 계산 (비율 기반: avgPeriod × 62 / 166 - 4)
+    int16_t calcMin = (int16_t)avgPeriod * MIN_DIM_BASE / 166 - 4;
     if (calcMin < MIN_DIM_MIN) calcMin = MIN_DIM_MIN;
     if (calcMin > MIN_DIM_MAX) calcMin = MIN_DIM_MAX;
     minDim = (uint8_t)calcMin;
