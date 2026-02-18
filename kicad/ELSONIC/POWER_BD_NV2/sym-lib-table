@@ -1,4 +1,0 @@
-(sym_lib_table
-  (version 7)
-  (lib (name "POWER_BD_NV2-altium-import")(type "KiCad")(uri "${KIPRJMOD}/POWER_BD_NV2-altium-import.kicad_sym")(options "")(descr ""))
-)

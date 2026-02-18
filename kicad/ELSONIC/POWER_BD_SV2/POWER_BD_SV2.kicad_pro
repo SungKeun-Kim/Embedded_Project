@@ -529,7 +529,7 @@
   },
   "schematic": {
     "annotate_start_num": 0,
-    "bom_export_filename": "POWER_BD_NV2.csv",
+    "bom_export_filename": "D:\\01_AllData\\06_Embedded_Proj\\KiCAD\\ELSONIC\\POWER_BD_SV2\\POWER_BD_SV2.csv",
     "bom_fmt_presets": [],
     "bom_fmt_settings": {
       "field_delimiter": ",",
