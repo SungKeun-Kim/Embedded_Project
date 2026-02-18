@@ -164,8 +164,8 @@ void setup() {
     if (calcMax > MAX_DIM_MAX) calcMax = MAX_DIM_MAX;
     maxDim = (uint8_t)calcMax;
     
-    // minDim 계산 (비율 기반: avgPeriod × 62 / 166 - 4)
-    int16_t calcMin = (int16_t)avgPeriod * MIN_DIM_BASE / 166 - 4;
+    // minDim 계산 (비율 기반: avgPeriod × 62 / 166 - 5)
+    int16_t calcMin = (int16_t)avgPeriod * MIN_DIM_BASE / 166 - 5;
     if (calcMin < MIN_DIM_MIN) calcMin = MIN_DIM_MIN;
     if (calcMin > MIN_DIM_MAX) calcMin = MIN_DIM_MAX;
     minDim = (uint8_t)calcMin;
