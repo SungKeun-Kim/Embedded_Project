@@ -68,9 +68,9 @@ const uint8_t SAFETY_TIMEOUT = 210;          // 10.5ms (50Hz 대응, ZC 미검�
 const uint8_t MIN_ZC_PERIOD = 140;           // 7ms (노이즈 필터)
 const uint8_t MIN_DIM_DEFAULT = 62;          // 기본값 (60Hz, 8MHz 기준)
 const uint8_t MIN_DIM_BASE = 62;             // 비율 계산 기준 (166틱 대비 62틱 = 37.3%)
-const uint8_t MAX_DIM_DEFAULT = 159;         // 기본값 (부팅 시, 보수적)
-const uint8_t MAX_DIM_MARGIN = 7;            // maxDim 계산 시 여유 (측정주기 - margin)
-                                             // 166 - 7 = 159
+const uint8_t MAX_DIM_DEFAULT = 157;         // 기본값 (부팅 시, 보수적)
+const uint8_t MAX_DIM_MARGIN = 9;            // maxDim 계산 시 여유 (측정주기 - margin)
+                                             // 166 - 9 = 157
 const uint8_t MAX_DIM_MIN = 156;             // maxDim 하한 (느린칩 대응)
 const uint8_t MAX_DIM_MAX = 195;             // maxDim 상한 (50Hz 대응)
 const uint8_t MIN_DIM_MIN = 50;              // minDim 하한 (느린칩 대응)
@@ -98,6 +98,8 @@ const uint8_t DIM_OFF = 255;                 // OFF 값 (> SAFETY_TIMEOUT → �
 volatile uint8_t state = S_IDLE;             // 상태 머신 현재 상태
 volatile uint8_t counter = 0;                // 범용 카운터 (DELAY: 위상지연, TRIGGER: 펄스폭)
 volatile uint8_t dimValue = DIM_OFF;         // 조광 값 - OFF 상태로 시작 (START 전 5V)
+volatile bool calibMode = true;              // 캘리브레이션 모드 플래그
+volatile uint16_t calibCounter = 0;          // 캘리브레이션용 틱 카운터
 volatile uint8_t minDim = MIN_DIM_DEFAULT;   // 동적 최소 지연값 (자동 보정)
 volatile uint8_t maxDim = MAX_DIM_DEFAULT;   // 동적 최대 지연값 (자동 보정)
 int potValue;                                // ADC 읽기 값
@@ -121,62 +123,12 @@ void setup() {
   DIDR0 |= (1 << ADC3D);                        // PB3 디지털 입력 비활성화 (ADC 노이즈 감소)
 
   // ==========================================
-  // 2단계: ZC 주기 측정 (부팅 시 1회, 트라이악 OFF 상태)
-  // Timer1 시작 전에 폴링으로 8회 측정 → maxDim 계산
-  // ==========================================
-  {
-    uint16_t periodSum = 0;
-    uint8_t samples = 0;
-    
-    // 8회 측정 (상승 엣지 → 상승 엣지 정확 측정)
-    while (samples < 8) {
-      // 상승 엣지 대기 (정확한 시작점)
-      while ((PINB >> ZC_PIN) & 1);   // HIGH→LOW 대기
-      while (!((PINB >> ZC_PIN) & 1)); // LOW→HIGH 대기 (상승 엣지)
-      
-      uint16_t ticks = 0;
-      
-      // HIGH 구간 카운트
-      while ((PINB >> ZC_PIN) & 1) {
-        delayMicroseconds(50);
-        ticks++;
-        if (ticks > 250) break;  // 타임아웃
-      }
-      // LOW 구간 카운트 (다음 상승 엣지까지)
-      while (!((PINB >> ZC_PIN) & 1)) {
-        delayMicroseconds(50);
-        ticks++;
-        if (ticks > 250) break;
-      }
-      
-      // 유효한 주기만 합산 (150~220 범위)
-      if (ticks >= 150 && ticks <= 220) {
-        periodSum += ticks;
-        samples++;
-      }
-    }
-    
-    // maxDim 계산
-    uint8_t avgPeriod = periodSum / 8;
-    int16_t calcMax = (int16_t)avgPeriod - MAX_DIM_MARGIN;
-    if (calcMax < MAX_DIM_MIN) calcMax = MAX_DIM_MIN;
-    if (calcMax > MAX_DIM_MAX) calcMax = MAX_DIM_MAX;
-    maxDim = (uint8_t)calcMax;
-    
-    // minDim 계산 (비율 기반: avgPeriod × 62 / 166 - 4)
-    int16_t calcMin = (int16_t)avgPeriod * MIN_DIM_BASE / 166 - 4;
-    if (calcMin < MIN_DIM_MIN) calcMin = MIN_DIM_MIN;
-    if (calcMin > MIN_DIM_MAX) calcMin = MIN_DIM_MAX;
-    minDim = (uint8_t)calcMin;
-  }
-
-  // ==========================================
-  // 3단계: Timer1 설정 (50μs 주기)
-  // INT0 미사용 - Timer1 ISR 내에서 PB2 폴링
+  // 2단계: Timer1 설정 (50μs 주기) - 캘리브레이션 모드로 시작
   // ==========================================
   cli();
+  calibMode = true;                            // 캘리브레이션 모드 활성화
+  calibCounter = 0;
 
-  // Timer1 완전 초기화
   GTCCR = 0;                                   // 타이머 동기화 해제
   TCCR1 = 0;                                   // Timer1 정지
   TCNT1 = 0;                                   // 카운터 클리어
@@ -184,20 +136,73 @@ void setup() {
   OCR1C = 49;                                  // TOP = 49 (50μs @ 8MHz)
   OCR1A = 49;                                  // 비교 매치 A
 
-  // TIMSK: Timer0 오버플로(millis용) + Timer1 비교매치A만 활성화
-  // 다른 모든 인터럽트 비트 강제 클리어 (init()에서 설정된 잔여 비트 제거)
-  TIMSK = (1 << TOIE0) | (1 << OCIE1A);
+  TIMSK = (1 << TOIE0) | (1 << OCIE1A);        // Timer0 + Timer1 인터럽트 활성화
+  sei();
 
-  // INT0는 사용하지 않음 (GIMSK 건드리지 않음)
-  // 폴링 방식으로 제로크로스 검출 → 인터럽트 설정 문제 완전 제거
+  // ==========================================
+  // 3단계: ZC 주기 측정 (Timer1 틱 기반, 트라이악 OFF 상태)
+  // 8회 측정하여 avgPeriod 계산 → minDim/maxDim 설정
+  // ==========================================
+  {
+    uint16_t periodSum = 0;
+    uint8_t samples = 0;
+    
+    // 첫 상승 엣지 대기 (동기화)
+    while ((PINB >> ZC_PIN) & 1);              // HIGH→LOW 대기
+    while (!((PINB >> ZC_PIN) & 1));           // LOW→HIGH 대기 (상승 엣지)
+    
+    // calibCounter 리셋
+    cli();
+    calibCounter = 0;
+    sei();
+    
+    // 8회 측정 (상승 엣지 → 상승 엣지)
+    while (samples < 8) {
+      // 다음 상승 엣지 대기
+      while ((PINB >> ZC_PIN) & 1);            // HIGH→LOW 대기
+      while (!((PINB >> ZC_PIN) & 1));         // LOW→HIGH 대기 (상승 엣지)
+      
+      // 틱 수 읽기
+      cli();
+      uint16_t ticks = calibCounter;
+      calibCounter = 0;
+      sei();
+      
+      // 유효한 주기만 합산 (140~220 범위: 60Hz±10% + 여유)
+      if (ticks >= 140 && ticks <= 220) {
+        periodSum += ticks;
+        samples++;
+      }
+    }
+    
+    // avgPeriod 계산
+    uint8_t avgPeriod = periodSum / 8;
+    
+    // maxDim 계산 (avgPeriod - margin)
+    int16_t calcMax = (int16_t)avgPeriod - MAX_DIM_MARGIN;
+    if (calcMax < MAX_DIM_MIN) calcMax = MAX_DIM_MIN;
+    if (calcMax > MAX_DIM_MAX) calcMax = MAX_DIM_MAX;
+    maxDim = (uint8_t)calcMax;
+    
+    // minDim 계산 (비율 기반: avgPeriod × 62 / 166 - offset)
+    int16_t calcMin = (int16_t)avgPeriod * MIN_DIM_BASE / 166 - 1;
+    if (calcMin < MIN_DIM_MIN) calcMin = MIN_DIM_MIN;
+    if (calcMin > MIN_DIM_MAX) calcMin = MIN_DIM_MAX;
+    minDim = (uint8_t)calcMin;
+  }
 
+  // ==========================================
+  // 4단계: 캘리브레이션 완료 → 정상 모드 전환
+  // ==========================================
+  cli();
+  calibMode = false;                           // 정상 모드로 전환
   sei();
 }
 
 // ==========================================
 // Timer1 비교 매치 A 인터럽트 (50μs마다 호출)
-// - PB2 폴링으로 제로크로스 상승 엣지 검출
-// - 4단계 상태 머신: IDLE → ZC_OFFSET → DELAY → TRIGGER → IDLE
+// - 캘리브레이션 모드: calibCounter++ 만 수행
+// - 정상 모드: PB2 폴링으로 제로크로스 검출 + 트라이악 제어
 //
 // ★★★ 핵심 설계 원칙 ★★★
 // 1. ZC 엣지 검출은 IDLE 상태에서만 수행
@@ -206,6 +211,12 @@ void setup() {
 //    → 트라이악 EMI 노이즈 완전 차단
 // ==========================================
 ISR(TIMER1_COMPA_vect) {
+  // ---- 캘리브레이션 모드: 틱 카운트만 수행 ----
+  if (calibMode) {
+    calibCounter++;
+    return;
+  }
+
   // ---- PB2 상승 엣지 검출 (단순 2샘플 비교) ----
   static uint8_t lastPin = 0;
   uint8_t curPin = (PINB >> ZC_PIN) & 1;     // PB2: 0 또는 1
