@@ -68,9 +68,9 @@ const uint8_t SAFETY_TIMEOUT = 210;          // 10.5ms (50Hz 대응, ZC 미검�
 const uint8_t MIN_ZC_PERIOD = 140;           // 7ms (노이즈 필터)
 const uint8_t MIN_DIM_DEFAULT = 62;          // 기본값 (60Hz, 8MHz 기준)
 const uint8_t MIN_DIM_BASE = 62;             // 비율 계산 기준 (166틱 대비 62틱 = 37.3%)
-const uint8_t MAX_DIM_DEFAULT = 157;         // 기본값 (부팅 시, 보수적)
-const uint8_t MAX_DIM_MARGIN = 9;            // maxDim 계산 시 여유 (측정주기 - margin)
-                                             // 166 - 9 = 157
+const uint8_t MAX_DIM_DEFAULT = 156;         // 기본값 (부팅 시, 보수적)
+const uint8_t MAX_DIM_MARGIN = 10;           // maxDim 계산 시 여유 (측정주기 - margin)
+                                             // 166 - 10 = 156
 const uint8_t MAX_DIM_MIN = 156;             // maxDim 하한 (느린칩 대응)
 const uint8_t MAX_DIM_MAX = 195;             // maxDim 상한 (50Hz 대응)
 const uint8_t MIN_DIM_MIN = 50;              // minDim 하한 (느린칩 대응)
@@ -184,8 +184,8 @@ void setup() {
     if (calcMax > MAX_DIM_MAX) calcMax = MAX_DIM_MAX;
     maxDim = (uint8_t)calcMax;
     
-    // minDim 계산 (비율 기반: avgPeriod × 62 / 166 - offset)
-    int16_t calcMin = (int16_t)avgPeriod * MIN_DIM_BASE / 166 - 1;
+    // minDim 계산 (비율 기반: avgPeriod × 62 / 166)
+    int16_t calcMin = (int16_t)avgPeriod * MIN_DIM_BASE / 166;
     if (calcMin < MIN_DIM_MIN) calcMin = MIN_DIM_MIN;
     if (calcMin > MIN_DIM_MAX) calcMin = MIN_DIM_MAX;
     minDim = (uint8_t)calcMin;
