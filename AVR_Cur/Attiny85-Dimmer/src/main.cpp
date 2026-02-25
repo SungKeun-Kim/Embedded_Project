@@ -136,7 +136,7 @@ void setup() {
   OCR1C = 49;                                  // TOP = 49 (50μs @ 8MHz)
   OCR1A = 49;                                  // 비교 매치 A
 
-  TIMSK = (1 << TOIE0) | (1 << OCIE1A);        // Timer0 + Timer1 인터럽트 활성화
+  TIMSK = (1 << OCIE1A);        // Timer1 비교 매치 A 인터럽트만 활성화 (50μs 주기)
   sei();
 
   // ==========================================
