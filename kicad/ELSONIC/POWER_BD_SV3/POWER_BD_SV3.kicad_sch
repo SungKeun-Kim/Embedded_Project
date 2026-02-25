@@ -3075,34 +3075,42 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "03_MyLib_Active:LED"
-			(pin_numbers
-				(hide yes)
-			)
+		(symbol "03_MyLib_Active:LED_SMD"
 			(pin_names
 				(offset 1.016)
-				(hide yes)
 			)
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
 			(property "Reference" "D"
-				(at 0 2.54 0)
+				(at -3.0988 4.4958 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
+					(justify left bottom)
 				)
 			)
-			(property "Value" "LED"
-				(at 0 -2.54 0)
+			(property "Value" "LED_SMD"
+				(at -3.556 -3.302 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
+					(justify left bottom)
 				)
 			)
-			(property "Footprint" ""
+			(property "Footprint" "03_MyFoot_Active:LED_3216"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify bottom)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" ""
 				(at 0 0 0)
 				(effects
 					(font
@@ -3111,7 +3119,7 @@
 					(hide yes)
 				)
 			)
-			(property "Datasheet" "~"
+			(property "Description" ""
 				(at 0 0 0)
 				(effects
 					(font
@@ -3120,82 +3128,130 @@
 					(hide yes)
 				)
 			)
-			(property "Description" "Light emitting diode"
+			(property "MF" ""
 				(at 0 0 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
+					(justify bottom)
 					(hide yes)
 				)
 			)
-			(property "Sim.Pins" "1=K 2=A"
+			(property "MAXIMUM_PACKAGE_HEIGHT" ""
 				(at 0 0 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
+					(justify bottom)
 					(hide yes)
 				)
 			)
-			(property "ki_keywords" "LED diode"
+			(property "Package" ""
 				(at 0 0 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
+					(justify bottom)
 					(hide yes)
 				)
 			)
-			(property "ki_fp_filters" "LED* LED_SMD:* LED_THT:*"
+			(property "Price" ""
 				(at 0 0 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
+					(justify bottom)
 					(hide yes)
 				)
 			)
-			(symbol "LED_0_1"
+			(property "Check_prices" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify bottom)
+					(hide yes)
+				)
+			)
+			(property "STANDARD" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify bottom)
+					(hide yes)
+				)
+			)
+			(property "PARTREV" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify bottom)
+					(hide yes)
+				)
+			)
+			(property "SnapEDA_Link" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify bottom)
+					(hide yes)
+				)
+			)
+			(property "MP" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify bottom)
+					(hide yes)
+				)
+			)
+			(property "Description_1" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify bottom)
+					(hide yes)
+				)
+			)
+			(property "Availability" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify bottom)
+					(hide yes)
+				)
+			)
+			(property "MANUFACTURER" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify bottom)
+					(hide yes)
+				)
+			)
+			(symbol "LED_SMD_0_0"
 				(polyline
 					(pts
-						(xy -3.048 -0.762) (xy -4.572 -2.286) (xy -3.81 -2.286) (xy -4.572 -2.286) (xy -4.572 -1.524)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.778 -0.762) (xy -3.302 -2.286) (xy -2.54 -2.286) (xy -3.302 -2.286) (xy -3.302 -1.524)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.27 0) (xy 1.27 0)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.27 -1.27) (xy -1.27 1.27)
+						(xy -2.54 1.524) (xy -2.54 0)
 					)
 					(stroke
 						(width 0.254)
@@ -3207,7 +3263,7 @@
 				)
 				(polyline
 					(pts
-						(xy 1.27 -1.27) (xy 1.27 1.27) (xy -1.27 0) (xy 1.27 -1.27)
+						(xy -2.54 0) (xy -2.54 -1.524)
 					)
 					(stroke
 						(width 0.254)
@@ -3217,40 +3273,160 @@
 						(type none)
 					)
 				)
-			)
-			(symbol "LED_1_1"
-				(pin passive line
-					(at -3.81 0 0)
-					(length 2.54)
-					(name "K"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
+				(polyline
+					(pts
+						(xy -2.54 -1.524) (xy 0 0)
 					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.143 3.683) (xy -0.5715 3.175) (xy -0.1905 4.191) (xy -1.143 3.683)
+					)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(polyline
+					(pts
+						(xy -0.3556 4.0386) (xy -2.1336 2.0066)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 1.524) (xy 0 0)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 0) (xy -2.54 1.524)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.127 3.6195) (xy 0.6985 3.1115) (xy 1.0795 4.191) (xy 0.127 3.6195)
+					)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.889 3.937) (xy -0.889 1.905)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 2.54 0) (xy 0 0)
+					)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "LED_SMD_1_0"
+				(polyline
+					(pts
+						(xy -2.54 0) (xy -5.08 0)
+					)
+					(stroke
+						(width 0.1524)
+						(type solid)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 0) (xy 0 -1.524)
+					)
+					(stroke
+						(width 0.254)
+						(type solid)
+					)
+					(fill
+						(type none)
 					)
 				)
 				(pin passive line
-					(at 3.81 0 180)
+					(at -7.62 0 0)
 					(length 2.54)
 					(name "A"
 						(effects
 							(font
-								(size 1.27 1.27)
+								(size 1.016 1.016)
 							)
 						)
 					)
 					(number "2"
 						(effects
 							(font
-								(size 1.27 1.27)
+								(size 1.016 1.016)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 5.08 0 180)
+					(length 2.54)
+					(name "K"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.016 1.016)
 							)
 						)
 					)
@@ -3969,6 +4145,181 @@
 						)
 					)
 					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "04_MyLib_Passive:C_2AB"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0.254)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "C"
+				(at 2.794 2.286 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Value" "C_2AB"
+				(at 2.794 -2.286 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Footprint" ""
+				(at 0.9652 -3.81 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "cap capacitor"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "C_*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "C_2AB_0_1"
+				(polyline
+					(pts
+						(xy -2.032 0.762) (xy 2.032 0.762)
+					)
+					(stroke
+						(width 0.508)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -2.032 -0.762) (xy 2.032 -0.762)
+					)
+					(stroke
+						(width 0.508)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "C_2AB_1_1"
+				(pin passive line
+					(at -1.27 3.81 270)
+					(length 2.794)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -1.27 -3.81 90)
+					(length 2.794)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 1.27 3.81 270)
+					(length 2.794)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 1.27 -3.81 90)
+					(length 2.794)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -6293,6 +6644,219 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "04_MyLib_Passive:R_POT"
+			(pin_names
+				(offset 1.016)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "RV"
+				(at -4.445 0 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "R_POT"
+				(at -2.54 0 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "resistor variable"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "Potentiometer*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "R_POT_0_1"
+				(polyline
+					(pts
+						(xy 0 2.54) (xy 0 2.286)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 2.286) (xy 1.016 1.905) (xy 0 1.524) (xy -1.016 1.143) (xy 0 0.762)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 0.762) (xy 1.016 0.381) (xy 0 0) (xy -1.016 -0.381) (xy 0 -0.762)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 -0.762) (xy 1.016 -1.143) (xy 0 -1.524) (xy -1.016 -1.905) (xy 0 -2.286)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 -2.286) (xy 0 -2.54)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.143 0) (xy 2.286 0.508) (xy 2.286 -0.508) (xy 1.143 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(polyline
+					(pts
+						(xy 2.54 0) (xy 1.524 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "R_POT_1_1"
+				(pin passive line
+					(at 0 3.81 270)
+					(length 1.27)
+					(name "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -3.81 90)
+					(length 1.27)
+					(name "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 3.81 0 180)
+					(length 1.27)
+					(name "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "05_MyLib_Others:SR525A"
 			(pin_names
 				(hide yes)
@@ -6558,219 +7122,6 @@
 					)
 					(fill
 						(type none)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
-		(symbol "Device:R_Potentiometer_US"
-			(pin_names
-				(offset 1.016)
-				(hide yes)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(property "Reference" "RV"
-				(at -4.445 0 90)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" "R_Potentiometer_US"
-				(at -2.54 0 90)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" ""
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Datasheet" "~"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Description" "Potentiometer, US symbol"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_keywords" "resistor variable"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_fp_filters" "Potentiometer*"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(symbol "R_Potentiometer_US_0_1"
-				(polyline
-					(pts
-						(xy 0 2.54) (xy 0 2.286)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 2.286) (xy 1.016 1.905) (xy 0 1.524) (xy -1.016 1.143) (xy 0 0.762)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 0.762) (xy 1.016 0.381) (xy 0 0) (xy -1.016 -0.381) (xy 0 -0.762)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 -0.762) (xy 1.016 -1.143) (xy 0 -1.524) (xy -1.016 -1.905) (xy 0 -2.286)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 -2.286) (xy 0 -2.54)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.143 0) (xy 2.286 0.508) (xy 2.286 -0.508) (xy 1.143 0)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(polyline
-					(pts
-						(xy 2.54 0) (xy 1.524 0)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "R_Potentiometer_US_1_1"
-				(pin passive line
-					(at 0 3.81 270)
-					(length 1.27)
-					(name "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 0 -3.81 90)
-					(length 1.27)
-					(name "3"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "3"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 3.81 0 180)
-					(length 1.27)
-					(name "2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
 					)
 				)
 			)
@@ -8764,6 +9115,12 @@
 		(uuid "444c9712-8f99-4b4b-8ad6-15ed285ba08b")
 	)
 	(junction
+		(at 325.12 186.69)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "447e92ff-d31e-4d3b-9a92-60e9f57a319e")
+	)
+	(junction
 		(at 101.6 81.28)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -8792,6 +9149,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "4d0e41f7-9e78-4293-b3ac-88b82c27b8b3")
+	)
+	(junction
+		(at 332.74 186.69)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "4d7a3cd2-fd24-4ddf-aef2-bc1b1cd47406")
 	)
 	(junction
 		(at 383.54 148.59)
@@ -9279,7 +9642,7 @@
 	)
 	(wire
 		(pts
-			(xy 275.59 46.99) (xy 275.59 54.61)
+			(xy 275.59 52.07) (xy 275.59 59.69)
 		)
 		(stroke
 			(width 0)
@@ -9319,7 +9682,7 @@
 	)
 	(wire
 		(pts
-			(xy 271.78 209.55) (xy 271.78 214.63)
+			(xy 271.78 214.63) (xy 271.78 219.71)
 		)
 		(stroke
 			(width 0)
@@ -9406,6 +9769,16 @@
 			(type default)
 		)
 		(uuid "151cbb29-b779-4717-95b1-b4bf578a3cac")
+	)
+	(wire
+		(pts
+			(xy 332.74 186.69) (xy 332.74 189.23)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "15f549b0-7954-437e-8419-64c945261884")
 	)
 	(wire
 		(pts
@@ -11026,6 +11399,16 @@
 			(type default)
 		)
 		(uuid "82a2b742-d785-4727-94fc-937b28d430bb")
+	)
+	(wire
+		(pts
+			(xy 325.12 186.69) (xy 325.12 189.23)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "832d1bf8-2fab-42b8-806c-6a10ee922e1d")
 	)
 	(wire
 		(pts
@@ -12892,7 +13275,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_0.25W_P10.16mm"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 110.744 172.466 90)
 			(effects
 				(font
@@ -12970,7 +13353,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_0.25W_P10.16mm"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 126.746 87.884 90)
 			(effects
 				(font
@@ -13195,7 +13578,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "40K"
+		(property "Value" "40K/F"
 			(at 242.062 127 0)
 			(effects
 				(font
@@ -13204,7 +13587,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_0.25W_P10.16mm"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 239.014 126.746 90)
 			(effects
 				(font
@@ -13322,83 +13705,6 @@
 		)
 	)
 	(symbol
-		(lib_id "04_MyLib_Passive:C")
-		(at 328.93 186.69 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "0b16fac5-10d3-46f8-b560-49ab4ca28654")
-		(property "Reference" "C31"
-			(at 328.93 179.07 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "MPP104/600V"
-			(at 328.93 181.61 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "04_MyFoot_Passive:C_PP_L23.0mm_W10.9mm_P21.2mm"
-			(at 332.74 185.7248 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 328.93 186.69 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 328.93 186.69 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Purchase-URL" ""
-			(at 328.93 186.69 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "e3ecd9ff-c412-433e-8522-3c076125382c")
-		)
-		(pin "1"
-			(uuid "ece0a836-9286-4f95-ae27-ba85aa2a00ba")
-		)
-		(instances
-			(project "POWER_BD_NV2"
-				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
-					(reference "C31")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "02_MyLib_Connectors:TAP_250")
 		(at 72.39 153.67 270)
 		(unit 1)
@@ -13505,7 +13811,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_0.25W_P10.16mm"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 272.796 195.834 90)
 			(effects
 				(font
@@ -13728,7 +14034,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_0.25W_P10.16mm"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 132.334 92.964 90)
 			(effects
 				(font
@@ -13805,7 +14111,7 @@
 				)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:C_Disc_D4.7mm_P5.00mm"
+		(property "Footprint" "04_MyFoot_Passive:C_3216Metric"
 			(at 232.41 132.3848 0)
 			(effects
 				(font
@@ -14811,7 +15117,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_0.25W_P10.16mm"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 147.574 171.196 90)
 			(effects
 				(font
@@ -15499,7 +15805,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_0.25W_P10.16mm"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 65.024 175.514 90)
 			(effects
 				(font
@@ -15576,7 +15882,7 @@
 				)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:C_Disc_D4.7mm_P5.00mm"
+		(property "Footprint" "04_MyFoot_Passive:C_3216Metric"
 			(at 215.9 123.4948 0)
 			(effects
 				(font
@@ -15733,7 +16039,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:C_Disc_D4.7mm_T3.0mm_P5.00mm"
+		(property "Footprint" "04_MyFoot_Passive:C_3216Metric"
 			(at 147.6248 181.61 0)
 			(effects
 				(font
@@ -15810,7 +16116,7 @@
 				)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:C_Disc_D4.7mm_T3.0mm_P5.00mm"
+		(property "Footprint" "04_MyFoot_Passive:C_3216Metric"
 			(at 95.25 110.7948 0)
 			(effects
 				(font
@@ -16281,6 +16587,80 @@
 			(project ""
 				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
 					(reference "U4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "04_MyLib_Passive:C_2AB")
+		(at 328.93 187.96 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "4dd1b8a5-a6a3-4283-bdbc-fb8fd6ed38ef")
+		(property "Reference" "C31"
+			(at 328.93 180.34 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "MPP104/600V"
+			(at 328.93 182.88 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "04_MyFoot_Passive:C_PP_P10.0mm_P21.2mm"
+			(at 332.74 186.9948 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 328.93 187.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 328.93 187.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "43cce332-0d28-494d-a73b-2efd947c46f5")
+		)
+		(pin "3"
+			(uuid "8e0888e7-f544-4d95-ba07-dd0a25afa0fd")
+		)
+		(pin "4"
+			(uuid "fd574822-d580-4f86-9bde-0047ca0de5a6")
+		)
+		(pin "1"
+			(uuid "aa41fa56-a808-42ea-8bfa-88e0f818af0b")
+		)
+		(instances
+			(project ""
+				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
+					(reference "C31")
 					(unit 1)
 				)
 			)
@@ -16852,7 +17232,7 @@
 				)
 			)
 		)
-		(property "Value" "UF4004"
+		(property "Value" "UF4007"
 			(at 136.144 62.23 0)
 			(effects
 				(font
@@ -17085,6 +17465,197 @@
 		)
 	)
 	(symbol
+		(lib_id "03_MyLib_Active:LED_SMD")
+		(at 275.59 46.99 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "6842e5d8-b2ff-44a7-9ca7-41f5370a6af6")
+		(property "Reference" "LED2"
+			(at 280.67 44.45 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "LED_SMD"
+			(at 280.67 46.99 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "03_MyFoot_Active:LED_2012Metric"
+			(at 275.59 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 275.59 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 275.59 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MF" ""
+			(at 275.59 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "MAXIMUM_PACKAGE_HEIGHT" ""
+			(at 275.59 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "Package" ""
+			(at 275.59 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "Price" ""
+			(at 275.59 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "Check_prices" ""
+			(at 275.59 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "STANDARD" ""
+			(at 275.59 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "PARTREV" ""
+			(at 275.59 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "SnapEDA_Link" ""
+			(at 275.59 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "MP" ""
+			(at 275.59 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "Description_1" ""
+			(at 275.59 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "Availability" ""
+			(at 275.59 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "MANUFACTURER" ""
+			(at 275.59 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "2aaea3d6-fa3e-4248-88ee-ecb299e6096b")
+		)
+		(pin "1"
+			(uuid "a1ecf441-22cc-4ba4-8e15-1027857bb83f")
+		)
+		(instances
+			(project ""
+				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
+					(reference "LED2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "05_MyLib_Others:SR525A")
 		(at 69.85 130.81 90)
 		(unit 1)
@@ -17262,7 +17833,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_0.25W_P10.16mm"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 147.574 213.614 90)
 			(effects
 				(font
@@ -17687,94 +18258,6 @@
 		)
 	)
 	(symbol
-		(lib_id "03_MyLib_Active:LED")
-		(at 275.59 43.18 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "7843ef30-9888-4c06-a8f5-cdd5c6e7b21d")
-		(property "Reference" "LED2"
-			(at 279.4 43.4975 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Value" "RED/3Pi"
-			(at 279.4 46.0375 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Footprint" "03_MyFoot_Active:LED_D3.0mm"
-			(at 275.59 43.18 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 275.59 43.18 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Light emitting diode"
-			(at 275.59 43.18 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Pins" "1=K 2=A"
-			(at 275.59 43.18 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Purchase-URL" ""
-			(at 275.59 43.18 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "70c1ee29-0237-4b7b-8cd0-2b8b63beadbb")
-		)
-		(pin "2"
-			(uuid "61330713-7f24-4cf4-a77d-a519ed3bc736")
-		)
-		(instances
-			(project "POWER_BD_NV2"
-				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
-					(reference "LED2")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "04_MyLib_Passive:R")
 		(at 275.59 33.02 180)
 		(unit 1)
@@ -17801,7 +18284,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_0.25W_P10.16mm"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 274.574 32.766 90)
 			(effects
 				(font
@@ -18319,7 +18802,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:C_Disc_D4.7mm_T3.0mm_P5.00mm"
+		(property "Footprint" "04_MyFoot_Passive:C_3216Metric"
 			(at 261.9248 92.71 0)
 			(effects
 				(font
@@ -18541,7 +19024,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_0.25W_P10.16mm"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 205.994 25.654 90)
 			(effects
 				(font
@@ -18594,7 +19077,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 271.78 214.63 0)
+		(at 271.78 219.71 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -18603,7 +19086,7 @@
 		(fields_autoplaced yes)
 		(uuid "8ed593ad-2ffe-45f8-939e-ec3a1f38f641")
 		(property "Reference" "#PWR022"
-			(at 271.78 220.98 0)
+			(at 271.78 226.06 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -18612,7 +19095,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 271.78 219.71 0)
+			(at 271.78 224.79 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -18620,7 +19103,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 271.78 214.63 0)
+			(at 271.78 219.71 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -18629,7 +19112,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 271.78 214.63 0)
+			(at 271.78 219.71 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -18638,7 +19121,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 271.78 214.63 0)
+			(at 271.78 219.71 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -19282,7 +19765,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:C_Disc_D4.7mm_P5.00mm"
+		(property "Footprint" "04_MyFoot_Passive:C_3216Metric"
 			(at 110.7948 113.03 0)
 			(effects
 				(font
@@ -19500,7 +19983,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:C_Disc_D4.7mm_P5.00mm"
+		(property "Footprint" "04_MyFoot_Passive:C_3216Metric"
 			(at 117.1448 184.15 0)
 			(effects
 				(font
@@ -20133,7 +20616,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_0.25W_P10.16mm"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 136.144 206.756 90)
 			(effects
 				(font
@@ -20428,7 +20911,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:C_Disc_D6.0mm_P5.00mm"
+		(property "Footprint" "04_MyFoot_Passive:C_3216Metric"
 			(at 151.4348 218.44 0)
 			(effects
 				(font
@@ -20614,7 +21097,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:C_Disc_D4.7mm_T3.0mm_P5.00mm"
+		(property "Footprint" "04_MyFoot_Passive:C_3216Metric"
 			(at 124.7648 113.03 0)
 			(effects
 				(font
@@ -20758,7 +21241,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_0.25W_P10.16mm"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 278.384 185.674 90)
 			(effects
 				(font
@@ -20836,7 +21319,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_0.25W_P10.16mm"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 183.134 132.334 90)
 			(effects
 				(font
@@ -20888,6 +21371,79 @@
 		)
 	)
 	(symbol
+		(lib_id "04_MyLib_Passive:R_POT")
+		(at 184.15 212.09 0)
+		(mirror y)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "c01807d6-09cc-47c2-a56c-eb63b267731e")
+		(property "Reference" "RV2"
+			(at 186.69 210.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Value" "3362P103"
+			(at 186.69 213.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" "04_MyFoot_Passive:TRIM_3362P"
+			(at 184.15 212.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 184.15 212.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 184.15 212.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "047a09ae-a6c1-4c19-bac2-532abcafd15d")
+		)
+		(pin "2"
+			(uuid "bc1195ff-0e8a-43a0-88c7-3aa30976b61f")
+		)
+		(pin "3"
+			(uuid "80e636c5-1af5-41b0-845b-5b65c557f2a6")
+		)
+		(instances
+			(project ""
+				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
+					(reference "RV2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "04_MyLib_Passive:R")
 		(at 212.09 133.35 90)
 		(unit 1)
@@ -20914,7 +21470,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_0.25W_P10.16mm"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 212.344 132.334 90)
 			(effects
 				(font
@@ -21032,94 +21588,6 @@
 		)
 	)
 	(symbol
-		(lib_id "03_MyLib_Active:LED")
-		(at 271.78 205.74 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "c2526e71-ae01-4743-99c2-9195d929ba7c")
-		(property "Reference" "LED1"
-			(at 275.59 206.0575 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Value" "RED/3Pi"
-			(at 275.59 208.5975 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Footprint" "03_MyFoot_Active:LED_D3.0mm"
-			(at 271.78 205.74 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 271.78 205.74 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 271.78 205.74 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Pins" ""
-			(at 271.78 205.74 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Purchase-URL" ""
-			(at 271.78 205.74 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "f77f950d-a0ac-4aba-a927-dddefcb18e69")
-		)
-		(pin "2"
-			(uuid "97cf55c8-fd62-420a-9b7b-db20ae4a3649")
-		)
-		(instances
-			(project "POWER_BD_NV2"
-				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
-					(reference "LED1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "04_MyLib_Passive:C")
 		(at 162.56 222.25 180)
 		(unit 1)
@@ -21147,7 +21615,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:C_Disc_D6.0mm_P5.00mm"
+		(property "Footprint" "04_MyFoot_Passive:C_3216Metric"
 			(at 161.5948 218.44 0)
 			(effects
 				(font
@@ -21440,7 +21908,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "CC472/630V"
+		(property "Value" "CC472/1kV"
 			(at 116.84 48.26 0)
 			(effects
 				(font
@@ -21561,6 +22029,197 @@
 			(project "POWER_BD_NV2"
 				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
 					(reference "#PWR09")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "03_MyLib_Active:LED_SMD")
+		(at 271.78 209.55 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "d704a6bb-a783-4c81-9b4a-5404171c5c1e")
+		(property "Reference" "LED1"
+			(at 276.86 207.01 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "LED_SMD"
+			(at 276.86 209.55 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "03_MyFoot_Active:LED_2012Metric"
+			(at 271.78 209.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 271.78 209.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 271.78 209.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MF" ""
+			(at 271.78 209.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "MAXIMUM_PACKAGE_HEIGHT" ""
+			(at 271.78 209.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "Package" ""
+			(at 271.78 209.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "Price" ""
+			(at 271.78 209.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "Check_prices" ""
+			(at 271.78 209.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "STANDARD" ""
+			(at 271.78 209.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "PARTREV" ""
+			(at 271.78 209.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "SnapEDA_Link" ""
+			(at 271.78 209.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "MP" ""
+			(at 271.78 209.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "Description_1" ""
+			(at 271.78 209.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "Availability" ""
+			(at 271.78 209.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "MANUFACTURER" ""
+			(at 271.78 209.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "ac9cd75a-565c-477c-8fe0-2079859d0264")
+		)
+		(pin "1"
+			(uuid "e48136e4-73fa-426b-83df-cbf495627463")
+		)
+		(instances
+			(project "POWER_BD_SV3"
+				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
+					(reference "LED1")
 					(unit 1)
 				)
 			)
@@ -21819,7 +22478,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "10K"
+		(property "Value" "10K/F"
 			(at 242.062 148.59 0)
 			(effects
 				(font
@@ -21828,7 +22487,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_0.25W_P10.16mm"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 239.014 148.336 90)
 			(effects
 				(font
@@ -21958,90 +22617,8 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:R_Potentiometer_US")
-		(at 184.15 212.09 0)
-		(mirror y)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "dd85ae23-03ea-476e-ae85-4573a1f1e04c")
-		(property "Reference" "RV2"
-			(at 186.69 210.82 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Value" "3362P103"
-			(at 186.69 213.36 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Footprint" ""
-			(at 184.15 212.09 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 184.15 212.09 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Potentiometer, US symbol"
-			(at 184.15 212.09 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Purchase-URL" ""
-			(at 184.15 212.09 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "3"
-			(uuid "0bcd4bbb-94f2-4328-95ba-7ae1aad9651e")
-		)
-		(pin "1"
-			(uuid "0de9b7f6-a455-43c5-b407-7aeae74ffc14")
-		)
-		(pin "2"
-			(uuid "bff5c0fd-89e2-4889-8cd3-07189da04346")
-		)
-		(instances
-			(project ""
-				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
-					(reference "RV2")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "power:GND")
-		(at 275.59 54.61 0)
+		(at 275.59 59.69 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -22050,7 +22627,7 @@
 		(fields_autoplaced yes)
 		(uuid "dd9a3a2f-aac9-4434-bca6-ba06ff248480")
 		(property "Reference" "#PWR023"
-			(at 275.59 60.96 0)
+			(at 275.59 66.04 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -22059,7 +22636,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 275.59 59.69 0)
+			(at 275.59 64.77 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -22067,7 +22644,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 275.59 54.61 0)
+			(at 275.59 59.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -22076,7 +22653,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 275.59 54.61 0)
+			(at 275.59 59.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -22085,7 +22662,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 275.59 54.61 0)
+			(at 275.59 59.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -22557,7 +23134,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_0.25W_P10.16mm"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 205.994 87.884 90)
 			(effects
 				(font
@@ -22635,7 +23212,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_0.25W_P10.16mm"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 205.994 61.214 90)
 			(effects
 				(font
@@ -22803,7 +23380,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:C_Disc_D4.7mm_T3.0mm_P5.00mm"
+		(property "Footprint" "04_MyFoot_Passive:C_3216Metric"
 			(at 319.0748 91.44 0)
 			(effects
 				(font
@@ -23167,7 +23744,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_0.25W_P10.16mm"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 171.704 197.866 90)
 			(effects
 				(font
@@ -23236,7 +23813,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "1K"
+		(property "Value" "1K/F"
 			(at 242.062 116.84 0)
 			(effects
 				(font
@@ -23245,7 +23822,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_0.25W_P10.16mm"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 239.014 116.586 90)
 			(effects
 				(font
@@ -23603,7 +24180,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "1.2K"
+		(property "Value" "1.2K/F"
 			(at 198.882 124.46 0)
 			(effects
 				(font
@@ -23612,7 +24189,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_0.25W_P10.16mm"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 195.834 124.206 90)
 			(effects
 				(font
@@ -23691,7 +24268,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:C_Disc_D4.7mm_T3.0mm_P5.00mm"
+		(property "Footprint" "04_MyFoot_Passive:C_3216Metric"
 			(at 261.9248 30.48 0)
 			(effects
 				(font
@@ -23770,7 +24347,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:C_Disc_D4.7mm_T3.0mm_P5.00mm"
+		(property "Footprint" "04_MyFoot_Passive:C_3216Metric"
 			(at 261.9248 66.04 0)
 			(effects
 				(font
