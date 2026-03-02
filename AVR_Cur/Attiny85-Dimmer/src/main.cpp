@@ -73,7 +73,7 @@ const uint8_t MAX_DIM_MARGIN = 10;           // maxDim 계산 시 여유 (측정
                                              // 166 - 10 = 156
 const uint8_t MAX_DIM_MIN = 156;             // maxDim 하한 (느린칩 대응)
 const uint8_t MAX_DIM_MAX = 195;             // maxDim 상한 (50Hz 대응)
-const uint8_t MIN_DIM_MIN = 50;              // minDim 하한 (느린칩 대응)
+const uint8_t MIN_DIM_MIN = 57;              // minDim 하한 (경험적 안정 래치 한계, 58틱 동작 확인)
 const uint8_t MIN_DIM_MAX = 80;              // minDim 상한 (50Hz 대응)
 
 // ---- ADC 보정 상수 ----
@@ -102,6 +102,8 @@ volatile bool calibMode = true;              // 캘리브레이션 모드 플래
 volatile uint16_t calibCounter = 0;          // 캘리브레이션용 틱 카운터
 volatile uint8_t minDim = MIN_DIM_DEFAULT;   // 동적 최소 지연값 (자동 보정)
 volatile uint8_t maxDim = MAX_DIM_DEFAULT;   // 동적 최대 지연값 (자동 보정)
+volatile uint8_t lastZcPeriod = 0;           // 마지막 ZC 주기 틱 수 (ISR→loop 전달)
+volatile bool newZcReady = false;            // 새 ZC 주기 측정 완료 플래그
 int potValue;                                // ADC 읽기 값
 
 void setup() {
@@ -234,6 +236,8 @@ ISR(TIMER1_COMPA_vect) {
     case S_IDLE:
       // 제로크로스 상승 엣지 + 최소 주기 경과 확인
       if (rising && zcTimer > MIN_ZC_PERIOD) {
+        lastZcPeriod = zcTimer;                // 주기 캡처 (런타임 보정용)
+        newZcReady = true;
         zcTimer = 0;                           // 주기 타이머 리셋
         counter = 0;
         state = S_ZC_OFFSET;                   // 오프셋 대기로 전환
@@ -286,6 +290,45 @@ ISR(TIMER1_COMPA_vect) {
 }
 
 void loop() {
+  // ---- 런타임 ZC 주기 추적 → minDim/maxDim 자동 재보정 ----
+  // 매 ZC마다 ISR이 캡처한 주기를 16회 누적 평균하여 재계산.
+  // 내부 RC 클럭 드리프트(온도/전압 변화)에 실시간 대응.
+  {
+    static uint16_t periodAccum = 0;
+    static uint8_t  periodCount = 0;
+
+    cli();
+    bool    ready  = newZcReady;
+    uint8_t period = lastZcPeriod;
+    if (ready) newZcReady = false;
+    sei();
+
+    if (ready && period >= MIN_ZC_PERIOD && period <= 220) {
+      periodAccum += period;
+      periodCount++;
+
+      if (periodCount >= 16) {
+        uint8_t avg = periodAccum / 16;
+
+        int16_t calcMax = (int16_t)avg - MAX_DIM_MARGIN;
+        if (calcMax < MAX_DIM_MIN) calcMax = MAX_DIM_MIN;
+        if (calcMax > MAX_DIM_MAX) calcMax = MAX_DIM_MAX;
+
+        int16_t calcMin = (int16_t)avg * MIN_DIM_BASE / 166;
+        if (calcMin < MIN_DIM_MIN) calcMin = MIN_DIM_MIN;
+        if (calcMin > MIN_DIM_MAX) calcMin = MIN_DIM_MAX;
+
+        cli();
+        maxDim = (uint8_t)calcMax;
+        minDim = (uint8_t)calcMin;
+        sei();
+
+        periodAccum = 0;
+        periodCount = 0;
+      }
+    }
+  }
+
   // ADC 읽기 (PB3/ADC3)
   potValue = analogRead(POT_PIN);
 
