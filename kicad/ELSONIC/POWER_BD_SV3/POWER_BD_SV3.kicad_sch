@@ -13578,7 +13578,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "40K/F"
+		(property "Value" "39K/F"
 			(at 242.062 127 0)
 			(effects
 				(font
@@ -21310,8 +21310,8 @@
 				(justify left)
 			)
 		)
-		(property "Value" "820R"
-			(at 185.928 130.556 90)
+		(property "Value" "820R/F"
+			(at 188.214 130.302 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -21461,8 +21461,8 @@
 				(justify left)
 			)
 		)
-		(property "Value" "68K"
-			(at 215.138 130.556 90)
+		(property "Value" "68K/F"
+			(at 216.408 130.556 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -23813,7 +23813,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "1K/F"
+		(property "Value" "2K/F"
 			(at 242.062 116.84 0)
 			(effects
 				(font
