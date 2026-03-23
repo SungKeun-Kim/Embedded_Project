@@ -87,7 +87,7 @@ const int ADC_MAX = 880;                     // 입력 최대값 (4.3V)
 const int ADC_OFF = 900;                     // OFF 임계값 (4.4V 이상 → OFF)
 const uint16_t DIM_OFF = 500;               // OFF 값 (> SAFETY_TIMEOUT → 타임아웃으로 트리거 안됨)
 const uint16_t MAX_DIM_STEP = 10;           // 출력 증가 최대 속도 (10틱/50ms, 노이즈 과출력 방지)
-const uint8_t QUIET_START_CYCLES = 40;      // 조용한 시작 (40 × 50ms = 2s, SG3525 VCO 안정화 대기)
+const uint8_t QUIET_START_CYCLES = 50;      // 조용한 시작 (50 × 50ms = 2.5s, SG3525 VCO 안정화 대기)
 const uint8_t SOFT_START_CYCLES = 10;       // 소프트 스타트 (10 × 50ms = 500ms, maxDim 고정)
 
 // ---- 상태 머신 정의 ----

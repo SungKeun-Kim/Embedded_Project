@@ -250,7 +250,7 @@
     "pinned_symbol_libs": []
   },
   "meta": {
-    "filename": "MAIN_BD_NV1.kicad_pro",
+    "filename": "KI_Mega_PWBD.kicad_pro",
     "version": 3
   },
   "net_settings": {
@@ -410,7 +410,7 @@
   },
   "sheets": [
     [
-      "3b10d882-3697-49a8-b390-9b61d27de0b8",
+      "d9c08b35-52cd-4d23-8563-5e53eed0df37",
       "Root"
     ]
   ],
