@@ -42,7 +42,7 @@ extern "C" {
    오실레이터 주파수 설정
    ================================================================ */
 
-/* HSE: 외부 크리스탈 (미사용 시 HSI로 대체) */
+/* HSE: 외부 8MHz 크리스탈 (PF0=OSC_IN, PF1=OSC_OUT) */
 #if !defined(HSE_VALUE)
   #define HSE_VALUE    8000000U         /* 8 MHz (보드에 실장 시) */
 #endif

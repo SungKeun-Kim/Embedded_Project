@@ -1,7 +1,8 @@
 /**
  * @file  system_clock.c
- * @brief 시스템 클럭 설정 — HSI(16 MHz) → PLL → 170 MHz (STM32G474MET6)
+ * @brief 시스템 클럭 설정 — HSE(8 MHz) → PLL → 170 MHz (STM32G474MET6)
  *
+ * HSE 8 MHz 크리스탈 (PF0=OSC_IN, PF1=OSC_OUT).
  * AHB=170 MHz, APB1=170 MHz, APB2=170 MHz.
  * Flash Latency: 4 Wait States (150–170 MHz 구간).
  * HRTIM 클럭: APB2 × 32(DLL) = 5.44 GHz 유효 분해능.
@@ -17,13 +18,12 @@ void SystemClock_Config(void)
     /* ---- 전원 레귤레이터 전압 스케일링 ---- */
     HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1_BOOST);
 
-    /* ---- HSI 활성화 + PLL 설정 ---- */
-    rcc_osc.OscillatorType = RCC_OSCILLATORTYPE_HSI;
-    rcc_osc.HSIState       = RCC_HSI_ON;
-    rcc_osc.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+    /* ---- HSE 활성화 + PLL 설정 ---- */
+    rcc_osc.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+    rcc_osc.HSEState       = RCC_HSE_ON;
     rcc_osc.PLL.PLLState   = RCC_PLL_ON;
-    rcc_osc.PLL.PLLSource  = RCC_PLLSOURCE_HSI;
-    rcc_osc.PLL.PLLM       = RCC_PLLM_DIV4;    /* 16 / 4 = 4 MHz */
+    rcc_osc.PLL.PLLSource  = RCC_PLLSOURCE_HSE;
+    rcc_osc.PLL.PLLM       = RCC_PLLM_DIV2;    /* 8 / 2 = 4 MHz */
     rcc_osc.PLL.PLLN       = 85U;               /* 4 × 85 = 340 MHz VCO */
     rcc_osc.PLL.PLLP       = RCC_PLLP_DIV2;     /* 170 MHz (미사용) */
     rcc_osc.PLL.PLLQ       = RCC_PLLQ_DIV2;     /* 170 MHz (미사용) */

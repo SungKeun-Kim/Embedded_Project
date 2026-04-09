@@ -172,3 +172,13 @@ if(OPENOCD)
         COMMENT "=== OpenOCD로 플래시 업로드 ==="
     )
 endif()
+
+# ---------- 호스트 단위 테스트 (Python) ----------
+find_program(PYTHON_EXE python3 python)
+if(PYTHON_EXE)
+    add_custom_target(test_host
+        COMMAND ${PYTHON_EXE} "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_logic.py"
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        COMMENT "=== 호스트 단위 테스트 실행 ==="
+    )
+endif()

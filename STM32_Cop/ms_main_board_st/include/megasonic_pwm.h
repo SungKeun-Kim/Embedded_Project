@@ -1,6 +1,6 @@
 /**
  * @file  megasonic_pwm.h
- * @brief HRTIM Timer A 메가소닉 PWM 하드웨어 제어 (200kHz~3MHz)
+ * @brief HRTIM Timer A 메가소닉 PWM 하드웨어 제어 (500kHz~2MHz)
  *
  * STM32G474MET6 HRTIM: 5.44 GHz 유효 클럭 (170 MHz × 32 DLL)
  * CHA1(PA8) + CHA2(PA9) 상보 출력, 184ps 분해능 데드타임.
@@ -23,7 +23,7 @@ void MegasonicPWM_Init(void);
 
 /**
  * @brief 주파수 설정
- * @param freq_01khz 주파수 (×0.1 kHz 단위, 예: 2850 = 285.0 kHz)
+ * @param freq_01khz 주파수 (×0.1 kHz 단위, 예: 5000 = 500.0 kHz)
  */
 void MegasonicPWM_SetFrequency(uint16_t freq_01khz);
 

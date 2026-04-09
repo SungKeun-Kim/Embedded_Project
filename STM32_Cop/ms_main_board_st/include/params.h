@@ -30,10 +30,11 @@ extern "C" {
 
 /* ================================================================
    메가소닉 주파수 (×0.1 kHz 단위)
+   500kHz ~ 2MHz, 250kHz 단위 7채널 구성
    ================================================================ */
-#define FREQ_DEFAULT            2850U       /* 285.0 kHz (매뉴얼 기본) */
-#define FREQ_MIN                2000U       /* 200.0 kHz */
-#define FREQ_MAX                30000U      /* 3000.0 kHz (3 MHz) */
+#define FREQ_DEFAULT            5000U       /* 500.0 kHz (Ch0 기본) */
+#define FREQ_MIN                5000U       /* 500.0 kHz */
+#define FREQ_MAX                20000U      /* 2000.0 kHz (2 MHz) */
 #define FREQ_STEP               10U         /*   1.0 kHz 단위 */
 
 /* ================================================================
@@ -51,42 +52,97 @@ extern "C" {
 #define HRTIM_DEADTIME_NS       15U         /* GaN FET: 15 ns 권장 */
 
 /* ================================================================
-   TIM1 PWM 설정 (레거시 호환, HRTIM으로 대체됨)
-   ================================================================ */
-#define TIM1_PRESCALER          0U
-#define TIM1_DEADTIME_NS        300U
-#define TIM1_CLOCK_HZ           170000000U  /* APB2 타이머 = 170 MHz */
-
-/* ================================================================
    소프트 스타트
    ================================================================ */
 #define SOFT_START_DURATION_MS  500U        /* 0% → 목표 듀티까지 500 ms */
 #define SOFT_START_STEP_MS      10U         /* 10 ms 간격 증가 */
 
 /* ================================================================
-   동작 모드
+   운전 모드 (매뉴얼 준수: NORMAL / REMOTE / EXT)
    ================================================================ */
 typedef enum {
-    MODE_CONTINUOUS = 0,    /* 연속 출력 */
-    MODE_PULSE      = 1,    /* 펄스 (ON/OFF 반복) */
-    MODE_SWEEP      = 2,    /* 주파수 스윕 */
+    MODE_NORMAL  = 0,   /* 기본 모드: 전면 패널 조작 + REMOTE 외부 입력 */
+    MODE_REMOTE  = 1,   /* REMOTE 전용: 외부 입력으로만 ON/OFF, 패널 버튼 비활성 */
+    MODE_EXT     = 2,   /* EXT 모드: RS-485 Modbus 읽기/쓰기 모두 가능 */
     MODE_COUNT
 } OperatingMode_t;
 
-/* 펄스 모드 파라미터 */
-#define PULSE_ON_DEFAULT        1000U       /* ms */
-#define PULSE_ON_MIN            10U
-#define PULSE_ON_MAX            10000U
-#define PULSE_OFF_DEFAULT       1000U       /* ms */
-#define PULSE_OFF_MIN           10U
-#define PULSE_OFF_MAX           10000U
+/* ================================================================
+   설정 모드 (MODE 버튼으로 순환)
+   ================================================================ */
+typedef enum {
+    SETMODE_NONE     = 0,   /* 설정 모드 아님 (정상 운전 화면) */
+    SETMODE_HL_SET   = 1,   /* HIGH/LOW 알람 설정 */
+    SETMODE_8POWER   = 2,   /* 8단계 출력 설정 */
+    SETMODE_FREQ_SET = 3,   /* 주파수 채널 설정 */
+    SETMODE_COUNT
+} SetMode_t;
 
-/* 스윕 모드 파라미터 (메가소닉 대역) */
-#define SWEEP_START_DEFAULT     2850U       /* 285.0 kHz */
-#define SWEEP_END_DEFAULT       4300U       /* 430.0 kHz */
-#define SWEEP_TIME_DEFAULT      5000U       /* 5000 ms */
-#define SWEEP_TIME_MIN          100U
-#define SWEEP_TIME_MAX          60000U
+/* ================================================================
+   출력 전력 (×0.01W 단위)
+   ================================================================ */
+#define POWER_DEFAULT           50U     /* 0.50 W */
+#define POWER_MIN               20U     /* 0.20 W */
+#define POWER_MAX               100U    /* 1.00 W */
+#define POWER_STEP              1U      /* 0.01 W 단위 */
+
+/* ================================================================
+   알람 임계값 (×0.01W 단위)
+   ================================================================ */
+#define ALARM_HIGH_DEFAULT      80U     /* 0.80 W */
+#define ALARM_HIGH_MIN          25U     /* 0.25 W */
+#define ALARM_HIGH_MAX          150U    /* 1.50 W */
+#define ALARM_LOW_DEFAULT       20U     /* 0.20 W */
+#define ALARM_LOW_MIN           0U      /* 0.00 W */
+#define ALARM_LOW_MAX           95U     /* 0.95 W */
+#define ALARM_HOLD_TIME_MS      5000U   /* 5초 유지 시 알람 발동 */
+
+/* ================================================================
+   8POWER Step 파라미터 (×0.01W 단위)
+   ================================================================ */
+#define POWER_8STEP_COUNT       8U      /* Step 0~7 */
+#define POWER_8STEP_DEFAULT     5U      /* Step 1~7 초기값: 0.05 W */
+#define POWER_8STEP_HIGH_DEF    150U    /* Step 1~7 HIGH 알람 초기값: 1.50 W */
+#define POWER_8STEP_LOW_DEF     0U      /* Step 1~7 LOW 알람 초기값: 0.00 W */
+
+/* ================================================================
+   에러 코드 (매뉴얼 Err1~Err8)
+   ================================================================ */
+typedef enum {
+    ERR_NONE        = 0x00,
+    ERR_LOW         = 0x01, /* Err1: LOW ALARM (5초 유지) */
+    ERR_HIGH        = 0x02, /* Err2: HI ALARM (5초 유지) */
+    ERR_TRANSDUCER  = 0x04, /* Err5: TRANSDUCER ALARM (5초 유지) */
+    ERR_SETTING     = 0x08, /* Err6: SETTING ERROR */
+    ERR_SENSOR_OFF  = 0x10, /* Err7: SENSOR ALARM (정지 중) — 전원 재투입만 해제 */
+    ERR_SENSOR_RUN  = 0x20, /* Err8: SENSOR ALARM (운전 중) */
+} ErrorCode_t;
+
+/* ================================================================
+   버튼 인덱스
+   ================================================================ */
+typedef enum {
+    BTN_IDX_START_STOP = 0,
+    BTN_IDX_MODE       = 1,
+    BTN_IDX_UP         = 2,
+    BTN_IDX_DOWN       = 3,
+    BTN_IDX_SET        = 4,
+    BTN_IDX_FREQ       = 5,
+    BTN_IDX_COUNT      = 6
+} ButtonIndex_t;
+
+/* ================================================================
+   LED 인덱스
+   ================================================================ */
+typedef enum {
+    LED_IDX_NORMAL  = 0,
+    LED_IDX_HL_SET  = 1,
+    LED_IDX_8POWER  = 2,
+    LED_IDX_REMOTE  = 3,
+    LED_IDX_EXT     = 4,
+    LED_IDX_RX      = 5,
+    LED_IDX_COUNT   = 6
+} LedIndex_t;
 
 /* ================================================================
    ADC 파라미터
@@ -124,19 +180,26 @@ static const uint32_t MODBUS_BAUD_TABLE[MODBUS_BAUD_INDEX_COUNT] = {
 };
 
 /* ================================================================
-   10채널 주파수 테이블 기본값 (×0.1 kHz)
+   7채널 주파수 테이블 기본값 (×0.1 kHz)
+   500kHz ~ 2MHz, 250kHz 단위
    ================================================================ */
-#define FREQ_CH0_DEFAULT        2850U       /* 285.0 kHz */
-#define FREQ_CH1_DEFAULT        4300U       /* 430.0 kHz */
-#define FREQ_CH2_DEFAULT        5800U       /* 580.0 kHz */
-#define FREQ_CH3_DEFAULT        7500U       /* 750.0 kHz */
-#define FREQ_CH4_DEFAULT        9500U       /* 950.0 kHz */
-#define FREQ_CH5_DEFAULT        10000U      /* 1000.0 kHz */
-#define FREQ_CH6_DEFAULT        11800U      /* 1180.0 kHz */
-#define FREQ_CH7_DEFAULT        15000U      /* 1500.0 kHz */
-#define FREQ_CH8_DEFAULT        20000U      /* 2000.0 kHz */
-#define FREQ_CH9_DEFAULT        30000U      /* 3000.0 kHz */
-#define FREQ_CHANNEL_COUNT      10U
+#define FREQ_CH0_DEFAULT        5000U       /*  500.0 kHz */
+#define FREQ_CH1_DEFAULT        7500U       /*  750.0 kHz */
+#define FREQ_CH2_DEFAULT        10000U      /* 1000.0 kHz (1 MHz) */
+#define FREQ_CH3_DEFAULT        12500U      /* 1250.0 kHz */
+#define FREQ_CH4_DEFAULT        15000U      /* 1500.0 kHz */
+#define FREQ_CH5_DEFAULT        17500U      /* 1750.0 kHz */
+#define FREQ_CH6_DEFAULT        20000U      /* 2000.0 kHz (2 MHz) */
+#define FREQ_CHANNEL_COUNT      7U
+
+/* HRTIM Period 테이블 (5.44GHz 유효 클럭 기준) */
+#define HRTIM_PERIOD_CH0        10880U      /*  500 kHz */
+#define HRTIM_PERIOD_CH1        7253U       /*  750 kHz */
+#define HRTIM_PERIOD_CH2        5440U       /* 1000 kHz */
+#define HRTIM_PERIOD_CH3        4352U       /* 1250 kHz */
+#define HRTIM_PERIOD_CH4        3627U       /* 1500 kHz */
+#define HRTIM_PERIOD_CH5        3109U       /* 1750 kHz */
+#define HRTIM_PERIOD_CH6        2720U       /* 2000 kHz */
 
 /* ================================================================
    LCD 화면 갱신

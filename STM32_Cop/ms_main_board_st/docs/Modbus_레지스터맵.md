@@ -47,8 +47,8 @@
 | --- | ----------- | ------------------------------- |
 | PA2 | USART2_TX   | RS-485 TXD                      |
 | PA3 | USART2_RX   | RS-485 RXD                      |
-| PA4 | GPIO_Output | DE (Driver Enable, HIGH=송신)   |
-| PA5 | GPIO_Output | /RE (Receiver Enable, LOW=수신) |
+| PC13 | GPIO_Output | DE (Driver Enable, HIGH=송신)   |
+| PC14 | GPIO_Output | /RE (Receiver Enable, LOW=수신) |
 
 **방향 전환 타이밍:**
 
@@ -163,9 +163,9 @@ uint16_t Modbus_CRC16(const uint8_t *data, uint16_t length)
 
 ```
 요청: [01] [03] [00 00] [00 0A] [C5 CD]
-응답: [01] [03] [14] [00 01] [00 32] [00 30] [00 00] [0B 2A] [00 01] [00 00] [00 01] [00 00] [00 03] [CRC CRC]
+응답: [01] [03] [14] [00 01] [00 32] [00 30] [00 00] [13 88] [00 01] [00 00] [00 01] [00 00] [00 03] [CRC CRC]
 → 0x0000=1(발진ON), 0x0001=50(0.50W), 0x0002=48(0.48W), 0x0003=0(Ch0),
-   0x0004=2850(285.0kHz), 0x0005=플래그, 0x0006=0(NORMAL), 0x0007=1(주소1),
+   0x0004=5000(500.0kHz), 0x0005=플래그, 0x0006=0(NORMAL), 0x0007=1(주소1),
    0x0008=0(로컬허용), 0x0009=외부입력상태
 ```
 
@@ -272,8 +272,8 @@ uint16_t Modbus_CRC16(const uint8_t *data, uint16_t length)
 | 0x0000 | R/W | 동작 ON/OFF         | 0=OFF, 1=ON                          | STA: Rx 필드    |
 | 0x0001 | R/W | 출력 전력 설정값    | ×0.01 W (20~100 → 0.20~1.00W)        | W command       |
 | 0x0002 | R   | 현재 실측 출력 전력 | ×0.01 W                              | STA: Mxxx 필드  |
-| 0x0003 | R/W | 주파수 채널 번호    | 0~9 (Ch0~Ch9)                        | C command       |
-| 0x0004 | R   | 현재 주파수         | ×0.1 kHz (예: 2850=285.0kHz)         | STA: Fx 필드    |
+| 0x0003 | R/W | 주파수 채널 번호    | 0~6 (Ch0~Ch6)                        | C command       |
+| 0x0004 | R   | 현재 주파수         | ×0.1 kHz (예: 5000=500.0kHz)         | STA: Fx 필드    |
 | 0x0005 | R   | 동작 상태 플래그    | 비트 필드 (§4.2 참조)                | STA 종합        |
 | 0x0006 | R/W | 동작 모드           | 0=NORMAL, 1=REMOTE, 2=EXT            | STA: Ex 필드    |
 | 0x0007 | R/W | 슬레이브 주소       | 1~247 (기존 0~14 → 1~15 매핑)        | [ID] 필드       |
@@ -322,24 +322,20 @@ uint16_t Modbus_CRC16(const uint8_t *data, uint16_t length)
 | 0x0040        | R/W | Step 0 LOW 알람   | ×0.01 W (= NORMAL LOW알람과 동일) |
 | 0x0041~0x0047 | R/W | Step 1~7 LOW 알람 | ×0.01 W (0~95)                    |
 
-#### 그룹 0x50: 주파수 채널 테이블 (10개)
+#### 그룹 0x50: 주파수 채널 테이블 (7개, 500kHz~2MHz, 250kHz 단위)
 
 | 주소   | R/W | 명칭        | 기본값 (×0.1 kHz) | 실제 주파수 |
 | ------ | --- | ----------- | ----------------- | ----------- |
-| 0x0050 | R/W | Ch 0 주파수 | 2850              | 285.0 kHz   |
-| 0x0051 | R/W | Ch 1 주파수 | 4300              | 430.0 kHz   |
-| 0x0052 | R/W | Ch 2 주파수 | 5800              | 580.0 kHz   |
-| 0x0053 | R/W | Ch 3 주파수 | 7500              | 750.0 kHz   |
-| 0x0054 | R/W | Ch 4 주파수 | 9500              | 950.0 kHz   |
-| 0x0055 | R/W | Ch 5 주파수 | 10000             | 1,000.0 kHz |
-| 0x0056 | R/W | Ch 6 주파수 | 11800             | 1,180.0 kHz |
-| 0x0057 | R/W | Ch 7 주파수 | 15000             | 1,500.0 kHz |
-| 0x0058 | R/W | Ch 8 주파수 | 20000             | 2,000.0 kHz |
-| 0x0059 | R/W | Ch 9 주파수 | 30000             | 3,000.0 kHz |
+| 0x0050 | R/W | Ch 0 주파수 | 5000              | 500.0 kHz   |
+| 0x0051 | R/W | Ch 1 주파수 | 7500              | 750.0 kHz   |
+| 0x0052 | R/W | Ch 2 주파수 | 10000             | 1,000.0 kHz |
+| 0x0053 | R/W | Ch 3 주파수 | 12500             | 1,250.0 kHz |
+| 0x0054 | R/W | Ch 4 주파수 | 15000             | 1,500.0 kHz |
+| 0x0055 | R/W | Ch 5 주파수 | 17500             | 1,750.0 kHz |
+| 0x0056 | R/W | Ch 6 주파수 | 20000             | 2,000.0 kHz |
 
-> **주파수 범위**: 200.0~3000.0 kHz (×0.1 kHz 단위, 값 2000~30000).
+> **주파수 범위**: 500.0~2000.0 kHz (×0.1 kHz 단위, 값 5000~20000).
 > **주파수 변경 시**: 발진 1초 정지 후 새 주파수로 재개 (매뉴얼 준수).
-> ⚠ Ch7~Ch9의 값이 16비트(65535)를 초과하지 않도록 ×0.1 kHz 단위 사용.
 
 #### 그룹 0x60: 통신 설정 (Communication)
 
@@ -421,7 +417,7 @@ uint16_t Modbus_CRC16(const uint8_t *data, uint16_t length)
 | **W command**   | 출력 전력 설정   | FC 0x06, reg=0x0001, val=전력값(×0.01W)      |
 | **STA command** | 상태 전체 읽기   | FC 0x03, reg=0x0000, qty=10 (10개 연속 읽기) |
 | **VER command** | 펌웨어 버전 읽기 | FC 0x03, reg=0x0017, qty=1                   |
-| **C command**   | 주파수 채널 설정 | FC 0x06, reg=0x0003, val=채널번호(0~9)       |
+| **C command**   | 주파수 채널 설정 | FC 0x06, reg=0x0003, val=채널번호(0~6)       |
 
 ### 5.2 STA 명령 응답 필드 → Modbus 레지스터 매핑
 
@@ -438,7 +434,7 @@ I[ID],M[xxx]W,Rx,Ex,Sx,Wx,Fx,Vx,Axxx,Oxxx,[BCCH],[BCCL],[CR]
 | Ex       | EXT 모드 상태           | 0x0005 bit2 또는 0x0006      |
 | Sx       | SENSOR 상태             | 0x0005 bit3 또는 0x0009 bit1 |
 | Wx       | 알람 상태 (0/1/2)       | 0x0005 bit4~5 또는 0x0012    |
-| Fx       | 주파수 채널 (0~9)       | 0x0003                       |
+| Fx       | 주파수 채널 (0~6)       | 0x0003                       |
 | Vx       | 전압 (0~9)              | 0x0014                       |
 | Axxx     | 전류 (0~999mA)          | 0x0015                       |
 | Oxxx     | 임피던스 (50~999Ω)      | 0x0016                       |
@@ -668,7 +664,7 @@ typedef struct {
     uint16_t run_state;        /* 0x0000: 0=OFF, 1=ON */
     uint16_t power_set;        /* 0x0001: ×0.01W */
     uint16_t power_actual;     /* 0x0002: ×0.01W */
-    uint16_t freq_channel;     /* 0x0003: 0~9 */
+    uint16_t freq_channel;     /* 0x0003: 0~6 */
     uint16_t freq_current;     /* 0x0004: ×0.1kHz */
     uint16_t status_flags;     /* 0x0005: 비트필드 */
     uint16_t mode;             /* 0x0006: 0/1/2 */
@@ -703,7 +699,7 @@ void Modbus_SetPower(uint8_t *buf, uint8_t slave_addr, uint16_t power_x100)
 /* 마스터 → 슬레이브: 주파수 채널 설정 (C 명령 대체) */
 void Modbus_SetChannel(uint8_t *buf, uint8_t slave_addr, uint16_t channel)
 {
-    /* channel: 0~9 (Ch0~Ch9) */
+    /* channel: 0~6 (Ch0~Ch6) */
     buf[0] = slave_addr;
     buf[1] = 0x06;            /* FC: Write Single Register */
     buf[2] = 0x00; buf[3] = 0x03;  /* 레지스터: 0x0003 */

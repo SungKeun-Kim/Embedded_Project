@@ -13,8 +13,12 @@
 #include "menu.h"
 #include "menu_screen.h"
 #include "modbus_rtu.h"
+#include "selftest.h"
 #include "config.h"
 #include "params.h"
+
+/* 자기검증 주기: 200ms (5Hz) */
+#define SELFTEST_INTERVAL_MS  200U
 
 int main(void)
 {
@@ -36,6 +40,8 @@ int main(void)
     Menu_Init();
     Modbus_Init();
 
+    uint32_t selftest_tick = 0;  /* 자기검증 마지막 실행 시각 */
+
     /* 메인 루프 */
     while (1) {
         /* 버튼 입력은 SysTick ISR에서 처리 (Button_Process) */
@@ -54,5 +60,19 @@ int main(void)
 
         /* Modbus 수신 프레임 처리 */
         Modbus_Process();
+
+        /* ── 런타임 자기검증 (200ms 주기) ── */
+        uint32_t now = HAL_GetTick();
+        if (now - selftest_tick >= SELFTEST_INTERVAL_MS) {
+            selftest_tick = now;
+            uint8_t result = SelfTest_RunAll();
+            if (result != SELFTEST_OK) {
+                /* 불일치 발견: 디버그 UART 경고 + LED 점멸 */
+                char buf[128];
+                SelfTest_FormatResult(buf, result);
+                /* TODO: Debug_Print(buf); — USART1 디버그 출력 구현 시 활성화 */
+                (void)buf;  /* 컴파일러 경고 방지 */
+            }
+        }
     }
 }

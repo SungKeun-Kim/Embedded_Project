@@ -1,9 +1,9 @@
 /**
  * @file  megasonic_pwm.c
- * @brief HRTIM Timer A 메가소닉 PWM 하드웨어 제어 (200kHz~3MHz)
+ * @brief HRTIM Timer A 메가소닉 PWM 하드웨어 제어 (500kHz~2MHz)
  *
  * STM32G474MET6 HRTIM을 사용한 고해상도 상보 PWM 생성.
- * PA8(CHA1) + PA9(CHA2) → 하프브리지 GaN FET 구동.
+ * PA8(CHA1) + PA9(CHA2) → 하프브리지 Si MOSFET 구동.
  * 유효 클럭 5.44 GHz (184 ps 분해능), DLL 캘리브레이션 필수.
  */
 #include "megasonic_pwm.h"
@@ -37,8 +37,8 @@ void MegasonicPWM_Init(void)
     HAL_HRTIM_PollForDLLCalibration(&hhrtim1, 10);
 
     /* ---- Timer A 타임베이스 설정 ---- */
-    /* 기본 주파수: 285 kHz → Period = 5,440,000,000 / 285,000 ≈ 19088 */
-    s_current_period = (uint32_t)((uint64_t)HRTIM_EFF_CLOCK_HZ / 285000U);
+    /* 기본 주파수: 500 kHz → Period = 5,440,000,000 / 500,000 = 10880 */
+    s_current_period = (uint32_t)((uint64_t)HRTIM_EFF_CLOCK_HZ / 500000U);
 
     timebase_cfg.Period          = s_current_period;
     timebase_cfg.RepetitionCounter = 0;

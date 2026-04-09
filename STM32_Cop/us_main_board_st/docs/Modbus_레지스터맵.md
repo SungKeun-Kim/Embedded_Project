@@ -35,14 +35,16 @@
 
 ### 1.3 RS-485 방향 제어 핀
 
-| 핀   | 포트        | 기능                               |
-| ---- | ----------- | ---------------------------------- |
-| PA2  | USART2_TX   | RS485 TXD                          |
-| PA3  | USART2_RX   | RS485 RXD                          |
-| PC9  | GPIO_Output | DE (Driver Enable, HIGH=송신)      |
-| PC10 | GPIO_Output | /RE (Receiver Enable, LOW=수신)    |
-| PC11 | GPIO_Output | RTERM (종단 저항 ON/OFF)           |
-| PC12 | GPIO_Input  | Board_Detect (옵션 보드 장착 인식) |
+| 핀   | 포트        | 기능                                                      |
+| ---- | ----------- | --------------------------------------------------------- |
+| PA2  | USART2_TX   | RS485 TXD                                                 |
+| PA3  | USART2_RX   | RS485 RXD                                                 |
+| PA5  | GPIO_Output | DE (Driver Enable, HIGH=송신 활성화) — USART2 인접 배치   |
+| PA6  | GPIO_Output | /RE (Receiver Enable, LOW=수신 활성화) — USART2 인접 배치 |
+| PC11 | GPIO_Output | RTERM (종단 저항 ON/OFF)                                  |
+| PC12 | GPIO_Input  | Board_Detect (옵션 보드 장착 인식, 메뉴 표시 연동용)      |
+
+> **핀 변경 이력**: DE를 PC9→PA5, /RE를 PC10→PA6으로 이동하여 USART2(PA2/PA3) 인접 배치. MAX3485 배선 최단 거리 확보.
 
 **방향 전환 타이밍:**
 

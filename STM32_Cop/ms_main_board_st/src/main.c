@@ -21,7 +21,7 @@ int main(void)
     /* HAL 라이브러리 초기화 (SysTick 1 ms) */
     HAL_Init();
 
-    /* 시스템 클럭: HSE 8 MHz → PLL ×9 → 72 MHz */
+    /* 시스템 클럭: HSE 8 MHz → PLL (PLLM=2, PLLN=85, PLLR=2) → 170 MHz */
     SystemClock_Config();
 
     /* 전체 GPIO 초기화 */

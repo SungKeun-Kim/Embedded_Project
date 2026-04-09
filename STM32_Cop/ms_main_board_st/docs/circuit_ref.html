@@ -1,0 +1,2353 @@
+﻿<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>메가소닉 발진기 메인보드 — 회로 설계 참조 문서 v5</title>
+    <style>
+      @page {
+        size: A4;
+        margin: 15mm 12mm 15mm 12mm;
+      }
+      @media print {
+        body {
+          font-size: 8.5pt;
+        }
+        h1 {
+          font-size: 15pt;
+        }
+        h2 {
+          font-size: 12pt;
+          page-break-before: always;
+        }
+        h2.no-break {
+          page-break-before: avoid;
+        }
+        h3 {
+          font-size: 10pt;
+        }
+        h4 {
+          font-size: 9pt;
+        }
+        pre,
+        table {
+          page-break-inside: avoid;
+        }
+        .no-print {
+          display: none;
+        }
+        .warning-box,
+        .ok-box,
+        .info-box {
+          page-break-inside: avoid;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Malgun Gothic", "맑은 고딕", "Noto Sans KR", sans-serif;
+        line-height: 1.6;
+        color: #1a1a1a;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #fff;
+      }
+      h1 {
+        font-size: 22pt;
+        border-bottom: 3px solid #1a3a6a;
+        padding-bottom: 8px;
+        margin-top: 0;
+        color: #1a3a6a;
+      }
+      h1 small {
+        font-size: 12pt;
+        color: #888;
+        font-weight: normal;
+        display: block;
+        margin-top: 4px;
+      }
+      h2 {
+        font-size: 16pt;
+        border-left: 5px solid #1a3a6a;
+        border-bottom: 1px solid #cce;
+        padding: 6px 12px;
+        margin-top: 36px;
+        color: #1a3a6a;
+        background: #f0f4ff;
+      }
+      h3 {
+        font-size: 12pt;
+        margin-top: 24px;
+        color: #2a5a2a;
+        border-bottom: 1px dotted #aaa;
+        padding-bottom: 2px;
+      }
+      h4 {
+        font-size: 10pt;
+        margin-top: 16px;
+        color: #555;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 10px 0 16px 0;
+        font-size: 9pt;
+      }
+      th,
+      td {
+        border: 1px solid #aaa;
+        padding: 5px 9px;
+        text-align: left;
+        vertical-align: top;
+      }
+      th {
+        background: #dde3f0;
+        font-weight: bold;
+        color: #1a3a6a;
+      }
+      tr:nth-child(even) td {
+        background: #f7f9ff;
+      }
+      tr:hover td {
+        background: #eef2ff;
+      }
+      .highlight-row td {
+        background: #fffde7 !important;
+        font-weight: bold;
+      }
+      .changed-row td {
+        background: #fff3e0 !important;
+      }
+      .new-row td {
+        background: #e8f5e9 !important;
+      }
+      .warn-row td {
+        background: #ffebee !important;
+      }
+      pre {
+        background: #1e2a3a;
+        color: #d4e0f0;
+        border-radius: 6px;
+        padding: 12px 14px;
+        overflow-x: auto;
+        font-size: 8.5pt;
+        line-height: 1.45;
+        font-family: "Consolas", "D2Coding", "Courier New", monospace;
+        tab-size: 4;
+      }
+      pre.ascii-art {
+        background: #f8f8f0;
+        color: #1a1a1a;
+        border: 1px solid #ccc;
+        font-size: 8pt;
+        line-height: 1.35;
+      }
+      pre.formula {
+        background: #f0f4f0;
+        color: #1a3a1a;
+        border: 1px solid #9c9;
+        font-size: 9pt;
+      }
+      code {
+        font-family: "Consolas", "D2Coding", monospace;
+        font-size: 9pt;
+        background: #e8edf5;
+        padding: 1px 5px;
+        border-radius: 3px;
+        color: #1a3a6a;
+      }
+      pre code {
+        background: none;
+        padding: 0;
+        color: inherit;
+      }
+      .warning-box {
+        border-left: 4px solid #e74c3c;
+        background: #fdf2f2;
+        padding: 8px 14px;
+        margin: 10px 0;
+        border-radius: 0 4px 4px 0;
+        font-size: 9pt;
+      }
+      .warning-box::before {
+        content: "⚠ ";
+        font-weight: bold;
+        color: #e74c3c;
+      }
+      .ok-box {
+        border-left: 4px solid #27ae60;
+        background: #f0fdf4;
+        padding: 8px 14px;
+        margin: 10px 0;
+        border-radius: 0 4px 4px 0;
+        font-size: 9pt;
+      }
+      .ok-box::before {
+        content: "✓ ";
+        font-weight: bold;
+        color: #27ae60;
+      }
+      .info-box {
+        border-left: 4px solid #3498db;
+        background: #f0f8ff;
+        padding: 8px 14px;
+        margin: 10px 0;
+        border-radius: 0 4px 4px 0;
+        font-size: 9pt;
+      }
+      .info-box::before {
+        content: "ℹ ";
+        font-weight: bold;
+        color: #3498db;
+      }
+      .change-badge {
+        display: inline-block;
+        background: #ff6b35;
+        color: white;
+        font-size: 7.5pt;
+        padding: 1px 5px;
+        border-radius: 3px;
+        margin-left: 4px;
+        vertical-align: middle;
+        font-weight: bold;
+      }
+      .new-badge {
+        display: inline-block;
+        background: #27ae60;
+        color: white;
+        font-size: 7.5pt;
+        padding: 1px 5px;
+        border-radius: 3px;
+        margin-left: 4px;
+        vertical-align: middle;
+        font-weight: bold;
+      }
+      hr {
+        border: none;
+        border-top: 1px solid #ccd;
+        margin: 24px 0;
+      }
+      a {
+        color: #1a66d9;
+      }
+      .toc {
+        background: #f5f7ff;
+        border: 1px solid #cce;
+        border-radius: 6px;
+        padding: 14px 20px;
+        margin: 20px 0;
+      }
+      .toc h3 {
+        margin-top: 0;
+        color: #1a3a6a;
+        border: none;
+      }
+      .toc ol {
+        margin: 0;
+        padding-left: 20px;
+      }
+      .toc li {
+        margin: 4px 0;
+        font-size: 9.5pt;
+      }
+      .toc a {
+        text-decoration: none;
+      }
+      .toc a:hover {
+        text-decoration: underline;
+      }
+      .section-badge {
+        display: inline-block;
+        background: #1a3a6a;
+        color: white;
+        font-size: 9pt;
+        padding: 2px 8px;
+        border-radius: 12px;
+        margin-right: 6px;
+        font-weight: bold;
+      }
+      .checklist {
+        list-style: none;
+        padding: 0;
+      }
+      .checklist li {
+        padding: 6px 10px;
+        margin: 4px 0;
+        border-radius: 4px;
+        border: 1px solid #e0e0e0;
+        font-size: 9.5pt;
+      }
+      .checklist li::before {
+        content: "☐ ";
+        font-size: 12pt;
+        color: #888;
+      }
+      .checklist li.critical {
+        border-color: #e74c3c;
+        background: #fff5f5;
+      }
+      .checklist li.critical::before {
+        content: "☐ ";
+        color: #e74c3c;
+      }
+      .checklist li.important {
+        border-color: #f39c12;
+        background: #fffbf0;
+      }
+      .checklist li.important::before {
+        content: "☐ ";
+        color: #f39c12;
+      }
+      .footer {
+        text-align: center;
+        font-size: 8pt;
+        color: #999;
+        margin-top: 40px;
+        border-top: 1px solid #ccc;
+        padding-top: 10px;
+      }
+      .two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      @media (max-width: 700px) {
+        .two-col {
+          grid-template-columns: 1fr;
+        }
+      }
+      .chip-box {
+        border: 2px solid #1a3a6a;
+        border-radius: 8px;
+        padding: 12px;
+        margin: 10px 0;
+        background: #f8f9ff;
+        font-size: 9pt;
+      }
+      .chip-box h4 {
+        margin: 0 0 8px 0;
+        color: #1a3a6a;
+        font-size: 10pt;
+      }
+      .pin-table th:first-child {
+        width: 70px;
+      }
+      .pin-table th:nth-child(2) {
+        width: 100px;
+      }
+      .version-info {
+        background: #f0f4ff;
+        border: 1px solid #cce;
+        border-radius: 6px;
+        padding: 10px 16px;
+        font-size: 9pt;
+        margin-bottom: 20px;
+      }
+      .version-info table {
+        margin: 0;
+        font-size: 8.5pt;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>
+      메가소닉 발진기 메인보드 — 회로 설계 참조 문서
+      <small>STM32G474MET6 기반 · HRTIM 500kHz~2MHz · v5 (2026-04-10)</small>
+    </h1>
+
+    <div class="version-info">
+      <table>
+        <tr>
+          <th>버전</th>
+          <td>v5 (2026-04-10)</td>
+          <th>MCU</th>
+          <td>STM32G474MET6 (LQFP80)</td>
+        </tr>
+        <tr>
+          <th>주요 변경</th>
+          <td colspan="3">
+            <strong>v3</strong>: HSE 8MHz 크리스탈 적용 (PF0/PF1 전용) →
+            LC_RELAY3/4를 PC7/PC8로 재배치<br />
+            RS-485 DE/RE: PA4/PA5 → PC13/PC14 재배치 (PA4를 DAC1_OUT1로 전환)<br />
+            <strong>v4</strong>: LCD+LED 제어를 74HCT574 ×2 방법 C로 통합 —
+            DATA버스(PB10~PB15)+CLK 2개로 간소화<br />
+            LC_RELAY1 PB8 → PC9 이동 (GPIOB DATA 버스와 완전 분리)<br />
+            <strong>v5</strong>: 디스플레이 보드 커넥터 16핀 →
+            <strong>20핀</strong>, 부저(PB5) KEC105S로 디스플레이 보드 이전,<br />
+            버튼 풀업 내부 → <strong>외부 10kΩ</strong>, LED 저항 330Ω →
+            <strong>560Ω</strong>, ULN2003A #1 7채널 → <strong>5채널</strong>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- 목차 -->
+    <div class="toc">
+      <h3>목 차</h3>
+      <ol>
+        <li><a href="#pinmap">핀맵 전체 요약 (LQFP80, v3 최종)</a></li>
+        <li><a href="#sysclk">시스템 클럭 — HSE 8MHz → PLL → 170MHz</a></li>
+        <li><a href="#overview">회로 개요 — 시스템 블록도</a></li>
+        <li><a href="#ucc21520">UCC21520 절연 게이트 드라이버</a></li>
+        <li><a href="#mosfet">IPB200N15N3 Si MOSFET</a></li>
+        <li><a href="#dc-dc">절연 DC-DC 컨버터 (VDDA용)</a></li>
+        <li><a href="#gate-circuit">게이트 드라이브 전체 회로도</a></li>
+        <li><a href="#buck">BUCK 전력 컨버터 (LM5005)</a></li>
+        <li><a href="#adc">ADC 전력 계측 회로</a></li>
+        <li><a href="#rs485">RS-485 Modbus RTU 인터페이스</a></li>
+        <li><a href="#relay">릴레이 · 외부 제어 인터페이스</a></li>
+        <li><a href="#power">전원 공급 계획</a></li>
+        <li><a href="#pcb">PCB 레이아웃 가이드</a></li>
+        <li><a href="#checklist">최종 회로 설계 점검 체크리스트</a></li>
+      </ol>
+    </div>
+
+    <!-- ========================================================== -->
+    <h2 id="pinmap" class="no-break">
+      <span class="section-badge">1</span>핀맵 전체 요약
+      <span class="change-badge">v3 최종</span>
+    </h2>
+
+    <div class="warning-box">
+      PF0/PF1은 HSE 8MHz 크리스탈 전용 — GPIO 사용 절대 금지. LC_RELAY3/4는
+      PC7/PC8로 재배치 완료.
+    </div>
+
+    <h3>1.1 메가소닉 발진 (HRTIM Timer A)</h3>
+    <table class="pin-table">
+      <tr>
+        <th>핀</th>
+        <th>기능</th>
+        <th>AF</th>
+        <th>속도</th>
+        <th>비고</th>
+      </tr>
+      <tr class="highlight-row">
+        <td>PA8</td>
+        <td>HRTIM1_CHA1</td>
+        <td>AF13</td>
+        <td>VERY_HIGH</td>
+        <td>하이사이드 게이트 드라이버 입력 (UCC21520 INA)</td>
+      </tr>
+      <tr class="highlight-row">
+        <td>PA9</td>
+        <td>HRTIM1_CHA2</td>
+        <td>AF13</td>
+        <td>VERY_HIGH</td>
+        <td>로우사이드 게이트 드라이버 입력 (UCC21520 INB, 상보)</td>
+      </tr>
+    </table>
+
+    <h3>
+      1.2 LCD1602 + LED 제어 (방법 C: 74HCT574 ×2)
+      <span class="change-badge">v4 신규</span>
+    </h3>
+    <div class="info-box">
+      MCU 보드와 분리된 <strong>디스플레이 보드</strong>에 74HCT574 ×2를 탑재.
+      공유 6비트 DATA 버스(PB10~PB15)에 CLK_LCD(PD0) / CLK_LED(PD1) 상승엣지로
+      LCD와 LED를 독립 래치 제어. 버튼 외부 10kΩ 풀업, 부저(KEC105S) 포함.
+      커넥터: <strong>20핀</strong> (기존 16핀 + ⑰BUZZER + ⑱5V + ⑲3.3V + ⑳GND).<br>
+      <strong>74HCT574 VCC: 5V</strong> (HCT 계열: V_IH=2.0V 고정 → MCU 3.3V 출력으로 정상 구동).
+      <strong>LCD1602 VDD: 5V 필수</strong> (HD44780: 4.5~5.5V 범위).
+    </div>
+    <h4>MCU 핀 재할당 (방법 C)</h4>
+    <table class="pin-table">
+      <tr><th>MCU 핀</th><th>신규 기능</th><th>이전 기능</th><th>비고</th></tr>
+      <tr class="changed-row"><td>PB10</td><td>DATA[0]</td><td>LED_REMOTE</td><td>공유 DATA 버스 bit0</td></tr>
+      <tr class="changed-row"><td>PB11</td><td>DATA[1]</td><td>LED_EXT</td><td>공유 DATA 버스 bit1</td></tr>
+      <tr class="changed-row"><td>PB12</td><td>DATA[2]</td><td>LCD_D5</td><td>공유 DATA 버스 bit2</td></tr>
+      <tr class="changed-row"><td>PB13</td><td>DATA[3]</td><td>LCD_D6</td><td>공유 DATA 버스 bit3</td></tr>
+      <tr class="changed-row"><td>PB14</td><td>DATA[4]</td><td>LED_RX</td><td>공유 DATA 버스 bit4</td></tr>
+      <tr class="changed-row"><td>PB15</td><td>DATA[5]</td><td>LCD_D7</td><td>공유 DATA 버스 bit5</td></tr>
+      <tr class="changed-row"><td>PD0</td><td>CLK_LCD</td><td>LCD_RS</td><td>74HCT574 #1 래치 클럭</td></tr>
+      <tr class="changed-row"><td>PD1</td><td>CLK_LED</td><td>LCD_EN</td><td>74HCT574 #2 래치 클럭</td></tr>
+      <tr><td>PD2</td><td colspan="2">여유 핀 (이전: LCD_D4)</td><td>해제됨</td></tr>
+      <tr><td>PB0/PB1/PB2</td><td colspan="2">여유 핀 (이전: LED_NORMAL/HL_SET/8POWER)</td><td>해제됨</td></tr>
+    </table>
+    <h4>74HCT574 내부 배선</h4>
+    <table class="pin-table">
+      <tr><th>74HCT574 #1 (LCD)</th><th>Q 출력</th><th>74HCT574 #2 (LED)</th><th>Q 출력</th></tr>
+      <tr><td>D0 ← DATA[0]</td><td>Q0 → LCD RS</td><td>D0 ← DATA[0]</td><td>Q0 → LED1 (NORMAL)</td></tr>
+      <tr><td>D1 ← DATA[1]</td><td>Q1 → LCD EN</td><td>D1 ← DATA[1]</td><td>Q1 → LED2 (HL_SET)</td></tr>
+      <tr><td>D2 ← DATA[2]</td><td>Q2 → LCD D4</td><td>D2 ← DATA[2]</td><td>Q2 → LED3 (8POWER)</td></tr>
+      <tr><td>D3 ← DATA[3]</td><td>Q3 → LCD D5</td><td>D3 ← DATA[3]</td><td>Q3 → LED4 (REMOTE)</td></tr>
+      <tr><td>D4 ← DATA[4]</td><td>Q4 → LCD D6</td><td>D4 ← DATA[4]</td><td>Q4 → LED5 (EXT)</td></tr>
+      <tr><td>D5 ← DATA[5]</td><td>Q5 → LCD D7</td><td>D5 ← DATA[5]</td><td>Q5 → LED6 (RX)</td></tr>
+      <tr><td colspan="2">CLK ← CLK_LCD (PD0), VCC=5V, /OE=GND</td><td colspan="2">CLK ← CLK_LED (PD1), VCC=5V, /OE=GND</td></tr>
+    </table>
+    <h4>래치 동작 원리</h4>
+    <table class="pin-table">
+      <tr><th>동작</th><th>순서</th></tr>
+      <tr><td>LCD 출력</td><td>PB10~PB15에 {RS,EN,D4~D7} 셋팅 → PD0(CLK_LCD) 상승엣지 → 74HCT574 #1 래치</td></tr>
+      <tr><td>LED 출력</td><td>PB10~PB15에 {LED1~6} 셋팅 → PD1(CLK_LED) 상승엣지 → 74HCT574 #2 래치</td></tr>
+      <tr><td>버튼 읽기</td><td>HAL_GPIO_ReadPin(PC0~PC5) 직접 호출 (래치 불필요)</td></tr>
+    </table>
+    <div class="info-box">
+      <strong>LCD1602 전원 배선:</strong> Pin1(VSS)=GND, Pin2(VDD)=5V, Pin3(V0)=10kΩ 가변저항 중앙,
+      Pin5(R/W)=GND 고정, Pin15(A)=5V─[33Ω]─LED+, Pin16(K)=GND.<br>
+      <strong>부저 회로(KEC105S):</strong> PB5→KEC105S Base(내장R)→부저(-)→GND, 부저(+)=5V,
+      1N4148 역병렬(역기전력 보호). gpio_init.c: GPIO_MODE_OUTPUT_PP, GPIO_NOPULL.<br>
+      <strong>버튼 풀업:</strong> 외부 10kΩ (3.3V←R_PU←핀), gpio_init.c: GPIO_NOPULL.
+    </div>
+    <h3>
+      1.3 택트 스위치 6개 (외부 10kΩ 풀업, Active LOW)
+      <span class="change-badge">v5 변경</span>
+    </h3>
+    <table class="pin-table">
+      <tr>
+        <th>핀</th>
+        <th>기능</th>
+        <th>입력 조건</th>
+        <th>비고</th>
+      </tr>
+      <tr>
+        <td>PC0</td>
+        <td>BTN_START_STOP</td>
+        <td>외부 10kΩ 풀업, Active LOW</td>
+        <td>발진 시작/정지, EXT모드 ADDR 설정</td>
+      </tr>
+      <tr>
+        <td>PC1</td>
+        <td>BTN_MODE</td>
+        <td>외부 10kΩ 풀업, Active LOW</td>
+        <td>모드 전환 (NORMAL→H/L SET→8POWER)</td>
+      </tr>
+      <tr>
+        <td>PC2</td>
+        <td>BTN_UP</td>
+        <td>외부 10kΩ 풀업, Active LOW</td>
+        <td>값 증가 (0.01W 단위)</td>
+      </tr>
+      <tr>
+        <td>PC3</td>
+        <td>BTN_DOWN</td>
+        <td>외부 10kΩ 풀업, Active LOW</td>
+        <td>값 감소 (0.01W 단위)</td>
+      </tr>
+      <tr>
+        <td>PC4</td>
+        <td>BTN_SET</td>
+        <td>외부 10kΩ 풀업, Active LOW</td>
+        <td>설정 확인/저장</td>
+      </tr>
+      <tr>
+        <td>PC5</td>
+        <td>BTN_FREQ</td>
+        <td>외부 10kΩ 풀업, Active LOW</td>
+        <td>짧게: 5초 주파수 표시 / 5초 장기: FREQ SET</td>
+      </tr>
+    </table>
+
+    <h3>
+      1.4 LED 표시등 6개 (74HCT574 #2 Q 출력)
+      <span class="change-badge">v4 변경</span>
+    </h3>
+    <div class="info-box">
+      LED는 74HCT574 #2 Q0~Q5에 연결. MCU DATA 버스(PB10~PB15)에 마스크 로드 후
+      CLK_LED(PD1) 폄싹엣지로 래치함. 이전 직접 GPIO(PB0/1/2, 일부 PB10/11/14)
+      타입 → 여유 핀으로 전환.
+    </div>
+    <table class="pin-table">
+      <tr>
+        <th>LED ID</th>
+        <th>기능</th>
+        <th>74HCT574 #2 핀</th>
+        <th>점등 조건</th>
+      </tr>
+      <tr>
+        <td>LED1</td>
+        <td>LED_NORMAL</td>
+        <td>Q0 (DATA[0]=PB10)</td>
+        <td>NORMAL 모드</td>
+      </tr>
+      <tr>
+        <td>LED2</td>
+        <td>LED_HL_SET</td>
+        <td>Q1 (DATA[1]=PB11)</td>
+        <td>H/L SET 모드</td>
+      </tr>
+      <tr>
+        <td>LED3</td>
+        <td>LED_8POWER</td>
+        <td>Q2 (DATA[2]=PB12)</td>
+        <td>8POWER 모드</td>
+      </tr>
+      <tr>
+        <td>LED4</td>
+        <td>LED_REMOTE</td>
+        <td>Q3 (DATA[3]=PB13)</td>
+        <td>REMOTE 모드 / 발진 중 점멸</td>
+      </tr>
+      <tr>
+        <td>LED5</td>
+        <td>LED_EXT</td>
+        <td>Q4 (DATA[4]=PB14)</td>
+        <td>EXT 모드</td>
+      </tr>
+      <tr>
+        <td>LED6</td>
+        <td>LED_RX</td>
+        <td>Q5 (DATA[5]=PB15)</td>
+        <td>RS-485 수신 시 점멸</td>
+      </tr>
+    </table>
+    <div class="info-box">
+      LED 전류 제한 저항: <strong>560Ω</strong> (5V 기준, IOH=6mA 제한에서 4.5mA
+      동작). 74HCT574 Q 웜대: 35mA 절대 최대. 저항 = (5V - 2.0V) / 4.5mA ≈ 560Ω
+      (E24 표준값).
+    </div>
+
+    <h3>1.5 ADC 계측 입력</h3>
+    <table class="pin-table">
+      <tr>
+        <th>핀</th>
+        <th>ADC 채널</th>
+        <th>측정 대상</th>
+        <th>회로</th>
+      </tr>
+      <tr>
+        <td>PA0</td>
+        <td>ADC1_IN1</td>
+        <td>순방향 전력 (Forward Power)</td>
+        <td>방향성 커플러 → RF 검출기 DC 출력</td>
+      </tr>
+      <tr>
+        <td>PA1</td>
+        <td>ADC1_IN2</td>
+        <td>역방향 전력 (Reflected Power)</td>
+        <td>방향성 커플러 → RF 검출기 DC 출력</td>
+      </tr>
+      <tr>
+        <td>PA6</td>
+        <td>ADC2_IN3</td>
+        <td>BUCK 출력 전류</td>
+        <td>0.1Ω 센스 저항 → 10mV/100mA</td>
+      </tr>
+      <tr>
+        <td>PA7</td>
+        <td>ADC2_IN4</td>
+        <td>BUCK 출력 전압</td>
+        <td>저항 분압 1:10 → 0~2.5V</td>
+      </tr>
+    </table>
+
+    <h3>1.6 RS-485 Modbus RTU <span class="change-badge">v2 변경</span></h3>
+    <table class="pin-table">
+      <tr>
+        <th>핀</th>
+        <th>기능</th>
+        <th>AF</th>
+        <th>비고</th>
+      </tr>
+      <tr>
+        <td>PA2</td>
+        <td>USART2_TX</td>
+        <td>AF7</td>
+        <td>RS-485 TXD → MAX3485 DI</td>
+      </tr>
+      <tr>
+        <td>PA3</td>
+        <td>USART2_RX</td>
+        <td>AF7</td>
+        <td>RS-485 RXD ← MAX3485 RO</td>
+      </tr>
+      <tr class="changed-row">
+        <td>PC13</td>
+        <td>RS-485 DE</td>
+        <td>GPIO OUT</td>
+        <td>Driver Enable (HIGH=송신) ← v2: PA4에서 이동</td>
+      </tr>
+      <tr class="changed-row">
+        <td>PC14</td>
+        <td>RS-485 /RE</td>
+        <td>GPIO OUT</td>
+        <td>Receiver Enable (LOW=수신) ← v2: PA5에서 이동</td>
+      </tr>
+    </table>
+    <div class="info-box">
+      DE와 /RE를 동시 제어: 송신 시 DE=HIGH + /RE=HIGH, 수신 시 DE=LOW + /RE=LOW
+    </div>
+
+    <h3>1.7 BUCK 전력 컨버터 제어 <span class="change-badge">v2 변경</span></h3>
+    <table class="pin-table">
+      <tr>
+        <th>핀</th>
+        <th>기능</th>
+        <th>비고</th>
+      </tr>
+      <tr class="changed-row">
+        <td>PA4</td>
+        <td>DAC1_OUT1</td>
+        <td>LM5005 FB 전압 조절 (0~3.3V → 출력 0.1W~10W) ← v2: DE에서 변경</td>
+      </tr>
+      <tr>
+        <td>PA5</td>
+        <td>ADC2_IN13 (옵션)</td>
+        <td>BUCK 출력 전압 보조 ADC (피드백 보조용, 선택)</td>
+      </tr>
+    </table>
+
+    <h3>
+      1.8 알람 릴레이 출력 5개 (ULN2003A #1)
+      <span class="change-badge">v5 변경</span>
+    </h3>
+    <table class="pin-table">
+      <tr>
+        <th>핀</th>
+        <th>기능</th>
+        <th>정상 상태</th>
+        <th>알람 상태</th>
+      </tr>
+      <tr>
+        <td>PA11</td>
+        <td>RELAY_GO</td>
+        <td>SHORT</td>
+        <td>OPEN (출력 범위 이탈 시)</td>
+      </tr>
+      <tr>
+        <td>PA12</td>
+        <td>RELAY_OPERATE</td>
+        <td>SHORT</td>
+        <td>OPEN (어떤 알람이든, 전원 OFF 포함)</td>
+      </tr>
+      <tr>
+        <td>PA15</td>
+        <td>RELAY_LOW</td>
+        <td>OPEN</td>
+        <td>SHORT (Err1: LOW ALARM)</td>
+      </tr>
+      <tr>
+        <td>PB3</td>
+        <td>RELAY_HIGH</td>
+        <td>OPEN</td>
+        <td>SHORT (Err2: HIGH ALARM)</td>
+      </tr>
+      <tr>
+        <td>PB4</td>
+        <td>RELAY_TRANSDUCER</td>
+        <td>OPEN</td>
+        <td>SHORT (Err5: 진동자 알람)</td>
+      </tr>
+      <tr>
+        <td>PB5</td>
+        <td>BUZZER</td>
+        <td>LOW</td>
+        <td>
+          커넥터⑰ → KEC105S → 액티브 부저 (디스플레이 보드 실장, ULN2003A 외)
+        </td>
+      </tr>
+    </table>
+    <div class="info-box">
+      ULN2003A #1: 알람 릴레이 5개 = 5채널 사용, <strong>2채널 여유</strong>.
+      부저(PB5)는 디스플레이 보드에 KEC105S로 이전 (커넥터⑰). 접점 사양: AC 100V
+      / DC 100V, 0.3A. PA10은 SENSOR_INPUT(광커플러)으로 재할당.
+    </div>
+
+    <h3>
+      1.9 LC 탱크 릴레이 4개 (ULN2003A #2)
+      <span class="change-badge">v4 재배치</span>
+    </h3>
+    <div class="warning-box">
+      <strong>v4 변경</strong>: LC_RELAY1을 PB8 → PC9로 이동. LC 릴레이 4개 모두
+      GPIOC(PC7/8/9/15)로 통합 → GPIOB DATA 버스와 포트 완전 분리.
+    </div>
+    <table class="pin-table">
+      <tr>
+        <th>핀</th>
+        <th>기능</th>
+        <th>이전 핀</th>
+        <th>비고</th>
+      </tr>
+      <tr class="changed-row">
+        <td>PC9</td>
+        <td>LC_RELAY1 (L1 스위칭)</td>
+        <td><del>PB8</del></td>
+        <td><strong>v4 변경</strong>: PB8→PC9 (GPIOB DATA 버스 해제)</td>
+      </tr>
+      <tr>
+        <td>PC15</td>
+        <td>LC_RELAY2 (L2 스위칭)</td>
+        <td>PC15 (동일)</td>
+        <td>ULN2003A #2 구동</td>
+      </tr>
+      <tr class="changed-row">
+        <td>PC7</td>
+        <td>LC_RELAY3 (L3 스위칭)</td>
+        <td><del>PF0</del></td>
+        <td><strong>v3 변경</strong>: PF0→PC7 (HSE OSC_IN 해제)</td>
+      </tr>
+      <tr class="changed-row">
+        <td>PC8</td>
+        <td>LC_RELAY4 (L4 스위칭)</td>
+        <td><del>PF1</del></td>
+        <td><strong>v3 변경</strong>: PF1→PC8 (HSE OSC_OUT 해제)</td>
+      </tr>
+    </table>
+
+    <h3>1.10 외부 제어 입력 (광커플러 TLP281-4)</h3>
+    <table class="pin-table">
+      <tr>
+        <th>핀</th>
+        <th>기능</th>
+        <th>논리</th>
+        <th>비고</th>
+      </tr>
+      <tr>
+        <td>PC6</td>
+        <td>REMOTE</td>
+        <td>SHORT=ON, OPEN=OFF</td>
+        <td>발진 ON/OFF, 4-COM 단자 겸용</td>
+      </tr>
+      <tr>
+        <td>PC10</td>
+        <td>8POWER BIT1</td>
+        <td>SHORT=HIGH, OPEN=LOW</td>
+        <td>8단계 출력 BCD 선택 비트1</td>
+      </tr>
+      <tr>
+        <td>PC11</td>
+        <td>8POWER BIT2</td>
+        <td>Short=HIGH, OPEN=LOW</td>
+        <td>8단계 출력 BCD 선택 비트2</td>
+      </tr>
+      <tr>
+        <td>PC12</td>
+        <td>8POWER BIT3</td>
+        <td>SHORT=HIGH, OPEN=LOW</td>
+        <td>8단계 출력 BCD 선택 비트3</td>
+      </tr>
+    </table>
+
+    <h3>1.11 HSE 크리스탈 <span class="new-badge">v3 신규 지정</span></h3>
+    <div class="warning-box">
+      PF0, PF1은 HSE 전용! GPIO_Init에서 GPIOF 설정 금지. RCC_OscInit에서만
+      처리.
+    </div>
+    <table class="pin-table">
+      <tr>
+        <th>핀</th>
+        <th>기능</th>
+        <th>비고</th>
+      </tr>
+      <tr class="new-row">
+        <td>PF0</td>
+        <td>OSC_IN</td>
+        <td>8MHz 크리스탈 입력 — GPIO 금지, 22pF 부하 커패시터</td>
+      </tr>
+      <tr class="new-row">
+        <td>PF1</td>
+        <td>OSC_OUT</td>
+        <td>8MHz 크리스탈 출력 — GPIO 금지, 22pF 부하 커패시터</td>
+      </tr>
+    </table>
+
+    <h3>1.12 디버그 / SWD</h3>
+    <table class="pin-table">
+      <tr>
+        <th>핀</th>
+        <th>기능</th>
+        <th>비고</th>
+      </tr>
+      <tr>
+        <td>PB6</td>
+        <td>USART1_TX (AF7)</td>
+        <td>디버그 UART TX, 115200 bps</td>
+      </tr>
+      <tr>
+        <td>PB7</td>
+        <td>USART1_RX (AF7)</td>
+        <td>디버그 UART RX</td>
+      </tr>
+      <tr>
+        <td>PA13</td>
+        <td>SWDIO</td>
+        <td>SWD 데이터 — GPIO 금지</td>
+      </tr>
+      <tr>
+        <td>PA14</td>
+        <td>SWCLK</td>
+        <td>SWD 클럭 — GPIO 금지</td>
+      </tr>
+      <tr>
+        <td>NRST</td>
+        <td>RESET</td>
+        <td>MCU 리셋 핀 — ST-Link 연결 권장</td>
+      </tr>
+      <tr>
+        <td>BOOT0</td>
+        <td>부트 모드 선택</td>
+        <td>GND=플래시 부트 (10kΩ 풀다운 권장)</td>
+      </tr>
+    </table>
+
+    <h3>1.13 여유 핀 (Spare, 3개)</h3>
+    <table class="pin-table">
+      <tr>
+        <th>핀</th>
+        <th>현재 상태</th>
+        <th>활용 가능 기능</th>
+      </tr>
+      <tr>
+        <td>PA5</td>
+        <td>미사용</td>
+        <td>ADC2_IN13 (BUCK 출력 전압 보조) 또는 GPIO</td>
+      </tr>
+      <tr>
+        <td>PC9</td>
+        <td>미사용</td>
+        <td>GPIO 여유 (구 LED_kHz, LCD로 표시 전환됨)</td>
+      </tr>
+      <tr>
+        <td>PB9</td>
+        <td>미사용</td>
+        <td>I2C1_SDA (AF4) — AT24C02 EEPROM 확장 옵션</td>
+      </tr>
+    </table>
+    <div class="info-box">
+      PB8은 LC_RELAY1이지만 I2C1_SCL(AF4)과 겸용 후보. EEPROM 확장 시 LC_RELAY1
+      포트 재배치 필요.
+    </div>
+
+    <h3>1.14 핀 사용 통계</h3>
+    <table>
+      <tr>
+        <th>포트</th>
+        <th>사용 수</th>
+        <th>여유</th>
+        <th>사용 목록 요약</th>
+      </tr>
+      <tr>
+        <td>PA</td>
+        <td>14/16</td>
+        <td>PA5</td>
+        <td>PA0~PA4, PA6~PA15 (HRTIM, ADC, DAC, USART2, 릴레이)</td>
+      </tr>
+      <tr>
+        <td>PB</td>
+        <td>13/16</td>
+        <td>PB9</td>
+        <td>PB0~PB8, PB10~PB15 (LED, LCD D5~D7, 릴레이, USART1, LC릴레이)</td>
+      </tr>
+      <tr>
+        <td>PC</td>
+        <td>13/16</td>
+        <td>PC9</td>
+        <td>PC0~PC8, PC10~PC15 (버튼, EXT, RS485 DE/RE, LC릴레이3/4)</td>
+      </tr>
+      <tr>
+        <td>PD</td>
+        <td>3/3</td>
+        <td>—</td>
+        <td>PD0~PD2 (LCD RS/EN/D4, LQFP80 전용)</td>
+      </tr>
+      <tr class="new-row">
+        <td>PF</td>
+        <td>2/2</td>
+        <td>—</td>
+        <td>PF0(OSC_IN), PF1(OSC_OUT) — HSE 크리스탈 전용</td>
+      </tr>
+      <tr class="highlight-row">
+        <td><strong>합계</strong></td>
+        <td><strong>45/53</strong></td>
+        <td><strong>3개</strong></td>
+        <td>GPIO 43개 + HSE 2개 사용, 여유 3개 (PA5, PC9, PB9)</td>
+      </tr>
+    </table>
+
+    <!-- ========================================================== -->
+    <h2 id="sysclk">
+      <span class="section-badge">2</span>시스템 클럭 — HSE 8MHz → PLL → 170MHz
+      <span class="new-badge">v3 HSE 적용</span>
+    </h2>
+
+    <div class="ok-box">
+      HSE 8MHz 크리스탈 사용으로 정밀도 ±20ppm 확보 (HSI ±1% 대비 50배 개선).
+      HRTIM 주파수 오차 최소화.
+    </div>
+
+    <h3>2.1 PLL 설정</h3>
+    <pre class="formula">
+입력  : HSE = 8 MHz (PF0/PF1 크리스탈)
+PLLM  : ÷2  → 8 / 2 = 4 MHz (PLL 입력)
+PLLN  : ×85 → 4 × 85 = 340 MHz (VCO)
+PLLR  : ÷2  → 340 / 2 = 170 MHz (SYSCLK)
+
+AHB   = 170 MHz  (RCC_SYSCLK_DIV1)
+APB1  = 170 MHz  (RCC_HCLK_DIV1)
+APB2  = 170 MHz  (RCC_HCLK_DIV1)
+Flash Latency = 4 WS (150~170 MHz, Range1 Boost)
+
+HRTIM 유효 클럭 = APB2×32(DLL) = 170×32 = 5,440 MHz
+1 틱 = 1/5.44 GHz ≈ 184 ps
+</pre
+    >
+
+    <h3>2.2 HAL 초기화 코드 요점</h3>
+    <pre>
+/* 전원 스케일 설정 (170MHz를 위해 Range1 Boost 필수) */
+HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1_BOOST);
+
+/* HSE + PLL 설정 */
+rcc_osc.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+rcc_osc.HSEState       = RCC_HSE_ON;
+rcc_osc.PLL.PLLSource  = RCC_PLLSOURCE_HSE;
+rcc_osc.PLL.PLLM       = RCC_PLLM_DIV2;   /* ÷2 → 4MHz */
+rcc_osc.PLL.PLLN       = 85U;              /* ×85 → 340MHz VCO */
+rcc_osc.PLL.PLLR       = RCC_PLLR_DIV2;   /* ÷2 → 170MHz SYSCLK */
+HAL_RCC_OscConfig(&rcc_osc);
+
+/* Flash Latency 4WS */
+HAL_RCC_ClockConfig(&rcc_clk, FLASH_LATENCY_4);
+
+/* HRTIM DLL 캘리브레이션 (반드시 HRTIM 사용 전 호출) */
+HAL_HRTIM_DLLCalibrationStart(&hhrtim, HRTIM_CALIBRATIONRATE_14);
+HAL_HRTIM_PollForDLLCalibration(&hhrtim, HAL_MAX_DELAY);
+</pre
+    >
+
+    <h3>2.3 HSE 크리스탈 회로</h3>
+    <pre class="ascii-art">
+          PF0 (OSC_IN)                    PF1 (OSC_OUT)
+               │                               │
+              [C_L1: 22pF]              [C_L2: 22pF]
+               │                               │
+        ┌──────┴──────────────────────────────┴──────┐
+        │              8MHz 크리스탈               │
+        │         (±20ppm, HC-49S, 패럴렐 모드)    │
+        └────────────────────────────────────────────┘
+               │                               │
+             GND                             GND
+
+        R_XTAL (선택): 1MΩ 또는 470kΩ → PF0/PF1 사이 직렬 (발진 안정용, G4는 불필요한 경우 많음)
+</pre
+    >
+
+    <div class="warning-box">
+      부하 커패시터(CL)는 크리스탈 데이터시트 기준으로 선택. 일반적으로
+      CL1=CL2=9~22pF. PCB 기생 커패시턴스 고려하여 조정.
+    </div>
+
+    <h3>2.4 HRTIM 주파수 채널 테이블</h3>
+    <table>
+      <tr>
+        <th>채널</th>
+        <th>주파수 (kHz)</th>
+        <th>Period 틱</th>
+        <th>듀티 분해능</th>
+        <th>Phase 분해능</th>
+        <th>비고</th>
+      </tr>
+      <tr>
+        <td>Ch 0</td>
+        <td>500.0</td>
+        <td>10,880</td>
+        <td>0.009%</td>
+        <td>0.033°</td>
+        <td>최저 주파수</td>
+      </tr>
+      <tr>
+        <td>Ch 1</td>
+        <td>750.0</td>
+        <td>7,253</td>
+        <td>0.014%</td>
+        <td>0.050°</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>Ch 2</td>
+        <td>1,000.0</td>
+        <td>5,440</td>
+        <td>0.018%</td>
+        <td>0.066°</td>
+        <td>1MHz</td>
+      </tr>
+      <tr>
+        <td>Ch 3</td>
+        <td>1,250.0</td>
+        <td>4,352</td>
+        <td>0.023%</td>
+        <td>0.083°</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>Ch 4</td>
+        <td>1,500.0</td>
+        <td>3,627</td>
+        <td>0.028%</td>
+        <td>0.099°</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>Ch 5</td>
+        <td>1,750.0</td>
+        <td>3,109</td>
+        <td>0.032%</td>
+        <td>0.116°</td>
+        <td></td>
+      </tr>
+      <tr class="highlight-row">
+        <td>Ch 6</td>
+        <td>2,000.0</td>
+        <td>2,720</td>
+        <td>0.037%</td>
+        <td>0.132°</td>
+        <td>최고 주파수 (2MHz)</td>
+      </tr>
+    </table>
+    <pre class="formula">
+Period = 5,440,000,000 / 목표주파수[Hz]   (HRTIM 유효 클럭 = 5.44GHz)
+예) 1MHz: Period = 5,440,000,000 / 1,000,000 = 5,440 틱</pre
+    >
+
+    <!-- ========================================================== -->
+    <h2 id="overview">
+      <span class="section-badge">3</span>회로 개요 — 전체 시스템 블록도
+    </h2>
+
+    <pre class="ascii-art">
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                 │
+│  AC 220V / DC 48V SMPS                                                          │
+│       │                                                                         │
+│       ├──▶ 3.3V LDO ──────────────────────────────────────────────────────────┐ │
+│       │    (AMS1117-3.3)                                                       │ │
+│       │                                                                        │ │
+│       └──▶ ┌──────────────┐   Vbus   ┌───────────────┐  RF   ┌─────────────┐  │ │
+│            │  LM5005       │ 2.5~25V │  하프브리지   │ 출력 │  트랜스듀서 │  │ │
+│            │  BUCK 컨버터  │─────────▶│  UCC21520    │──────▶│  (메가소닉) │  │ │
+│            │  48V→가변     │          │  IPB200N15N3 │       │  50Ω        │  │ │
+│            └──────┬────────┘          └──────┬────────┘       └──────┬──────┘  │ │
+│                   │                          │                       │         │ │
+│            DAC1_OUT1 (PA4)           PA8 CHA1 / PA9 CHA2           ╔═══════╗   │ │
+│                   │                          │                    ║방향성 ║   │ │
+│  ┌────────────────┴──────────────────────────┴──────────────────── ║커플러 ║──┐│ │
+│  │                                                                 ╚═══════╝  ││ │
+│  │                STM32G474MET6                              ADC1(PA0) ADC1(PA1)││ │
+│  │                LQFP80 / 170MHz                            순방향전력 역방향    ││ │
+│  │                                                                              ││ │
+│  │  HRTIM CHA1(PA8) ──▶ UCC21520 INA                        ADC2(PA6) ADC2(PA7)││ │
+│  │  HRTIM CHA2(PA9) ──▶ UCC21520 INB                        전류    전압        ││ │
+│  │  DAC1_OUT1(PA4) ──▶ LM5005 FB                                               ││ │
+│  │  USART2(PA2/PA3) ◀▶ RS-485 (MAX3485)                                        ││ │
+│  │  GPIO(PC0~PC5) ◀── 버튼 6개                                                  ││ │
+│  │  GPIO(PB0~PB2,PB10,PB11,PB14) ──▶ LED 6개                                   ││ │
+│  │  GPIO(PD0~PD2,PB12,PB13,PB15) ──▶ LCD1602                                   ││ │
+│  │  GPIO(PA11,PA12,PA15,PB3,PB4,PA10) ──▶ 알람 릴레이 6개                       ││ │
+│  │  GPIO(PB8,PC15,PC7,PC8) ──▶ LC탱크 릴레이 4개                                ││ │
+│  │  GPIO(PC6,PC10~PC12) ◀── 외부제어(REMOTE,BCD)                                ││ │
+│  │  HSE(PF0/PF1) ← 8MHz 크리스탈                                                ││ │
+│  │  SWD(PA13/PA14) ← ST-Link                                                   ││ │
+│  └────────────────────────────────────────────────────────────────────────────┘│ │
+│                                                                                 │ │
+└─────────────────────────────────────────────────────────────────────────────────┘ │
+                                                                                    │
+              3.3V 로직 ─────────────────────────────────────────────────────────────┘
+</pre
+    >
+
+    <!-- ========================================================== -->
+    <h2 id="ucc21520">
+      <span class="section-badge">4</span>UCC21520 절연 게이트 드라이버
+    </h2>
+
+    <h3>4.1 주요 사양</h3>
+    <table>
+      <tr>
+        <th>항목</th>
+        <th>사양</th>
+        <th>비고</th>
+      </tr>
+      <tr>
+        <td>패키지</td>
+        <td>SOIC-16W (DW)</td>
+        <td>손납땜 가능</td>
+      </tr>
+      <tr>
+        <td>절연 내압</td>
+        <td>5.7 kVrms (강화 절연)</td>
+        <td>1차/2차 8mm 이상 이격</td>
+      </tr>
+      <tr>
+        <td>전파 지연</td>
+        <td>18 ns (typ)</td>
+        <td>Hi/Lo 동일</td>
+      </tr>
+      <tr>
+        <td>CMTI</td>
+        <td>150 kV/µs</td>
+        <td>Common Mode Transient Immunity</td>
+      </tr>
+      <tr>
+        <td>피크 출력 전류</td>
+        <td>4 A (source/sink)</td>
+        <td>게이트 충전 용량 충분</td>
+      </tr>
+      <tr>
+        <td>동작 주파수</td>
+        <td>DC ~ 5 MHz</td>
+        <td>2 MHz 여유 있음</td>
+      </tr>
+      <tr>
+        <td>입력 전압 (VCC)</td>
+        <td>3.0 ~ 5.5 V</td>
+        <td>3.3V 직결 가능</td>
+      </tr>
+      <tr>
+        <td>출력 전압 (VDDA/VDDB)</td>
+        <td>9.2 ~ 25 V</td>
+        <td>15V 권장 (IPB200N15N3 기준)</td>
+      </tr>
+    </table>
+
+    <h3>4.2 핀 배치 및 연결</h3>
+    <pre class="ascii-art">
+                    ┌─────────────────────────────────────────┐
+                    │           UCC21520DW (SOIC-16W)         │
+     1차측 (MCU)    │                                         │    2차측 (FET)
+                    │                                         │
+  3.3V ─────────────┤8  VCCI                       VDDA  16├──── VDDA (15V, 절연)
+                    │                                         │
+  GND ──────────────┤7  DISABLE                    OUTA  15├──── Q1 게이트 (+[R3: 4.7Ω]─)
+  (10kΩ 풀다운)     │                                         │
+  PA9 (CHA2) ───────┤6  INB                        VSSA  14├──── SW 노드 (하이사이드 GND)
+                    │                                         │
+  PA8 (CHA1) ───────┤5  INA                          NC   13├
+                    │                                         │
+  GND ──────────────┤4  GND (1차)                    NC   12├
+                    │                                         │
+                    ┤3  NC                          VDDB  11├──── VDDB (12~15V, 직접)
+                    │                                         │
+  [R_DT: 100kΩ]─────┤2  DT                         OUTB  10├──── Q2 게이트 (+[R4: 4.7Ω]─)
+                    │                                         │
+  3.3V ─────────────┤1  VCCI                        VSSB   9├──── 파워 GND
+                    │                                         │
+                    └─────────────────────────────────────────┘
+
+※ DISABLE 핀(핀7): Active HIGH로 출력 차단. 10kΩ 풀다운으로 GND에 연결 (항상 Enable 상태).
+   MCU에서 비상 차단이 필요하면 DISABLE에 별도 GPIO 연결 가능.
+※ DT 핀(핀2, 100kΩ): 하드웨어 데드타임 ~80ns. HRTIM 내장 데드타임과 중복 사용 금지.
+</pre
+    >
+
+    <h3>4.3 전원 도메인 (3개 독립 절연)</h3>
+    <table>
+      <tr>
+        <th>도메인</th>
+        <th>전원 핀</th>
+        <th>GND 핀</th>
+        <th>기준점</th>
+        <th>전압</th>
+      </tr>
+      <tr>
+        <td>1차측 (MCU 신호)</td>
+        <td>VCCI (핀1, 핀8)</td>
+        <td>GND (핀4)</td>
+        <td>시스템 GND</td>
+        <td>3.3V</td>
+      </tr>
+      <tr class="highlight-row">
+        <td>2차측 A (하이사이드)</td>
+        <td>VDDA (핀16)</td>
+        <td>VSSA (핀14)</td>
+        <td><strong>SW 노드</strong></td>
+        <td>15V</td>
+      </tr>
+      <tr>
+        <td>2차측 B (로우사이드)</td>
+        <td>VDDB (핀11)</td>
+        <td>VSSB (핀9)</td>
+        <td>파워 GND</td>
+        <td>12~15V</td>
+      </tr>
+    </table>
+    <div class="warning-box">
+      VSSA ≠ VSSB — VSSA는 반드시 SW 노드(Q1 소스)에, VSSB는 파워 GND에 연결.
+      절대 공통 연결 금지!
+    </div>
+
+    <h3>4.4 데드타임 설정</h3>
+    <table>
+      <tr>
+        <th>DT 핀 연결</th>
+        <th>데드타임</th>
+        <th>비고</th>
+      </tr>
+      <tr>
+        <td>GND (직접)</td>
+        <td>35 ns (최소)</td>
+        <td>최소 데드타임</td>
+      </tr>
+      <tr>
+        <td>50 kΩ</td>
+        <td>약 40 ns</td>
+        <td></td>
+      </tr>
+      <tr class="highlight-row">
+        <td><strong>100 kΩ</strong></td>
+        <td><strong>약 80 ns</strong></td>
+        <td><strong>Si MOSFET 권장</strong></td>
+      </tr>
+      <tr>
+        <td>200 kΩ</td>
+        <td>약 150 ns</td>
+        <td>보수적 설계</td>
+      </tr>
+      <tr>
+        <td>VCC</td>
+        <td>100 ns 이상</td>
+        <td></td>
+      </tr>
+    </table>
+    <div class="warning-box">
+      HRTIM 내장 데드타임과 UCC21520 DT 핀 중 하나만 사용! 이중 적용 시 과도한
+      듀티 손실 발생.
+    </div>
+
+    <!-- ========================================================== -->
+    <h2 id="mosfet">
+      <span class="section-badge">5</span>IPB200N15N3 Si MOSFET
+    </h2>
+
+    <div class="two-col">
+      <div class="chip-box">
+        <h4>IPB200N15N3 (Infineon, D2PAK)</h4>
+        <table>
+          <tr>
+            <th>항목</th>
+            <th>사양</th>
+          </tr>
+          <tr>
+            <td>Vds 최대</td>
+            <td>150 V</td>
+          </tr>
+          <tr>
+            <td>Rds(on)</td>
+            <td>20 mΩ @ Vgs=10V</td>
+          </tr>
+          <tr>
+            <td>Id (연속)</td>
+            <td>50 A @ 25°C</td>
+          </tr>
+          <tr>
+            <td>Qg (총 게이트 전하)</td>
+            <td>31 nC</td>
+          </tr>
+          <tr>
+            <td>Qgd (밀러 전하)</td>
+            <td>9 nC</td>
+          </tr>
+          <tr>
+            <td>tr (라이즈 타임)</td>
+            <td>7 ns</td>
+          </tr>
+          <tr>
+            <td>tf (폴 타임)</td>
+            <td>4 ns</td>
+          </tr>
+          <tr>
+            <td>게이트 전압</td>
+            <td>10~15 V 권장</td>
+          </tr>
+          <tr>
+            <td>최대 Vgs</td>
+            <td>±20 V</td>
+          </tr>
+        </table>
+      </div>
+      <div class="chip-box">
+        <h4>D2PAK (TO-263) 장점</h4>
+        <ul>
+          <li>손납땜 가능 — 핀 피치 2.54mm</li>
+          <li>드레인 패드 대형 → PCB 히트싱크 연결 용이</li>
+          <li>TO-220 대비 리드 인덕턴스 감소 (~5nH vs ~15nH)</li>
+          <li>국내 유통 양호</li>
+        </ul>
+        <h4>게이트 충전 시간 계산</h4>
+        <pre class="formula" style="margin: 0; padding: 6px">
+Tg = Qg / Ig = 31nC / 2A = 15.5ns
+→ UCC21520 4A 피크 출력으로 충분</pre
+        >
+      </div>
+    </div>
+
+    <h3>5.1 주파수별 스위칭 손실 비교</h3>
+    <table>
+      <tr>
+        <th>항목</th>
+        <th>Si MOSFET (IPB200N15N3)</th>
+        <th>GaN FET (EPC2036)</th>
+      </tr>
+      <tr>
+        <td>스위칭 시간</td>
+        <td>~7 ns</td>
+        <td>~2 ns</td>
+      </tr>
+      <tr>
+        <td>권장 데드타임</td>
+        <td>50~100 ns</td>
+        <td>5~20 ns</td>
+      </tr>
+      <tr>
+        <td>게이트 전압</td>
+        <td>10~15 V</td>
+        <td>4.5~5.5 V</td>
+      </tr>
+      <tr class="warn-row">
+        <td>500kHz 스위칭 손실</td>
+        <td>낮음 (허용)</td>
+        <td>극소</td>
+      </tr>
+      <tr class="warn-row">
+        <td>2MHz 스위칭 손실</td>
+        <td><strong>높음 — 발열 주의</strong></td>
+        <td>낮음</td>
+      </tr>
+      <tr>
+        <td>역회복 전류</td>
+        <td>있음 (몸체 다이오드)</td>
+        <td>없음</td>
+      </tr>
+      <tr>
+        <td>납땜 난이도</td>
+        <td>쉬움 (D2PAK)</td>
+        <td>어려움 (LGA/BGA)</td>
+      </tr>
+    </table>
+    <div class="warning-box">
+      2MHz에서 Si MOSFET 사용 시 스위칭 손실이 크게 증가합니다. 저출력(1W
+      이하)은 허용 범위이지만, 10W 급에서는 방열판 필수 또는 GaN으로 교체 검토.
+    </div>
+
+    <!-- ========================================================== -->
+    <h2 id="dc-dc">
+      <span class="section-badge">6</span>절연 DC-DC 컨버터 (VDDA용)
+    </h2>
+
+    <h3>6.1 RECOM R1215S (권장)</h3>
+    <table>
+      <tr>
+        <th>항목</th>
+        <th>사양</th>
+      </tr>
+      <tr>
+        <td>입력</td>
+        <td>12 V DC (10.8V ~ 13.2V)</td>
+      </tr>
+      <tr>
+        <td>출력</td>
+        <td>15 V DC, 67 mA (1W)</td>
+      </tr>
+      <tr>
+        <td>절연</td>
+        <td>1 kVDC (기본 절연)</td>
+      </tr>
+      <tr>
+        <td>패키지</td>
+        <td>SIP-4 (손납땜 용이)</td>
+      </tr>
+      <tr>
+        <td>효율</td>
+        <td>~80%</td>
+      </tr>
+    </table>
+
+    <pre class="ascii-art">
+    시스템 12V ────┬────▶ R1215S ────┬────▶ VDDA (15V)
+                   │      (절연)     │
+                   │                 └────▶ VSSA (= SW 노드, Q1 소스)
+                   │
+                   └──────────────────────▶ VDDB (직접 12V~15V)
+                                            VSSB (= 파워 GND)
+</pre
+    >
+
+    <div class="info-box">
+      R1215S SIP-4 핀 배치: 1=+Vin, 2=-Vin, 3=+Vout, 4=-Vout. -Vout이 VSSA (SW
+      노드)에 연결됨.
+    </div>
+
+    <h3>6.2 옵션 B: SN6505A + 트랜스포머 (고절연 5.7kVrms 요구 시)</h3>
+    <table>
+      <tr>
+        <th>항목</th>
+        <th>사양</th>
+      </tr>
+      <tr>
+        <td>드라이버 IC</td>
+        <td>SN6505A (TI)</td>
+      </tr>
+      <tr>
+        <td>입력</td>
+        <td>3.3V 또는 5V</td>
+      </tr>
+      <tr>
+        <td>트랜스포머</td>
+        <td>Würth 750316830 (1:1)</td>
+      </tr>
+      <tr>
+        <td>정류</td>
+        <td>쇼트키 다이오드 + LC 필터</td>
+      </tr>
+    </table>
+
+    <!-- ========================================================== -->
+    <h2 id="gate-circuit">
+      <span class="section-badge">7</span>게이트 드라이브 전체 회로도
+    </h2>
+
+    <pre class="ascii-art">
+ 시스템 3.3V ─────────────────────────────────────────────────────────────────────┐
+                                                                                  │
+ ┌─────────────────────────────────────────────────────────────────────────────┐  │
+ │   STM32G474MET6                  ┌────────────────────────────────────┐     │  │
+ │                                  │  절연 영역 (하이사이드)            │     │  │
+ │   PA8 (HRTIM1_CHA1)              │      VDDA (15V, R1215S)           │  Vbus(+)
+ │   AF13, VERY_HIGH                │           │                       │     │
+ │   ──────────────────[R1:5Ω]──────┤▶ INA  VDDA ──[C1:10µF + C2:100nF]─┤  ┌──┴─────┐
+ │                                  │        │                          │  │ Q1 하이 │
+ │   PA9 (HRTIM1_CHA2)              │      OUTA ──[R3:4.7Ω]────────────────┤IPB200N15N3
+ │   AF13, VERY_HIGH                │                                   │  └──┬─────┘
+ │   ──────────────────[R2:5Ω]──────┤▶ INB  VSSA ─────────────────────────────┤ SW 노드
+ │                                  │                                   │  ┌──┴─────┐
+ │   GND ──────────────────────────▶┤ GND   OUTB ──[R4:4.7Ω]────────────────┤ Q2 로우 │
+ │   3.3V ─────────────────────────▶┤ VCC  VSSB ─────────────────────────── ▶│IPB200N15N3
+ │                                  │         │                         │  └──┬─────┘
+ │   [R_DIS: 10kΩ] ── DIS ──▶ GND   │  VDDB ──[C3:10µF + C4:100nF]     │      │
+ │   [R_DT: 100kΩ] ── DT  ──▶ GND   │  (12V~15V 직접 공급)              │   파워 GND
+ │                                  │                                   │
+ │                                  │   UCC21520DW                      │
+ │                                  └────────────────────────────────────┘
+ │
+ │   DAC1_OUT1 (PA4) ────────────────────────────────────────── LM5005 FB 주입
+ │   ADC1_IN1  (PA0) ◀─────────────────────────────────────── 순방향 전력 검출
+ │   ADC1_IN2  (PA1) ◀─────────────────────────────────────── 역방향 전력 검출
+ │   ADC2_IN3  (PA6) ◀─────────────────────────────────────── BUCK 출력 전류
+ │   ADC2_IN4  (PA7) ◀─────────────────────────────────────── BUCK 출력 전압
+ │
+ └─────────────────────────────────────────────────────────────────────────────┘
+</pre
+    >
+
+    <h3>7.1 게이트 드라이브 BOM</h3>
+    <table>
+      <tr>
+        <th>부품 번호</th>
+        <th>모델/사양</th>
+        <th>수량</th>
+        <th>설명</th>
+      </tr>
+      <tr class="highlight-row">
+        <td>U1</td>
+        <td>UCC21520DW</td>
+        <td>1</td>
+        <td>절연 듀얼 게이트 드라이버 (SOIC-16W)</td>
+      </tr>
+      <tr>
+        <td>U2</td>
+        <td>R1215S (RECOM)</td>
+        <td>1</td>
+        <td>절연 DC-DC 12V→15V, VDDA용 (SIP-4)</td>
+      </tr>
+      <tr class="highlight-row">
+        <td>Q1, Q2</td>
+        <td>IPB200N15N3 (Infineon)</td>
+        <td>2</td>
+        <td>150V/50A Si MOSFET (D2PAK, 손납땜)</td>
+      </tr>
+      <tr>
+        <td>R1, R2</td>
+        <td>5Ω, 0.25W</td>
+        <td>2</td>
+        <td>MCU 출력 직렬 저항 (링잉 감쇠)</td>
+      </tr>
+      <tr>
+        <td>R3, R4</td>
+        <td>4.7Ω, 0.5W</td>
+        <td>2</td>
+        <td>게이트 직렬 저항 (하이/로우사이드)</td>
+      </tr>
+      <tr>
+        <td>R_DT</td>
+        <td>100kΩ, 0.1W</td>
+        <td>1</td>
+        <td>DT 핀 데드타임 설정 (~80ns)</td>
+      </tr>
+      <tr>
+        <td>R_DIS</td>
+        <td>10kΩ, 0.1W</td>
+        <td>1</td>
+        <td>DIS 핀 풀다운 (항상 Enable)</td>
+      </tr>
+      <tr>
+        <td>C1, C3</td>
+        <td>10µF/25V MLCC X5R</td>
+        <td>2</td>
+        <td>전원 바이패스 (VDDA, VDDB)</td>
+      </tr>
+      <tr>
+        <td>C2, C4</td>
+        <td>100nF/25V MLCC C0G</td>
+        <td>2</td>
+        <td>고주파 바이패스</td>
+      </tr>
+      <tr>
+        <td>C_VCC</td>
+        <td>100nF/10V MLCC</td>
+        <td>1</td>
+        <td>VCC (3.3V) 바이패스</td>
+      </tr>
+    </table>
+
+    <!-- ========================================================== -->
+    <h2 id="buck">
+      <span class="section-badge">8</span>BUCK 전력 컨버터 (LM5005)
+    </h2>
+
+    <h3>8.1 개요</h3>
+    <p>
+      48V SMPS 입력에서 가변 DC 전압(2.2V~22.4V)을 생성하여 하프브리지의 Vbus를
+      조절, 출력 전력 0.1W~10W를 제어.
+    </p>
+    <table>
+      <tr>
+        <th>항목</th>
+        <th>사양</th>
+      </tr>
+      <tr>
+        <td>입력 전압</td>
+        <td>7V ~ 75V (48V SMPS 입력)</td>
+      </tr>
+      <tr>
+        <td>출력 전압</td>
+        <td>2.2V ~ 22.4V (가변, DAC 제어)</td>
+      </tr>
+      <tr>
+        <td>출력 전력 (@50Ω 부하)</td>
+        <td>0.1W ~ 10W</td>
+      </tr>
+      <tr>
+        <td>스위칭 주파수</td>
+        <td>100kHz (R_T=330kΩ, 48V 입력 최적)</td>
+      </tr>
+      <tr>
+        <td>FB 기준 전압</td>
+        <td>1.23V</td>
+      </tr>
+      <tr>
+        <td>패키지</td>
+        <td>SOIC-14 (손납땜)</td>
+      </tr>
+    </table>
+
+    <h3>8.2 DAC 전압 제어 회로</h3>
+    <pre class="ascii-art">
+     V_out (2.2V ~ 22.4V)
+         │
+        [R1: 11kΩ, 1%] ◀── 최대 전압 결정
+         │
+         ├──────────────────────────────▶ FB (LM5005 핀7)
+         │                                     │
+        [R2: 1kΩ, 1%]                         [R3: 1.8kΩ, 1%]
+         │                                     │
+        GND                            DAC1_OUT1 (PA4) / STM32G474
+</pre
+    >
+
+    <pre class="formula">
+V_out = 1.23 × (1 + R1/R2) + (1.23 - V_dac) × R1/R3
+      = 14.76 + (1.23 - V_dac) × 6.11
+
+DAC = 0.0V  → V_out = 22.3V → P = 9.9W   ✓
+DAC = 1.0V  → V_out = 16.2V → P = 5.2W
+DAC = 1.23V → V_out = 14.8V → P = 4.4W   (FB=DAC, 전류=0)
+DAC = 2.0V  → V_out = 10.1V → P = 2.0W
+DAC = 3.0V  → V_out =  3.9V → P = 0.31W
+DAC = 3.3V  → V_out =  2.1V → P = 0.09W  ✓
+
+※ 48V 입력 시 최소 듀티 한계: V_out 최소 2.7V 권장 (0.15W)
+   → R_T = 330kΩ (100kHz) 사용 시 ON-time margin 충분
+</pre
+    >
+
+    <h3>8.3 BUCK BOM</h3>
+    <table>
+      <tr>
+        <th>부품</th>
+        <th>모델</th>
+        <th>수량</th>
+        <th>비고</th>
+      </tr>
+      <tr class="highlight-row">
+        <td>U_BUCK</td>
+        <td>LM5005MX (TI)</td>
+        <td>1</td>
+        <td>SOIC-14, 7~75V 입력</td>
+      </tr>
+      <tr>
+        <td>Q_H, Q_L</td>
+        <td>Si7852DP (Vishay)</td>
+        <td>2</td>
+        <td>SO-8, 80V/8A, N-ch MOSFET</td>
+      </tr>
+      <tr>
+        <td>L1</td>
+        <td>SRR1280-470M (Bourns)</td>
+        <td>1</td>
+        <td>47µH, 3A, 차폐형</td>
+      </tr>
+      <tr>
+        <td>C_out</td>
+        <td>GRM32ER72A106K (Murata)</td>
+        <td>2×100µF</td>
+        <td>100V MLCC X7R</td>
+      </tr>
+      <tr>
+        <td>C_BST</td>
+        <td>100nF, 50V</td>
+        <td>1</td>
+        <td>부트스트랩 커패시터</td>
+      </tr>
+      <tr>
+        <td>C_VCC</td>
+        <td>1µF, 25V</td>
+        <td>1</td>
+        <td>LM5005 내부 레귤레이터 바이패스</td>
+      </tr>
+      <tr>
+        <td>C_SS</td>
+        <td>1µF, 10V</td>
+        <td>1</td>
+        <td>소프트스타트 (T_ss ≈ 10ms)</td>
+      </tr>
+      <tr>
+        <td>R_T</td>
+        <td><strong>330kΩ</strong>, 1%</td>
+        <td>1</td>
+        <td>f_sw = 100kHz (48V 입력 최적)</td>
+      </tr>
+      <tr>
+        <td>R1</td>
+        <td>11kΩ, 1%</td>
+        <td>1</td>
+        <td>FB 상단 분압 (V_max ≈ 22V)</td>
+      </tr>
+      <tr>
+        <td>R2</td>
+        <td>1kΩ, 1%</td>
+        <td>1</td>
+        <td>FB 하단 분압</td>
+      </tr>
+      <tr>
+        <td>R3</td>
+        <td>1.8kΩ, 1%</td>
+        <td>1</td>
+        <td>DAC 주입 저항</td>
+      </tr>
+      <tr>
+        <td>R_gate</td>
+        <td>10Ω, 0.25W</td>
+        <td>2</td>
+        <td>FET 게이트 직렬 저항</td>
+      </tr>
+      <tr>
+        <td>F1</td>
+        <td>1A, 250V 퓨즈</td>
+        <td>1</td>
+        <td>48V 입력 보호</td>
+      </tr>
+    </table>
+
+    <div class="warning-box">
+      기존 LM5005MH 회로(R79=5.11kΩ, R80=16kΩ)는 고정 1.6V 출력용이므로 절대
+      사용 불가! 반드시 R1=11kΩ, R2=1kΩ, R3=1.8kΩ으로 변경.
+    </div>
+
+    <!-- ========================================================== -->
+    <h2 id="adc"><span class="section-badge">9</span>ADC 전력 계측 회로</h2>
+
+    <h3>9.1 방향성 커플러 + RF 전력 검출기</h3>
+    <p>
+      메가소닉 MHz 대역에서는 저항/CT 직접 측정 불가 → 방향성 커플러 + RF 전력
+      검출기 필수.
+    </p>
+    <pre class="ascii-art">
+  하프브리지 출력                              트랜스듀서
+  (PA8/PA9 → MOSFET)                          (50Ω)
+         │                                      │
+         ├──────────────┬────────────────────────┤
+                        │
+                  ╔═════╧═════╗
+                  ║ 방향성    ║
+                  ║ 커플러    ║
+                  ╚═════╤═════╝
+                     ╱     ╲
+            순방향 커플링    역방향 커플링
+                  │               │
+           [RF 검출기1]     [RF 검출기2]
+           (AD8318 or      (AD8318 or
+            LTC5507)        LTC5507)
+                  │               │
+             DC 출력          DC 출력
+                  │               │
+            PA0 (ADC1_IN1)  PA1 (ADC1_IN2)
+            순방향 전력       역방향 전력
+            (Forward Power)  (Reflected Power)
+</pre
+    >
+
+    <h3>9.2 ADC 설정</h3>
+    <table>
+      <tr>
+        <th>ADC</th>
+        <th>채널</th>
+        <th>핀</th>
+        <th>샘플링 타임</th>
+        <th>측정 대상</th>
+      </tr>
+      <tr>
+        <td>ADC1</td>
+        <td>IN1</td>
+        <td>PA0</td>
+        <td>92.5 cycles 이상</td>
+        <td>순방향 전력 (RF 검출기 DC)</td>
+      </tr>
+      <tr>
+        <td>ADC1</td>
+        <td>IN2</td>
+        <td>PA1</td>
+        <td>92.5 cycles 이상</td>
+        <td>역방향 전력 (RF 검출기 DC)</td>
+      </tr>
+      <tr>
+        <td>ADC2</td>
+        <td>IN3</td>
+        <td>PA6</td>
+        <td>92.5 cycles 이상</td>
+        <td>BUCK 출력 전류 (0.1Ω 센스)</td>
+      </tr>
+      <tr>
+        <td>ADC2</td>
+        <td>IN4</td>
+        <td>PA7</td>
+        <td>92.5 cycles 이상</td>
+        <td>BUCK 출력 전압 (분압 1:10)</td>
+      </tr>
+    </table>
+    <div class="warning-box">
+      ADC 사용 전 반드시 HAL_ADCEx_Calibration_Start(hadc, ADC_SINGLE_ENDED)
+      호출. VDDA=3.3V 기준. RF 검출기 출력이 3.3V 이내인지 확인 필수.
+    </div>
+
+    <!-- ========================================================== -->
+    <h2 id="rs485">
+      <span class="section-badge">10</span>RS-485 Modbus RTU 인터페이스
+    </h2>
+
+    <h3>10.1 MAX3485 트랜시버 회로</h3>
+    <pre class="ascii-art">
+  STM32G474               MAX3485                      RS-485 버스
+  (3.3V 로직)
+                       ┌──────────────┐
+  PA2 (USART2_TX) ─────┤ DI       A  ├──────── RS-485 A (+)
+  PA3 (USART2_RX) ─────┤ RO       B  ├──────── RS-485 B (-)
+  PC13 (DE)       ─────┤ DE          │
+  PC14 (/RE)      ─────┤ /RE     GND ├──────── GND
+              3.3V ─────┤ VCC         │
+                        └──────────────┘
+                                │
+                       [120Ω 종단 저항 (버스 끝단만)]
+                       [바이어스 저항: A-VCC 560Ω, B-GND 560Ω (선택)]
+</pre
+    >
+
+    <div class="info-box">
+      <strong>DE/RE 제어 논리:</strong><br />
+      송신 시: DE=HIGH, /RE=HIGH (동시) → 송신 완료(TC 플래그) 확인 후 → DE=LOW,
+      /RE=LOW 복귀<br />
+      수신 대기: DE=LOW, /RE=LOW
+    </div>
+
+    <h3>10.2 통신 사양</h3>
+    <table>
+      <tr>
+        <th>항목</th>
+        <th>설정값</th>
+      </tr>
+      <tr>
+        <td>USART</td>
+        <td>USART2 (PA2 TX / PA3 RX, AF7)</td>
+      </tr>
+      <tr>
+        <td>기본 통신 속도</td>
+        <td>9600 bps (Modbus 설정으로 변경 가능)</td>
+      </tr>
+      <tr>
+        <td>데이터 포맷</td>
+        <td>8N1 (기본), 8E1, 8O1 선택 가능</td>
+      </tr>
+      <tr>
+        <td>슬레이브 주소</td>
+        <td>1~247 (기본값 1)</td>
+      </tr>
+      <tr>
+        <td>프레임 종료 감지</td>
+        <td>3.5 문자 시간 침묵 (TIM4 또는 USART IDLE 인터럽트)</td>
+      </tr>
+      <tr>
+        <td>지원 FC</td>
+        <td>0x03 (Read), 0x06 (Write Single), 0x10 (Write Multiple)</td>
+      </tr>
+    </table>
+
+    <!-- ========================================================== -->
+    <h2 id="relay">
+      <span class="section-badge">11</span>릴레이 · 외부 제어 인터페이스
+    </h2>
+
+    <h3>11.1 ULN2003A 릴레이 드라이버</h3>
+    <pre class="ascii-art">
+                    ULN2003A #1 (알람 릴레이)    →  알람 릴레이 6개 + 부저
+  MCU GPIO ──────▶  IN1 → OUT1 ──▶ 릴레이 코일 (5V 코일)
+  PA11 (RELAY_GO)   IN2 → OUT2 ──▶ RELAY_GO        (정상 SHORT)
+  PA12 (OPERATE)    IN3 → OUT3 ──▶ RELAY_OPERATE    (통합 알람)
+  PA15 (LOW)        IN4 → OUT4 ──▶ RELAY_LOW        (Err1)
+  PB3  (HIGH)       IN5 → OUT5 ──▶ RELAY_HIGH       (Err2)
+  PB4  (TRANS)      IN6 → OUT6 ──▶ RELAY_TRANSDUCER (Err5)
+  PA10 (ADDR)       IN7 → OUT7 ──▶ RELAY_ADDR       (예비)
+  PB5  (BUZZER)     (공통 COM → +5V)
+
+                    ULN2003A #2 (LC 탱크 릴레이)
+  PB8  (LC1)        IN1 → OUT1 ──▶ LC_RELAY1
+  PC15 (LC2)        IN2 → OUT2 ──▶ LC_RELAY2
+  PC7  (LC3)        IN3 → OUT3 ──▶ LC_RELAY3   ← v3: PF0→PC7
+  PC8  (LC4)        IN4 → OUT4 ──▶ LC_RELAY4   ← v3: PF1→PC8
+                    (3채널 여유)
+</pre
+    >
+
+    <div class="info-box">
+      ULN2003A 입력: 2.4V 이상 HIGH 인식 (3.3V MCU 직결 가능). 출력 전류: 최대
+      500mA/채널. 릴레이 코일 전류 ≤ 100mA 확인.
+    </div>
+
+    <h3>11.2 외부 제어 커넥터 (D-SUB 25핀 또는 스크루 터미널)</h3>
+    <table>
+      <tr>
+        <th>핀 번호 (예시)</th>
+        <th>신호명</th>
+        <th>방향</th>
+        <th>비고</th>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td>RELAY_GO (NO)</td>
+        <td>출력</td>
+        <td>정상 출력 범위 Short</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>RELAY_GO (COM)</td>
+        <td>출력</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>RELAY_OPERATE (NO)</td>
+        <td>출력</td>
+        <td>24V 0.1A 이상 권장</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>RELAY_OPERATE (COM)</td>
+        <td>출력</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>5~8</td>
+        <td>RELAY_LOW, HIGH, TRANS, ADDR</td>
+        <td>출력</td>
+        <td>각 NO+COM 쌍</td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td>REMOTE</td>
+        <td>입력</td>
+        <td>광커플러, SHORT=ON</td>
+      </tr>
+      <tr>
+        <td>10</td>
+        <td>COM (4-COM)</td>
+        <td>입력</td>
+        <td>독립 접점 필수</td>
+      </tr>
+      <tr>
+        <td>11~13</td>
+        <td>BCD BIT1~3</td>
+        <td>입력</td>
+        <td>광커플러, 8단계 선택</td>
+      </tr>
+    </table>
+
+    <h3>11.3 TLP281-4 광커플러 회로</h3>
+    <pre class="ascii-art">
+  외부 신호                         STM32 GPIO
+    (DC 5V 또는 12V)
+             │
+            [R_ext: 470Ω~1kΩ]      PC6  ◀── 광커플러 출력 (Active LOW)
+             │                     (내부 풀업)
+          LED 쪽                         │
+       TLP281-4 광커플러         4.7kΩ  │
+          트랜지스터 쪽                  [C: 10nF] → GND (노이즈 제거)
+             │
+            GND (외부 기준)
+
+※ 3.3V 동작 확인: Vce(sat) ≤ 0.3V, 풀업 저항 4.7kΩ 사용 시 가능
+</pre
+    >
+
+    <!-- ========================================================== -->
+    <h2 id="power"><span class="section-badge">12</span>전원 공급 계획</h2>
+
+    <h3>12.1 전원 도메인 구조</h3>
+    <pre class="ascii-art">
+  AC 220V ────▶ 스위칭 전원 ─┬──▶ DC 48V (BUCK 컨버터 입력, 최대 3A)
+               (SMPS)        │
+                             ├──▶ DC 12V (게이트 드라이버 VDDB, ULN2003A 릴레이 코일)
+                             │
+                             └──▶ DC 5V ──▶ 3.3V LDO ──▶ MCU DVDD, LCD VCC (3.3V)
+                                                        │
+                                                        └──▶ LCD VDD (5V 별도 공급 권장)
+                                                             ULN2003A COM (5V)
+
+  DC 48V ──▶ LM5005 BUCK ──▶ 가변 2.2V~22.4V (Vbus, 하프브리지 입력)
+  DC 12V ──▶ R1215S (절연) ──▶ DC 15V (VDDA, 하이사이드 게이트 전원)
+</pre
+    >
+
+    <h3>12.2 전원별 공급 용량 예측</h3>
+    <table>
+      <tr>
+        <th>전원</th>
+        <th>소비 전력 / 전류</th>
+        <th>적용 대상</th>
+      </tr>
+      <tr>
+        <td>48V (BUCK 입력)</td>
+        <td>최대 15W (10W 부하 + 손실)</td>
+        <td>LM5005 BUCK 컨버터</td>
+      </tr>
+      <tr>
+        <td>12V</td>
+        <td>200mA (릴레이 6×20mA + 게이트 드라이버)</td>
+        <td>릴레이 코일, R1215S 입력, VDDB</td>
+      </tr>
+      <tr>
+        <td>5V</td>
+        <td>100mA (LCD+버저+MCU 전원 전)</td>
+        <td>3.3V LDO 입력, LCD VDD</td>
+      </tr>
+      <tr>
+        <td>3.3V</td>
+        <td>80mA (MCU 50mA + LED 6×3mA + DAC)</td>
+        <td>STM32, LED, RS-485 IC VCC</td>
+      </tr>
+      <tr>
+        <td>VDDA (15V, 절연)</td>
+        <td>67mA 이하 (R1215S 한계)</td>
+        <td>UCC21520 하이사이드 전원</td>
+      </tr>
+    </table>
+
+    <div class="warning-box">
+      STM32G474MET6는 VDDA=3.3V ±10% 범위 필요. ADC/DAC/컴프 동작을 위한 VDDA
+      바이패스 (100nF + 1µF) 필수.
+    </div>
+
+    <!-- ========================================================== -->
+    <h2 id="pcb"><span class="section-badge">13</span>PCB 레이아웃 가이드</h2>
+
+    <h3>13.1 LQFP80 핀 배치 요약 (물리적 위치)</h3>
+    <pre class="ascii-art">
+                ┌──────── 상단 (61~80번 핀) ────────┐
+                │ PB3(릴레이H) PB4(릴레이T)          │
+                │ PB5(부저)   PB6(TX) PB7(RX)        │
+                │ PB8(L1릴레이) PB9(여유 EEPROM)      │
+                │ BOOT0                               │
+  좌측 (1~20번) │                                    │ 우측 (41~60번)
+  버튼 6ea      │                                    │ PC7,8(L3,L4 릴레이)★
+  PC0~PC5       │      STM32G474MET6                 │ PA8(HRTIM CHA1)★
+  PA0~PA3(ADC,  │         LQFP80                    │ PA9(HRTIM CHA2)★
+  UART)         │      170MHz, 80핀                  │ PA10(릴레이 ADDR)
+  PA4(DAC)★     │                                    │ PA11(릴레이 GO)
+  PA5(여유)     │                                    │ PA12(릴레이 OPER)
+  PA6,PA7(ADC)  │                                    │ PA13(SWDIO)★보호
+                │                                    │ PA14(SWCLK)★보호
+                │                                    │ PA15(릴레이 LOW)
+                └──────── 하단 (21~40번 핀) ─────────┘
+                  LED 6ea (PB0,1,2,10,11,14)
+                  LCD (PD0~PD2, PB12,13,15)
+                  외부제어 (PC6, PC10~PC12)
+                  RS485 DE/RE (PC13,PC14)★
+                  LC릴레이1/2 (— PB8은 상단, PC15은 우측하)
+
+★ = 중요 신호 / 주의 핀
+</pre
+    >
+
+    <h3>13.2 PCB 설계 핵심 포인트</h3>
+    <table>
+      <tr>
+        <th>영역</th>
+        <th>권장 사항</th>
+      </tr>
+      <tr class="highlight-row">
+        <td>HRTIM PWM 트레이스<br />(PA8, PA9)</td>
+        <td>
+          GaN/MOSFET 게이트까지 최단 거리, 최소 폭 0.5mm, GND 플레인 바로
+          위/아래에 배치. 디지털 신호와 크로스토크 방지 가드 트레이스 삽입.
+        </td>
+      </tr>
+      <tr>
+        <td>절연 거리 (UCC21520)</td>
+        <td>
+          1차측(MCU)과 2차측(FET) 사이 최소 8mm 이격 (5.7kVrms 절연 사양). 슬릿
+          또는 에어 갭 PCB 가공 권장.
+        </td>
+      </tr>
+      <tr>
+        <td>전력 루프</td>
+        <td>
+          Vbus → Q1 → SW 노드 → Q2 → GND 루프를 최소화. 루프 면적을 최소화하여
+          EMI 감소.
+        </td>
+      </tr>
+      <tr>
+        <td>HSE 크리스탈<br />(PF0/PF1)</td>
+        <td>
+          MCU 가능한 가까운 위치, 크리스탈-MCU 트레이스 20mm 이내. 부하 커패시터
+          GND는 크리스탈 전용 GND 비아. 다른 고속 신호 라인과 최소 2mm 이격.
+        </td>
+      </tr>
+      <tr>
+        <td>바이패스 커패시터</td>
+        <td>
+          모든 IC VCC 핀 바로 옆에 100nF. 파워 FET VDDA/VDDB 옆에 10µF+100nF
+          쌍배치. STM32 VDDA에 100nF+1µF 쌍배치.
+        </td>
+      </tr>
+      <tr>
+        <td>RS-485 터미네이션</td>
+        <td>
+          버스 맨 끝 장치에만 120Ω 종단 저항. 배선 꼬임 쌍(Twisted Pair) 배선
+          권장.
+        </td>
+      </tr>
+      <tr>
+        <td>SWD 핀 (PA13/PA14)</td>
+        <td>
+          테스트 패드 또는 2.54mm 헤더 노출. 주변 신호와 간섭 없도록 별도 영역
+          확보.
+        </td>
+      </tr>
+      <tr>
+        <td>BOOT0 핀</td>
+        <td>
+          10kΩ 풀다운 저항으로 GND 고정 (플래시 부트). 점퍼/버튼으로 HIGH 전환
+          옵션 추가.
+        </td>
+      </tr>
+    </table>
+
+    <!-- ========================================================== -->
+    <h2 id="checklist">
+      <span class="section-badge">14</span>최종 회로 설계 점검 체크리스트
+    </h2>
+
+    <div class="warning-box">
+      회로 설계 착수 전 아래 항목을 반드시 확인하세요. Critical 항목 미충족 시
+      기능 불가.
+    </div>
+
+    <h3>🔴 Critical — 기능 불가 수준</h3>
+    <ul class="checklist">
+      <li class="critical">
+        PF0/PF1을 GPIO로 사용하지 않았는가? (HSE 크리스탈 전용, GPIO_Init에서
+        제외)
+      </li>
+      <li class="critical">PA13/PA14을 GPIO로 사용하지 않았는가? (SWD 전용)</li>
+      <li class="critical">
+        PA8/PA9 핀을 AF13 (HRTIM1)으로 설정하고 VERY_HIGH 속도로 구성했는가?
+      </li>
+      <li class="critical">
+        HRTIM DLL 캘리브레이션 코드가 HRTIM 사용 전에 반드시 호출되는가?
+      </li>
+      <li class="critical">
+        UCC21520 VSSA가 SW 노드에, VSSB가 파워 GND에 각각 연결되었는가? (절대
+        공유 금지)
+      </li>
+      <li class="critical">
+        하이사이드 게이트 전원 VDDA가 반드시 절연된 DC-DC (R1215S 등)에서
+        공급되는가?
+      </li>
+      <li class="critical">
+        LM5005 FB 분압 저항이 R1=11kΩ, R2=1kΩ, R3=1.8kΩ으로 설계되었는가? (기존
+        회로 R79/R80 값 사용 불가)
+      </li>
+      <li class="critical">
+        LC_RELAY3/4가 PC7/PC8에 연결되었는가? (PF0/PF1 아님)
+      </li>
+      <li class="critical">
+        RS-485 DE가 PC13에, /RE가 PC14에 연결되었는가? (PA4/PA5 아님)
+      </li>
+      <li class="critical">
+        PA4가 DAC1_OUT1로만 사용되고 다른 신호와 충돌 없는가?
+      </li>
+    </ul>
+
+    <h3>🟠 Important — 오동작 가능</h3>
+    <ul class="checklist">
+      <li class="important">
+        HSE 크리스탈 부하 커패시터(CL1/CL2)가 크리스탈 데이터시트 기준으로
+        선택되었는가? (일반적으로 9~22pF)
+      </li>
+      <li class="important">
+        VDDA/VSSA, VDDB/VSSB 핀 바로 옆에 바이패스 커패시터(10µF + 100nF)
+        배치되는가?
+      </li>
+      <li class="important">
+        STM32 VDDA 핀에 100nF + 1µF 바이패스 커패시터가 있는가?
+      </li>
+      <li class="important">
+        ADC 캘리브레이션 HAL_ADCEx_Calibration_Start() 호출이 펌웨어에 있는가?
+      </li>
+      <li class="important">
+        UCC21520 DT 핀(100kΩ)과 HRTIM 내장 데드타임 중 하나만 사용하는가? (이중
+        사용 금지)
+      </li>
+      <li class="important">RS-485 버스 끝단에만 120Ω 종단 저항이 있는가?</li>
+      <li class="important">
+        RS-485 송신 완료(USART2 TC 플래그) 확인 후 DE→LOW 전환 코드가 있는가?
+      </li>
+      <li class="important">
+        BOOT0 핀에 10kΩ 풀다운 저항이 있는가? (프로그래밍 후 GND 고정 필요)
+      </li>
+      <li class="important">
+        LCD1602의 R/W 핀이 GND에 고정되었는가? (쓰기 전용)
+      </li>
+      <li class="important">
+        LCD1602 V0 핀에 대비 조절용 가변저항(10kΩ)이 있는가?
+      </li>
+      <li class="important">
+        버튼 6개 (PC0~PC5) 내부 풀업 설정으로 GPIO_INPUT 구성되었는가?
+      </li>
+      <li class="important">LED 6개에 전류 제한 저항(330Ω~1kΩ)이 있는가?</li>
+      <li class="important">
+        ULN2003A COM 핀이 릴레이 코일 전원(5V)에 연결되었는가?
+      </li>
+      <li class="important">
+        알람 릴레이 접점 사양이 AC 100V/DC 100V, 0.3A 이내인가?
+      </li>
+      <li class="important">
+        광커플러(TLP281-4) 외부 전류 제한 저항이 적절한 값으로 설계되었는가?
+      </li>
+    </ul>
+
+    <h3>🟡 권장 — 성능 및 신뢰성</h3>
+    <ul class="checklist">
+      <li>
+        2MHz 고주파 동작 시 Si MOSFET(IPB200N15N3) 발열 검토 → 방열판 필요 여부
+        확인
+      </li>
+      <li>
+        HRTIM PWM 트레이스(PA8→UCC21520, PA9→UCC21520)가 최단 거리로
+        배선되었는가?
+      </li>
+      <li>전력 루프(Vbus→Q1→SW노드→Q2→GND) 면적이 최소화되었는가?</li>
+      <li>UCC21520 1차측/2차측 사이 PCB 절연 거리 8mm 이상 확보되었는가?</li>
+      <li>HSE 크리스탈과 MCU 사이 트레이스 길이가 20mm 이내인가?</li>
+      <li>RF 전력 검출기 출력 전압이 VDDA(3.3V) 이내인지 확인되었는가?</li>
+      <li>
+        BUCK 컨버터 인덕터(47µH)와 출력 커패시터(100µF×2) 배치가 루프 면적
+        최소화되었는가?
+      </li>
+      <li>4층 PCB 또는 연속 GND 플레인이 확보되었는가?</li>
+      <li>LM5005 R_T = 330kΩ (100kHz, 48V 입력 최적)으로 설정되었는가?</li>
+      <li>RELAY_OPERATE에 24V 0.1A 이상 접점을 사용하는가?</li>
+      <li>
+        DAC1_OUT1 (PA4) 출력 전압(0~3.3V)이 LM5005 FB 노드를 초과하지 않도록
+        설계되었는가?
+      </li>
+      <li>디버그 USART1 (PB6/PB7)이 테스트 포인트로 노출되었는가?</li>
+      <li>NRST 핀이 ST-Link 커넥터에 연결되었는가?</li>
+    </ul>
+
+    <h3>📋 핀 충돌 검증 체크</h3>
+    <table>
+      <tr>
+        <th>핀</th>
+        <th>할당 기능</th>
+        <th>충돌 가능성</th>
+        <th>확인</th>
+      </tr>
+      <tr>
+        <td>PA4</td>
+        <td>DAC1_OUT1 (BUCK FB)</td>
+        <td>v2 이전 RS-485 DE였음 — 반드시 DAC로만 사용</td>
+        <td>☐</td>
+      </tr>
+      <tr>
+        <td>PA5</td>
+        <td>여유 (ADC2_IN13 옵션)</td>
+        <td>v2 이전 RS-485 /RE였음 — 현재 미사용</td>
+        <td>☐</td>
+      </tr>
+      <tr>
+        <td>PC7</td>
+        <td>LC_RELAY3</td>
+        <td>v3 이전 외부제어 SENSOR였음 — PC7로 이동 확인</td>
+        <td>☐</td>
+      </tr>
+      <tr>
+        <td>PC8</td>
+        <td>LC_RELAY4</td>
+        <td>v3 이전 PF1이었음 — PC8로 이동 확인</td>
+        <td>☐</td>
+      </tr>
+      <tr>
+        <td>PC13</td>
+        <td>RS-485 DE</td>
+        <td>v2 이전 BOOT0 영역 혼동 주의</td>
+        <td>☐</td>
+      </tr>
+      <tr>
+        <td>PC14</td>
+        <td>RS-485 /RE</td>
+        <td>v2 이전 미사용이었음 — /RE로 변경 확인</td>
+        <td>☐</td>
+      </tr>
+      <tr>
+        <td>PB8</td>
+        <td>LC_RELAY1 (I2C1_SCL도 가능)</td>
+        <td>EEPROM 확장 시 릴레이와 충돌 — 반드시 하나만 선택</td>
+        <td>☐</td>
+      </tr>
+      <tr>
+        <td>PF0/PF1</td>
+        <td>HSE OSC_IN/OUT 전용</td>
+        <td>v3 이전 LC_RELAY3/4로 사용됨 — GPIO 금지</td>
+        <td>☐</td>
+      </tr>
+    </table>
+
+    <hr />
+    <div class="footer">
+      <strong>메가소닉 발진기 메인보드 회로 설계 참조 문서 v3</strong><br />
+      STM32G474MET6 (LQFP80) · HSE 8MHz → 170MHz · HRTIM 5.44GHz ·
+      500kHz~2MHz<br />
+      최종 갱신: 2026-04-08 | 핀맵 기준: include/config.h | 상세 핀맵:
+      docs/STM32G474MET6_LQFP80_핀맵.md
+    </div>
+  </body>
+</html>

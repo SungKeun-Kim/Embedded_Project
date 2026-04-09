@@ -1,0 +1,215 @@
+(footprint "Crystal_SMD_HC49-SD"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(descr "HC-49-SD, Crystal, 11.4x4.7mm package, SMD, generated with kicad-footprint-generator make_crystal.py, http://cdn-reichelt.de/documents/datenblatt/B400/xxx-HC49-SMD.pdf")
+	(property "Reference" "REF**"
+		(at 0 -3.55 0)
+		(layer "F.SilkS")
+		(uuid "fa87c44c-d8bd-426b-8e92-6ddf9ab72696")
+		(effects
+			(font
+				(size 1.1 1.1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "Crystal_SMD_HC49-SD"
+		(at 0 3.55 0)
+		(layer "F.Fab")
+		(uuid "224850d1-0297-4844-95cd-11dde0c100c1")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "05caa3a7-36cf-465d-bbee-20d6f6a11a1d")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "715aa0de-6039-4644-a931-f5a56ef30512")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(fp_line
+		(start -5.7 -2.3)
+		(end 5.7 -2.3)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "eb292b66-5a07-49bf-9cee-27a461ca675b")
+	)
+	(fp_line
+		(start -5.7 -1.1)
+		(end -5.7 -2.3)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "307af9f4-e93c-4482-a47a-9935df0a7af5")
+	)
+	(fp_line
+		(start -5.7 1.1)
+		(end -5.7 2.3)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "317d8f7a-0c3b-48fa-8f3f-a02ea2d07655")
+	)
+	(fp_line
+		(start -5.7 2.3)
+		(end 5.7 2.3)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "ee1ebc51-87fd-4872-98a8-7abfbcdd928f")
+	)
+	(fp_line
+		(start 5.7 -2.3)
+		(end 5.7 -1.1)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "a34239e3-96e9-451c-990a-55a5fc380a4e")
+	)
+	(fp_line
+		(start 5.7 2.3)
+		(end 5.7 1.1)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "884fd1da-b8da-41c1-9203-19e037d0f4bd")
+	)
+	(fp_rect
+		(start -7.31 -2.85)
+		(end 7.32 2.82)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "52513046-a679-4cc7-80b5-61cfbbb0b90b")
+	)
+	(fp_line
+		(start -3.35 -1.88)
+		(end 3.35 -1.88)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "41197e36-b45c-4be2-8b04-51a0bd44a0f5")
+	)
+	(fp_line
+		(start 3.35 1.88)
+		(end -3.35 1.88)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "f8697346-fc7f-40dd-80b1-1f80bd973a5f")
+	)
+	(fp_rect
+		(start -5.71 -2.34)
+		(end 5.69 2.36)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "534fdf26-c414-4d4a-8add-a80bc2f7669e")
+	)
+	(fp_arc
+		(start -3.35 1.88)
+		(mid -5.23 0)
+		(end -3.35 -1.88)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "1abee5d4-6046-4912-8bb0-e7206cde8e41")
+	)
+	(fp_arc
+		(start 3.35 -1.88)
+		(mid 5.23 0)
+		(end 3.35 1.88)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "3e9a03bd-0684-4b70-b961-efa50dcfeba9")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "559e11aa-b3b7-4e1b-91fe-add7cf83bf6f")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" smd roundrect
+		(at -4.75 0)
+		(size 5 2)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(roundrect_rratio 0.125)
+		(uuid "466b4e55-389b-4a4e-aecd-ab5196fe0d63")
+	)
+	(pad "2" smd roundrect
+		(at 4.75 0)
+		(size 5 2)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(roundrect_rratio 0.125)
+		(uuid "69ca59f4-91b2-4df8-ab6d-0cf15de62698")
+	)
+	(embedded_fonts no)
+	(model "${KICAD9_3DMODEL_DIR}/Crystal.3dshapes/Crystal_SMD_HC49-SD.step"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)
