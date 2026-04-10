@@ -23,3 +23,37 @@ Thumbs.db
 *.zip
 *.rar
 *.7z
+
+# 빌드 출력물
+**/build/
+**/Build/
+**/*.o
+**/*.a
+**/*.elf
+**/*.bin
+**/*.hex
+**/*.map
+**/*.su
+**/*.d
+
+# Python 가상환경 (kicad-mcp 등 MCP 서버)
+**/.venv/
+**/venv/
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+
+# Node.js (jlc-cli 등 MCP 서버)
+**/node_modules/
+**/dist/
+**/*.js.map
+
+# KiCad 캐시/임시 파일
+**/*.kicad_prl
+**/*-backups/
+**/fp-info-cache
+**/_autosave-*
+**/*.lck
+
+# KiCad 다운로드 라이브러리 (Down_Lib) — 용량 크고 재생성 가능
+**/Down_Lib/
