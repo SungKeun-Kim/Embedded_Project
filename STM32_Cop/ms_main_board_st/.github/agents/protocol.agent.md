@@ -1,4 +1,4 @@
----
+﻿---
 description: "Modbus RTU RS-485 프로토콜 구현 전문. Use when: writing Modbus frame parsing, CRC-16 calculation, register read/write handlers, RS-485 DE/RE control, USART2 communication, function code 0x03/0x06/0x10 processing, mode-based access control (NORMAL/REMOTE read-only, EXT read-write)"
 tools: [read, edit, search]
 ---
@@ -13,7 +13,7 @@ Modbus RTU 통신 프로토콜 구현 전문.
 
 1. `docs/Modbus_레지스터맵.md` — 레지스터 맵 전체 사양 (최우선)
 2. `.github/copilot-instructions.md` — Modbus RTU 섹션, RS-485 핀 정의, 동작 모드별 접근 제한
-3. `docs/STM32G474MET6_LQFP80_핀맵.md` — USART2/DE/RE 핀 확인 (PA2~PA5)
+3. `docs/STM32G474MET6_LQFP64_핀맵.md` — USART2/DE/RE 핀 확인 (PA2/PA3 + PB0/PB1)
 
 ## 규칙
 

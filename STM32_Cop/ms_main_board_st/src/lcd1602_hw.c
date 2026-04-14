@@ -6,6 +6,37 @@
 #include "config.h"
 #include "stm32g4xx_hal.h"
 
+static uint8_t g_lcd_rs_bit = 0u;
+
+static uint16_t LCD_HW_MapBusBitsToPins(uint8_t bus_bits)
+{
+    uint16_t pins = 0u;
+
+    if (bus_bits & LCD_BIT_RS) { pins |= GPIO_PIN_10; }
+    if (bus_bits & LCD_BIT_EN) { pins |= GPIO_PIN_11; }
+    if (bus_bits & LCD_BIT_D4) { pins |= GPIO_PIN_12; }
+    if (bus_bits & LCD_BIT_D5) { pins |= GPIO_PIN_13; }
+    if (bus_bits & LCD_BIT_D6) { pins |= GPIO_PIN_14; }
+    if (bus_bits & LCD_BIT_D7) { pins |= GPIO_PIN_15; }
+
+    return pins;
+}
+
+static void LCD_HW_SetBus(uint8_t bus_bits)
+{
+    uint16_t set_pins = LCD_HW_MapBusBitsToPins(bus_bits);
+    HAL_GPIO_WritePin(DISP_DATA_PORT, DISP_DATA_PINS, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(DISP_DATA_PORT, set_pins, GPIO_PIN_SET);
+}
+
+static void LCD_HW_Latch(void)
+{
+    HAL_GPIO_WritePin(LCD_CLK_PORT, LCD_CLK_PIN, GPIO_PIN_SET);
+    LCD_HW_DelayUs(1);
+    HAL_GPIO_WritePin(LCD_CLK_PORT, LCD_CLK_PIN, GPIO_PIN_RESET);
+    LCD_HW_DelayUs(1);
+}
+
 /* DWT 사이클 카운터를 이용한 마이크로초 지연 */
 void LCD_HW_InitDelay(void)
 {
@@ -25,26 +56,28 @@ void LCD_HW_DelayUs(uint32_t us)
 
 void LCD_HW_PulseEnable(void)
 {
-    HAL_GPIO_WritePin(LCD_EN_PORT, LCD_EN_PIN, GPIO_PIN_SET);
-    LCD_HW_DelayUs(1);  /* Enable 최소 폭 450 ns */
-    HAL_GPIO_WritePin(LCD_EN_PORT, LCD_EN_PIN, GPIO_PIN_RESET);
-    LCD_HW_DelayUs(1);
+    LCD_HW_SetBus((uint8_t)(g_lcd_rs_bit | LCD_BIT_EN));
+    LCD_HW_Latch();
+    LCD_HW_SetBus(g_lcd_rs_bit);
+    LCD_HW_Latch();
 }
 
 void LCD_HW_WriteNibble(uint8_t nibble)
 {
-    HAL_GPIO_WritePin(LCD_D4_PORT, LCD_D4_PIN, (nibble & 0x01) ? GPIO_PIN_SET : GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(LCD_D5_PORT, LCD_D5_PIN, (nibble & 0x02) ? GPIO_PIN_SET : GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(LCD_D6_PORT, LCD_D6_PIN, (nibble & 0x04) ? GPIO_PIN_SET : GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(LCD_D7_PORT, LCD_D7_PIN, (nibble & 0x08) ? GPIO_PIN_SET : GPIO_PIN_RESET);
+    uint8_t bus_bits = g_lcd_rs_bit;
+    if (nibble & 0x01u) { bus_bits |= LCD_BIT_D4; }
+    if (nibble & 0x02u) { bus_bits |= LCD_BIT_D5; }
+    if (nibble & 0x04u) { bus_bits |= LCD_BIT_D6; }
+    if (nibble & 0x08u) { bus_bits |= LCD_BIT_D7; }
+
+    LCD_HW_SetBus(bus_bits);
+    LCD_HW_Latch();
     LCD_HW_PulseEnable();
 }
 
 void LCD_HW_WriteByte(uint8_t data, uint8_t is_data)
 {
-    /* RS: 0=명령, 1=데이터 */
-    HAL_GPIO_WritePin(LCD_RS_PORT, LCD_RS_PIN,
-                      is_data ? GPIO_PIN_SET : GPIO_PIN_RESET);
+    g_lcd_rs_bit = is_data ? LCD_BIT_RS : 0u;
 
     /* 상위 니블 먼저 */
     LCD_HW_WriteNibble((data >> 4) & 0x0F);

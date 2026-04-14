@@ -26,6 +26,13 @@ message("Build type: ${CMAKE_BUILD_TYPE}")
 # 없으면 Drivers/ 디렉토리의 HAL/CMSIS를 직접 참조한다.
 # 회로 설계 완료 후 CubeMX → CMake 프로젝트 생성 시 자동 전환됨.
 set(CUBEMX_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cmake/stm32cubemx")
+set(DRIVERS_HAL_CORE "${CMAKE_CURRENT_SOURCE_DIR}/Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal.c")
+set(SKIP_FIRMWARE_TARGET FALSE)
+
+if(NOT EXISTS "${CUBEMX_DIR}/CMakeLists.txt" AND NOT EXISTS "${DRIVERS_HAL_CORE}")
+    message(WARNING "-- [MODE] CubeMX/Drivers 소스 미발견: 펌웨어 타겟 생성을 건너뜁니다. (docs_html 사용 가능)")
+    set(SKIP_FIRMWARE_TARGET TRUE)
+endif()
 
 if(EXISTS "${CUBEMX_DIR}/CMakeLists.txt")
     # ============================================================
@@ -50,7 +57,7 @@ if(EXISTS "${CUBEMX_DIR}/CMakeLists.txt")
     # 잘못된 libob.a 의존성 제거 (cpp 파일 사용 시)
     list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ob)
 
-else()
+elseif(NOT SKIP_FIRMWARE_TARGET)
     # ============================================================
     # 모드 B: 수동 구성 (Drivers/ 직접 참조)
     # ============================================================
@@ -134,39 +141,95 @@ else()
         LINK_DEPENDS "${LINKER_SCRIPT}"
     )
 
+else()
+    message("-- [MODE] 문서 전용 구성 (펌웨어 타겟 생략)")
 endif()
 
 # ---------- 공통 설정 (양쪽 모드 공유) ----------
-set_target_properties(${PROJECT_NAME} PROPERTIES
-    SUFFIX ".elf"
-)
-
-# ---------- 포스트 빌드: bin / hex 생성 ----------
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_OBJCOPY} -O ihex   $<TARGET_FILE:${PROJECT_NAME}> ${PROJECT_NAME}.hex
-    COMMAND ${CMAKE_OBJCOPY} -O binary $<TARGET_FILE:${PROJECT_NAME}> ${PROJECT_NAME}.bin
-    COMMAND ${CMAKE_SIZE}    $<TARGET_FILE:${PROJECT_NAME}>
-    COMMENT "=== 바이너리 생성 완료 ==="
-)
-
-# ---------- 커스텀 타겟: Flash 업로드 (ST-Link) ----------
-find_program(STFLASH st-flash)
-if(STFLASH)
-    add_custom_target(flash
-        COMMAND ${STFLASH} write ${PROJECT_NAME}.bin 0x08000000
-        DEPENDS ${PROJECT_NAME}
-        COMMENT "=== ST-Link으로 플래시 업로드 ==="
+if(TARGET ${PROJECT_NAME})
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        SUFFIX ".elf"
     )
+
+    # ---------- 포스트 빌드: bin / hex 생성 ----------
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_OBJCOPY} -O ihex   $<TARGET_FILE:${PROJECT_NAME}> ${PROJECT_NAME}.hex
+        COMMAND ${CMAKE_OBJCOPY} -O binary $<TARGET_FILE:${PROJECT_NAME}> ${PROJECT_NAME}.bin
+        COMMAND ${CMAKE_SIZE}    $<TARGET_FILE:${PROJECT_NAME}>
+        COMMENT "=== 바이너리 생성 완료 ==="
+    )
+
+    # ---------- 커스텀 타겟: Flash 업로드 (ST-Link) ----------
+    find_program(STFLASH st-flash)
+    if(STFLASH)
+        add_custom_target(flash
+            COMMAND ${STFLASH} write ${PROJECT_NAME}.bin 0x08000000
+            DEPENDS ${PROJECT_NAME}
+            COMMENT "=== ST-Link으로 플래시 업로드 ==="
+        )
+    endif()
+
+    find_program(OPENOCD openocd)
+    if(OPENOCD)
+        add_custom_target(flash_openocd
+            COMMAND ${OPENOCD}
+                -f interface/stlink.cfg
+                -f target/stm32g4x.cfg
+                -c "program ${PROJECT_NAME}.elf verify reset exit"
+            DEPENDS ${PROJECT_NAME}
+            COMMENT "=== OpenOCD로 플래시 업로드 ==="
+        )
+    endif()
 endif()
 
-find_program(OPENOCD openocd)
-if(OPENOCD)
-    add_custom_target(flash_openocd
-        COMMAND ${OPENOCD}
-            -f interface/stlink.cfg
-            -f target/stm32g4x.cfg
-            -c "program ${PROJECT_NAME}.elf verify reset exit"
-        DEPENDS ${PROJECT_NAME}
-        COMMENT "=== OpenOCD로 플래시 업로드 ==="
+# ---------- 문서 생성 타겟 (Markdown -> HTML) ----------
+find_package(Python3 COMPONENTS Interpreter QUIET)
+if(Python3_Interpreter_FOUND)
+    set(DOCS_MD_TO_HTML_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/docs/md_to_html.py")
+
+    set(CIRCUIT_REF_64_MD   "${CMAKE_CURRENT_SOURCE_DIR}/docs/circuit_ref_64pin.md")
+    set(CIRCUIT_REF_64_HTML "${CMAKE_CURRENT_SOURCE_DIR}/docs/circuit_ref_64pin.html")
+    set(CUBEMX_64_MD        "${CMAKE_CURRENT_SOURCE_DIR}/docs/cubemx_64pin_pin_table.md")
+    set(CUBEMX_64_HTML      "${CMAKE_CURRENT_SOURCE_DIR}/docs/cubemx_64pin_pin_table.html")
+    set(CUBEMX_64_CHECKLIST_MD   "${CMAKE_CURRENT_SOURCE_DIR}/docs/cubemx_64pin_onepage_checklist.md")
+    set(CUBEMX_64_CHECKLIST_HTML "${CMAKE_CURRENT_SOURCE_DIR}/docs/cubemx_64pin_onepage_checklist.html")
+
+    add_custom_command(
+        OUTPUT "${CIRCUIT_REF_64_HTML}"
+        COMMAND ${Python3_EXECUTABLE} "${DOCS_MD_TO_HTML_SCRIPT}"
+                --src "${CIRCUIT_REF_64_MD}"
+                --dst "${CIRCUIT_REF_64_HTML}"
+        DEPENDS "${DOCS_MD_TO_HTML_SCRIPT}" "${CIRCUIT_REF_64_MD}"
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        COMMENT "=== circuit_ref_64pin.html 생성 ==="
+        VERBATIM
     )
+
+    add_custom_command(
+        OUTPUT "${CUBEMX_64_HTML}"
+        COMMAND ${Python3_EXECUTABLE} "${DOCS_MD_TO_HTML_SCRIPT}"
+                --src "${CUBEMX_64_MD}"
+                --dst "${CUBEMX_64_HTML}"
+        DEPENDS "${DOCS_MD_TO_HTML_SCRIPT}" "${CUBEMX_64_MD}"
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        COMMENT "=== cubemx_64pin_pin_table.html 생성 ==="
+        VERBATIM
+    )
+
+    add_custom_command(
+        OUTPUT "${CUBEMX_64_CHECKLIST_HTML}"
+        COMMAND ${Python3_EXECUTABLE} "${DOCS_MD_TO_HTML_SCRIPT}"
+                --src "${CUBEMX_64_CHECKLIST_MD}"
+                --dst "${CUBEMX_64_CHECKLIST_HTML}"
+        DEPENDS "${DOCS_MD_TO_HTML_SCRIPT}" "${CUBEMX_64_CHECKLIST_MD}"
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        COMMENT "=== cubemx_64pin_onepage_checklist.html 생성 ==="
+        VERBATIM
+    )
+
+    add_custom_target(docs_html
+        DEPENDS "${CIRCUIT_REF_64_HTML}" "${CUBEMX_64_HTML}" "${CUBEMX_64_CHECKLIST_HTML}"
+    )
+else()
+    message(STATUS "-- [DOCS] Python3 미발견: docs_html 타겟 비활성화")
 endif()

@@ -209,6 +209,48 @@ static const uint32_t MODBUS_BAUD_TABLE[MODBUS_BAUD_INDEX_COUNT] = {
 #define LCD_REFRESH_MIN_MS      100U        /* 최소 갱신 주기 */
 
 /* ================================================================
+   자동 공진 탐색 (Resonance Auto-Scan)
+   ─ 트랜스듀서의 C₀(정전 용량)를 모르는 상태에서
+     주파수 7채널 × LC 릴레이 16조합 = 최대 112 포인트를
+     저전력으로 스윕하여 VSWR 최소점(직렬 공진점)을 탐색한다.
+   ─ PZT 크기별 두께 공진 참고:
+       1mm PZT 14×15mm → fr ≈ 2.0 MHz, C₀ ≈ 3.2 nF
+       2mm PZT          → fr ≈ 1.0 MHz
+       4mm PZT          → fr ≈ 0.5 MHz
+   ================================================================ */
+
+/* 탐색 수행 전력 (×0.01W) — 안전: 공진 전 과전류 방지 */
+#define RESCAN_POWER_01W        15U         /* 1차 탐색: 0.15W (전류 기반, 최소 안정 출력) */
+#define RESCAN_POWER_VSWR       30U         /* 2차 VSWR 탐색: 0.3W (700kHz~2MHz) */
+#define RESCAN_POWER_VSWR_LF    50U         /* 2차 VSWR 탐색: 0.5W (500~700kHz, CT 저주파 감도 보상) */
+
+/* VSWR 임계값 (×100) — 이 값 이하면 공진 확정 판정 */
+#define RESCAN_VSWR_OK_X100     150U        /* VSWR ≤ 1.50 → 탐색 성공 */
+#define RESCAN_VSWR_SEARCH_X100 300U        /* VSWR ≤ 3.00 → 유효 포인트 기록 */
+
+/* 각 포인트 안정화 대기 시간 */
+#define RESCAN_FREQ_SETTLE_MS   100U        /* 주파수(채널) 변경 후 안정화 대기 */
+#define RESCAN_RELAY_SETTLE_MS  20U         /* LC 릴레이 전환 후 안정화 대기 */
+#define RESCAN_SAMPLE_COUNT     10U         /* ADC 측정 평균 샘플 수 */
+
+/* LC 릴레이 4개 고정+가중 인덕턴스 값 (x0.01µH 단위)
+   L_BASE = 3.3||3.9 = 1.79µH를 항상 포함하고,
+   bit0=L1(0.89µH), bit1=L2(2.7µH), bit2=L3(4.7µH), bit3=L4(6.8µH)를 더한다.
+   조합 예) l_combo=0b0110 -> L_total = 1.79 + 2.70 + 4.70 = 9.19µH */
+#define LC_BASE_VALUE_X100UH    179U        /* 고정 인덕턴스 1.79µH */
+#define LC_L1_VALUE_X100UH      89U         /* LC_RELAY1 = L1 = 0.89µH (bit0) */
+#define LC_L2_VALUE_X100UH      270U        /* LC_RELAY2 = L2 = 2.70µH (bit1) */
+#define LC_L3_VALUE_X100UH      470U        /* LC_RELAY3 = L3 = 4.70µH (bit2) */
+#define LC_L4_VALUE_X100UH      680U        /* LC_RELAY4 = L4 = 6.80µH (bit3) */
+#define LC_L_COMBO_COUNT        16U         /* 0b0000(1.79µH) ~ 0b1111(16.88µH) */
+#define LC_L_MIN_X100UH         179U        /* 최소 L = 1.79µH */
+#define LC_L_MAX_X100UH         1688U       /* 최대 L = 16.88µH */
+
+/* 공진 탐색 완료 후 파워 단계적 증가 (소프트 파워업) */
+#define RESCAN_POWERUP_STEP_01W 5U          /* 0.05W씩 증가 */
+#define RESCAN_POWERUP_STEP_MS  200U        /* 200ms 간격으로 증가 */
+
+/* ================================================================
    펌웨어 버전
    ================================================================ */
 #define FW_VERSION_MAJOR        1U

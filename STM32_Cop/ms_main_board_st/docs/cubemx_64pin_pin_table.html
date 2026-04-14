@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="md_to_html.py">
+<title>메가소닉 게이트 드라이브 회로 참조 문서</title>
+<style>
+  :root {
+    --ink: #17212b;
+    --muted: #617286;
+    --line: #ccd6e3;
+    --soft: #f4f7fb;
+    --panel: #ffffff;
+    --brand: #0b4f6c;
+    --brand-soft: #eaf4fa;
+    --accent: #d97d54;
+    --warn-bg: #fff3e7;
+    --warn-line: #d97706;
+    --ok-bg: #edf9f1;
+    --ok-line: #15803d;
+    --info-bg: #eef6ff;
+    --info-line: #2563eb;
+  }
+  * { box-sizing: border-box; }
+  @page {
+    size: A4;
+    margin: 14mm 12mm 14mm 12mm;
+  }
+  @media print {
+    body { background: #fff; font-size: 9pt; }
+    .page { max-width: none; padding: 0; }
+    .meta, .toc-box { page-break-inside: avoid; }
+    h2 { page-break-before: always; }
+    h2:first-of-type { page-break-before: avoid; }
+    .pre-block, table { page-break-inside: avoid; }
+  }
+  body {
+    margin: 0;
+    background: linear-gradient(180deg, #eef5fb 0%, #f8fbfd 180px, #f7f8fa 100%);
+    color: var(--ink);
+    font-family: "Malgun Gothic", "맑은 고딕", "Noto Sans KR", sans-serif;
+    line-height: 1.65;
+  }
+  .page {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 28px 24px 40px;
+  }
+  h1 {
+    margin: 0;
+    padding-bottom: 12px;
+    font-size: 30px;
+    color: var(--brand);
+    border-bottom: 3px solid var(--brand);
+  }
+  h2 {
+    margin-top: 36px;
+    padding: 10px 14px;
+    font-size: 24px;
+    color: var(--brand);
+    background: var(--brand-soft);
+    border-left: 6px solid var(--brand);
+    border-radius: 10px;
+  }
+  h3 {
+    margin-top: 28px;
+    font-size: 18px;
+    color: #1c5d38;
+  }
+  h4 {
+    margin-top: 20px;
+    font-size: 15px;
+    color: #344255;
+  }
+  p, li { word-break: keep-all; }
+  .meta {
+    margin: 18px 0 24px;
+    padding: 14px 18px;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    color: var(--muted);
+  }
+  .toc-box {
+    margin: 0 0 28px;
+    padding: 18px 20px;
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+  }
+  .toc-box .toc > ul, .toc-box .toc > ol {
+    margin: 0;
+    padding-left: 22px;
+  }
+  .toc-box li { margin: 5px 0; }
+  .toc-box a {
+    color: var(--brand);
+    text-decoration: none;
+  }
+  .toc-box a:hover { text-decoration: underline; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0 18px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+    display: block;
+    overflow-x: auto;
+  }
+  thead th {
+    background: #e6eef7;
+    color: var(--brand);
+  }
+  th, td {
+    border: 1px solid var(--line);
+    padding: 8px 10px;
+    text-align: left;
+    vertical-align: top;
+    white-space: nowrap;
+  }
+  td { white-space: normal; }
+  tr:nth-child(even) td { background: #fbfdff; }
+  .pre-block {
+    margin: 16px 0 22px;
+  }
+  .pre-label {
+    display: inline-block;
+    margin: 0 0 8px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--brand);
+    background: var(--brand-soft);
+  }
+  .pre-block pre {
+    margin: 0;
+    padding: 16px 18px;
+    overflow-x: auto;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    background: #f8fafc;
+    box-shadow: 0 10px 24px rgba(17, 24, 39, 0.05);
+    white-space: pre;
+  }
+  .pre-block code {
+    font-family: "D2Coding", "Cascadia Mono", "Consolas", "Noto Sans Mono CJK KR", monospace;
+    font-variant-ligatures: none;
+    font-size: 13px;
+    line-height: 1.42;
+    letter-spacing: 0;
+  }
+  .pre-block.diagram pre {
+    background: linear-gradient(180deg, #f9fbfd 0%, #f2f7fb 100%);
+    border-color: #bfd3e1;
+  }
+  .pre-block.formula pre {
+    background: #f8fbf6;
+    border-color: #c9dec7;
+  }
+  .pre-block.source pre {
+    background: #152232;
+    border-color: #152232;
+  }
+  .pre-block.source code {
+    color: #eef4fb;
+  }
+  code {
+    padding: 2px 6px;
+    border-radius: 6px;
+    background: #edf2f7;
+    font-family: "D2Coding", "Cascadia Mono", "Consolas", monospace;
+    font-size: 0.95em;
+  }
+  .pre-block pre code {
+    padding: 0;
+    background: transparent;
+  }
+  .warning-box, .ok-box, .info-box {
+    margin: 14px 0;
+    padding: 12px 16px;
+    border-left: 5px solid;
+    border-radius: 12px;
+  }
+  .warning-box {
+    background: var(--warn-bg);
+    border-color: var(--warn-line);
+  }
+  .ok-box {
+    background: var(--ok-bg);
+    border-color: var(--ok-line);
+  }
+  .info-box {
+    background: var(--info-bg);
+    border-color: var(--info-line);
+  }
+  blockquote { margin: 0; }
+  hr {
+    border: 0;
+    border-top: 1px solid var(--line);
+    margin: 28px 0;
+  }
+  a { color: var(--brand); }
+  .footer {
+    margin-top: 32px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 13px;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <h1>메가소닉 게이트 드라이브 회로 참조 문서</h1>
+      <div class="meta">
+        이 문서는 docs/cubemx_64pin_pin_table.md를 기준으로 자동 생성되었습니다. 생성 시각: 2026-04-14 19:44
+      </div>
+      <section class="toc-box"><div class="toc"><span class="toctitle">목차</span><ul>
+<li><a href="#_1">빠른 사용 순서</a></li>
+<li><a href="#cubemx">CubeMX 복붙용 핀 설정표</a></li>
+<li><a href="#spare">Spare 핀 권장 설정</a></li>
+<li><a href="#cmake-html">CMake로 HTML 생성</a></li>
+<li><a href="#cubemx-pd2pc5">CubeMX 최종 점검 요약 (PD2/PC5 반영)</a></li>
+<li><a href="#bring-up">다음 단계: 보드 Bring-up</a></li>
+</ul>
+</div>
+</section>
+    </header>
+    <h1 id="stm32g474retx-lqfp64-cubemx">STM32G474RETx LQFP64 CubeMX 핀 설정표</h1>
+<div class="info-box"><p>목적: STM32CubeIDE .ioc 설정 시 바로 복사해 적용할 수 있는 64핀 기준 표<br>
+기준 소스: include/config.h, src/gpio_init.c</p></div>
+<hr>
+<h2 id="_1">빠른 사용 순서</h2>
+<ol>
+<li>MCU 선택: STM32G474RETx (LQFP64)</li>
+<li>SYS: Debug = Serial Wire</li>
+<li>RCC: HSE = Crystal/Ceramic Resonator (PF0/PF1)</li>
+<li>아래 표대로 핀별 Peripheral/Mode/User Label 적용</li>
+<li>Project Manager -&gt; Toolchain/IDE: CMake</li>
+</ol>
+<hr>
+<h2 id="cubemx">CubeMX 복붙용 핀 설정표</h2>
+<table>
+<thead>
+<tr>
+<th>Pin</th>
+<th>User Label</th>
+<th>CubeMX 설정</th>
+<th>Pull</th>
+<th>Speed</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PA0</td>
+<td>ADC_FWD</td>
+<td>ADC1_IN1</td>
+<td>No pull</td>
+<td>-</td>
+<td>순방향 전력 검출</td>
+</tr>
+<tr>
+<td>PA1</td>
+<td>ADC_REF</td>
+<td>ADC1_IN2</td>
+<td>No pull</td>
+<td>-</td>
+<td>역방향 전력 검출</td>
+</tr>
+<tr>
+<td>PA2</td>
+<td>MODBUS_TX</td>
+<td>USART2_TX</td>
+<td>No pull</td>
+<td>High</td>
+<td>RS-485 TX</td>
+</tr>
+<tr>
+<td>PA3</td>
+<td>MODBUS_RX</td>
+<td>USART2_RX</td>
+<td>Pull-up</td>
+<td>High</td>
+<td>RS-485 RX</td>
+</tr>
+<tr>
+<td>PA4</td>
+<td>BUCK_DAC</td>
+<td>DAC1_OUT1</td>
+<td>No pull</td>
+<td>-</td>
+<td>BUCK FB 제어</td>
+</tr>
+<tr>
+<td>PA6</td>
+<td>ADC_CUR</td>
+<td>ADC2_IN3</td>
+<td>No pull</td>
+<td>-</td>
+<td>출력 전류</td>
+</tr>
+<tr>
+<td>PA7</td>
+<td>ADC_VOL</td>
+<td>ADC2_IN4</td>
+<td>No pull</td>
+<td>-</td>
+<td>출력 전압</td>
+</tr>
+<tr>
+<td>PA8</td>
+<td>MS_PWM</td>
+<td>HRTIM1_CHA1</td>
+<td>No pull</td>
+<td>Very High</td>
+<td>AF13</td>
+</tr>
+<tr>
+<td>PA9</td>
+<td>MS_PWMN</td>
+<td>HRTIM1_CHA2</td>
+<td>No pull</td>
+<td>Very High</td>
+<td>AF13, 상보 출력</td>
+</tr>
+<tr>
+<td>PA10</td>
+<td>RELAY_LOW</td>
+<td>GPIO_Output</td>
+<td>No pull</td>
+<td>Low</td>
+<td>Push-Pull</td>
+</tr>
+<tr>
+<td>PA11</td>
+<td>RELAY_GO</td>
+<td>GPIO_Output</td>
+<td>No pull</td>
+<td>Low</td>
+<td>Push-Pull</td>
+</tr>
+<tr>
+<td>PA12</td>
+<td>RELAY_OPERATE</td>
+<td>GPIO_Output</td>
+<td>No pull</td>
+<td>Low</td>
+<td>Push-Pull</td>
+</tr>
+<tr>
+<td>PA13</td>
+<td>SWDIO</td>
+<td>SYS_SWDIO</td>
+<td>-</td>
+<td>-</td>
+<td>디버그 전용</td>
+</tr>
+<tr>
+<td>PA14</td>
+<td>SWCLK</td>
+<td>SYS_SWCLK</td>
+<td>-</td>
+<td>-</td>
+<td>디버그 전용</td>
+</tr>
+<tr>
+<td>PA15</td>
+<td>EXT_REMOTE</td>
+<td>GPIO_Input</td>
+<td>Pull-up</td>
+<td>-</td>
+<td>외부 REMOTE</td>
+</tr>
+<tr>
+<td>PB0</td>
+<td>MODBUS_DE</td>
+<td>GPIO_Output</td>
+<td>No pull</td>
+<td>High</td>
+<td>RS-485 DE</td>
+</tr>
+<tr>
+<td>PB1</td>
+<td>MODBUS_RE_N</td>
+<td>GPIO_Output</td>
+<td>No pull</td>
+<td>High</td>
+<td>RS-485 /RE</td>
+</tr>
+<tr>
+<td>PB3</td>
+<td>RELAY_HIGH</td>
+<td>GPIO_Output</td>
+<td>No pull</td>
+<td>Low</td>
+<td>Push-Pull</td>
+</tr>
+<tr>
+<td>PB4</td>
+<td>RELAY_TRANS</td>
+<td>GPIO_Output</td>
+<td>No pull</td>
+<td>Low</td>
+<td>Push-Pull</td>
+</tr>
+<tr>
+<td>PB6</td>
+<td>DEBUG_TX</td>
+<td>USART1_TX</td>
+<td>No pull</td>
+<td>High</td>
+<td>디버그 UART</td>
+</tr>
+<tr>
+<td>PB7</td>
+<td>DEBUG_RX</td>
+<td>USART1_RX</td>
+<td>No pull</td>
+<td>High</td>
+<td>디버그 UART</td>
+</tr>
+<tr>
+<td>PB10</td>
+<td>DISP_D0</td>
+<td>GPIO_Output</td>
+<td>No pull</td>
+<td>Medium</td>
+<td>공유 DATA 버스</td>
+</tr>
+<tr>
+<td>PB11</td>
+<td>DISP_D1</td>
+<td>GPIO_Output</td>
+<td>No pull</td>
+<td>Medium</td>
+<td>공유 DATA 버스</td>
+</tr>
+<tr>
+<td>PB12</td>
+<td>DISP_D2</td>
+<td>GPIO_Output</td>
+<td>No pull</td>
+<td>Medium</td>
+<td>공유 DATA 버스</td>
+</tr>
+<tr>
+<td>PB13</td>
+<td>DISP_D3</td>
+<td>GPIO_Output</td>
+<td>No pull</td>
+<td>Medium</td>
+<td>공유 DATA 버스</td>
+</tr>
+<tr>
+<td>PB14</td>
+<td>DISP_D4</td>
+<td>GPIO_Output</td>
+<td>No pull</td>
+<td>Medium</td>
+<td>공유 DATA 버스</td>
+</tr>
+<tr>
+<td>PB15</td>
+<td>DISP_D5</td>
+<td>GPIO_Output</td>
+<td>No pull</td>
+<td>Medium</td>
+<td>공유 DATA 버스</td>
+</tr>
+<tr>
+<td>PC0</td>
+<td>BTN_START_STOP</td>
+<td>GPIO_Input</td>
+<td>Pull-up</td>
+<td>-</td>
+<td>Active Low</td>
+</tr>
+<tr>
+<td>PC1</td>
+<td>BTN_MODE</td>
+<td>GPIO_Input</td>
+<td>Pull-up</td>
+<td>-</td>
+<td>Active Low</td>
+</tr>
+<tr>
+<td>PC2</td>
+<td>BTN_UP</td>
+<td>GPIO_Input</td>
+<td>Pull-up</td>
+<td>-</td>
+<td>Active Low</td>
+</tr>
+<tr>
+<td>PC3</td>
+<td>BTN_DOWN</td>
+<td>GPIO_Input</td>
+<td>Pull-up</td>
+<td>-</td>
+<td>Active Low</td>
+</tr>
+<tr>
+<td>PC4</td>
+<td>BTN_SET</td>
+<td>GPIO_Input</td>
+<td>Pull-up</td>
+<td>-</td>
+<td>Active Low</td>
+</tr>
+<tr>
+<td>PC5</td>
+<td>BUZZER</td>
+<td>GPIO_Output</td>
+<td>No pull</td>
+<td>Low</td>
+<td>Push-Pull</td>
+</tr>
+<tr>
+<td>PC6</td>
+<td>LC_RELAY1</td>
+<td>GPIO_Output</td>
+<td>No pull</td>
+<td>Low</td>
+<td>LC bit0</td>
+</tr>
+<tr>
+<td>PC7</td>
+<td>LC_RELAY2</td>
+<td>GPIO_Output</td>
+<td>No pull</td>
+<td>Low</td>
+<td>LC bit1</td>
+</tr>
+<tr>
+<td>PC8</td>
+<td>LC_RELAY3</td>
+<td>GPIO_Output</td>
+<td>No pull</td>
+<td>Low</td>
+<td>LC bit2</td>
+</tr>
+<tr>
+<td>PC9</td>
+<td>LC_RELAY4</td>
+<td>GPIO_Output</td>
+<td>No pull</td>
+<td>Low</td>
+<td>LC bit3</td>
+</tr>
+<tr>
+<td>PC10</td>
+<td>EXT_BCD1</td>
+<td>GPIO_Input</td>
+<td>Pull-up</td>
+<td>-</td>
+<td>8POWER BCD1</td>
+</tr>
+<tr>
+<td>PC11</td>
+<td>EXT_BCD2</td>
+<td>GPIO_Input</td>
+<td>Pull-up</td>
+<td>-</td>
+<td>8POWER BCD2</td>
+</tr>
+<tr>
+<td>PC12</td>
+<td>EXT_BCD3</td>
+<td>GPIO_Input</td>
+<td>Pull-up</td>
+<td>-</td>
+<td>8POWER BCD3</td>
+</tr>
+<tr>
+<td>PD2</td>
+<td>SENSOR_INPUT</td>
+<td>GPIO_Input</td>
+<td>Pull-up</td>
+<td>-</td>
+<td>외부 SENSOR</td>
+</tr>
+<tr>
+<td>PC14</td>
+<td>CLK_LCD</td>
+<td>GPIO_Output</td>
+<td>No pull</td>
+<td>Medium</td>
+<td>74HCT574 LCD 래치 클럭</td>
+</tr>
+<tr>
+<td>PC15</td>
+<td>CLK_LED</td>
+<td>GPIO_Output</td>
+<td>No pull</td>
+<td>Medium</td>
+<td>74HCT574 LED 래치 클럭</td>
+</tr>
+<tr>
+<td>PF0</td>
+<td>HSE_IN</td>
+<td>RCC_OSC_IN</td>
+<td>-</td>
+<td>-</td>
+<td>8MHz HSE</td>
+</tr>
+<tr>
+<td>PF1</td>
+<td>HSE_OUT</td>
+<td>RCC_OSC_OUT</td>
+<td>-</td>
+<td>-</td>
+<td>8MHz HSE</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="spare">Spare 핀 권장 설정</h2>
+<table>
+<thead>
+<tr>
+<th>Pin</th>
+<th>권장 기본 설정</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PA5</td>
+<td>GPIO_Input (No pull)</td>
+<td>필요 시 ADC2_IN13로 사용</td>
+</tr>
+<tr>
+<td>PB2</td>
+<td>GPIO_Input (No pull)</td>
+<td>확장 GPIO</td>
+</tr>
+<tr>
+<td>PB5</td>
+<td>GPIO_Input (No pull)</td>
+<td>확장 GPIO (BUZZER 이동 후)</td>
+</tr>
+<tr>
+<td>PB8</td>
+<td>GPIO_Input (No pull)</td>
+<td>확장 GPIO</td>
+</tr>
+<tr>
+<td>PB9</td>
+<td>GPIO_Input (No pull)</td>
+<td>확장 GPIO</td>
+</tr>
+<tr>
+<td>PC13</td>
+<td>GPIO_Input (No pull)</td>
+<td>확장 GPIO (SENSOR 이동 후)</td>
+</tr>
+</tbody>
+</table>
+<p>총 여유 핀: 6</p>
+<hr>
+<h2 id="cmake-html">CMake로 HTML 생성</h2>
+<p>아래 명령으로 64핀 문서 HTML을 생성한다.</p>
+<div class="pre-block source"><div class="pre-label">코드 예시</div><pre><code class="language-bash">cmake -B build -G &quot;Ninja&quot; -DCMAKE_BUILD_TYPE=Debug
+cmake --build build --target docs_html
+</code></pre></div>
+<p>생성 파일:</p>
+<ul>
+<li>docs/circuit_ref_64pin.html</li>
+<li>docs/cubemx_64pin_pin_table.html</li>
+<li>docs/cubemx_64pin_onepage_checklist.html</li>
+</ul>
+<hr>
+<h2 id="cubemx-pd2pc5">CubeMX 최종 점검 요약 (PD2/PC5 반영)</h2>
+<p>아래 항목만 최종 확인하면 최근 핀 재배치 이슈를 대부분 차단할 수 있다.</p>
+<ul>
+<li>[ ] SENSOR_INPUT = PD2 (PC13 아님)</li>
+<li>[ ] BUZZER = PC5 (PB5 아님)</li>
+<li>[ ] RELAY_LOW = PA10 (PC15 아님)</li>
+<li>[ ] CLK_LCD/CLK_LED = PC14/PC15 (PB8/PB9 아님)</li>
+<li>[ ] PB8/PB9/PB5/PC13은 Spare로 남아 있음</li>
+<li>[ ] PF0/PF1은 HSE 전용으로 설정됨</li>
+</ul>
+<hr>
+<h2 id="bring-up">다음 단계: 보드 Bring-up</h2>
+<p>전원 인가부터 GPIO/통신/HRTIM 확인까지의 실전 스모크 테스트 절차는 아래 문서를 사용한다.</p>
+<ul>
+<li>docs/bringup_64pin_smoke_test.md</li>
+</ul>
+    <div class="footer">cubemx_64pin_pin_table.md 기반 자동 생성 문서</div>
+  </main>
+</body>
+</html>

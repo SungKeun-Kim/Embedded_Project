@@ -2,7 +2,7 @@
  * @file  config.h
  * @brief 하드웨어 핀 정의 및 GPIO 매핑
  *
- * 커스텀 보드(STM32G474MET6 LQFP80) 메가소닉 메인보드.
+ * 커스텀 보드(STM32G474RET6 LQFP64) 메가소닉 메인보드.
  * 핀 변경 시 이 파일만 수정하면 전체 프로젝트에 반영된다.
  */
 #ifndef CONFIG_H
@@ -24,21 +24,21 @@ extern "C" {
 #define MS_PWM_AF               GPIO_AF13_HRTIM1
 
 /* ================================================================
-   LCD1602 + LED 디스플레이 (방법 C: 74HCT574 ×2 래치 버스)
+      LCD1602 + LED 디스플레이 (방법 C: 74HCT574 ×2 래치 버스)
    DATA 버스 6비트 (PB10~PB15) 공유:
-     CLK_LCD(PD0) 폄스 → 74HCT574 #1 Q 래치 → LCD1602 (RS/EN/D4~D7)
-     CLK_LED(PD1) 폂스 → 74HCT574 #2 Q 래치 → LED ×6
+      CLK_LCD(PC14) 펄스 → 74HCT574 #1 Q 래치 → LCD1602 (RS/EN/D4~D7)
+      CLK_LED(PC15) 펄스 → 74HCT574 #2 Q 래치 → LED ×6
    ================================================================ */
 /* DATA 버스 (PB10~PB15, 74HCT574 D입력 공유) */
 #define DISP_DATA_PORT          GPIOB
 #define DISP_DATA_PINS          (GPIO_PIN_10 | GPIO_PIN_11 | GPIO_PIN_12 | \
                                  GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15)
 /* 74HCT574 #1 (LCD) — CLK_LCD */
-#define LCD_CLK_PORT            GPIOD
-#define LCD_CLK_PIN             GPIO_PIN_0      /* CLK_LCD (was LCD_RS) */
+#define LCD_CLK_PORT            GPIOC
+#define LCD_CLK_PIN             GPIO_PIN_14     /* CLK_LCD (PC14) */
 /* 74HCT574 #2 (LED) — CLK_LED */
-#define LED_CLK_PORT            GPIOD
-#define LED_CLK_PIN             GPIO_PIN_1      /* CLK_LED (was LCD_EN) */
+#define LED_CLK_PORT            GPIOC
+#define LED_CLK_PIN             GPIO_PIN_15     /* CLK_LED (PC15) */
 
 /* DATA 버스 비트 위치 정의 (74HCT574 #1 → LCD) */
 #define LCD_BIT_RS              (1u << 0)   /* PB10 → D0 → Q0 → RS */
@@ -57,7 +57,8 @@ extern "C" {
 #define LED_BIT_RX              (1u << 5)   /* PB15 → D5 → Q5 → LED_RX */
 
 /* ================================================================
-   택트 스위치 6개 (내부 풀업, Active LOW — PC0~PC5)
+   택트 스위치 5개 (내부 풀업, Active LOW — PC0~PC4)
+   FREQ 버튼은 하드웨어 삭제 (별도 버튼 미사용)
    ================================================================ */
 #define BTN_START_STOP_PORT     GPIOC
 #define BTN_START_STOP_PIN      GPIO_PIN_0
@@ -69,8 +70,6 @@ extern "C" {
 #define BTN_DOWN_PIN            GPIO_PIN_3
 #define BTN_SET_PORT            GPIOC
 #define BTN_SET_PIN             GPIO_PIN_4
-#define BTN_FREQ_PORT           GPIOC
-#define BTN_FREQ_PIN            GPIO_PIN_5
 
 /* 기존 4버튼 호환 별칭 (메뉴 모듈 사용) */
 #define BTN_OK_PORT             BTN_SET_PORT
@@ -120,10 +119,10 @@ extern "C" {
 #define MODBUS_RX_PIN           GPIO_PIN_3      /* USART2_RX */
 #define MODBUS_TX_AF            GPIO_AF7_USART2
 #define MODBUS_RX_AF            GPIO_AF7_USART2
-#define MODBUS_DE_PORT          GPIOC
-#define MODBUS_DE_PIN           GPIO_PIN_13     /* RS-485 DE (Driver Enable) */
-#define MODBUS_RE_PORT          GPIOC
-#define MODBUS_RE_PIN           GPIO_PIN_14     /* RS-485 /RE (Receiver Enable, Active LOW) */
+#define MODBUS_DE_PORT          GPIOB
+#define MODBUS_DE_PIN           GPIO_PIN_0      /* RS-485 DE (Driver Enable) */
+#define MODBUS_RE_PORT          GPIOB
+#define MODBUS_RE_PIN           GPIO_PIN_1      /* RS-485 /RE (Receiver Enable, Active LOW) */
 
 /* DE/RE 제어 매크로 (2핀 분리) */
 #define MODBUS_DE_TX() do { \
@@ -146,15 +145,15 @@ extern "C" {
 
 /* ================================================================
    알람 릴레이 출력 5개 (D-SUB 25핀 커넥터)
-   ULN2003A #1로 구동 (5채널 사용, 1채널 여유 + 1채널 BUZZER = 7연간)
-   PA10은 RELAY_ADDR 제거 → SENSOR_INPUT으로 재할당
+   ULN2003A #1로 구동 (5채널 사용, 2채널 여유)
+   BOOT0 충돌 회피를 위해 RELAY_LOW를 PA10으로 재배치
    ================================================================ */
 #define RELAY_GO_PORT           GPIOA
 #define RELAY_GO_PIN            GPIO_PIN_11     /* 정상 출력 범위 내 */
 #define RELAY_OPERATE_PORT      GPIOA
 #define RELAY_OPERATE_PIN       GPIO_PIN_12     /* 통합 알람 (정상=SHORT, 알람=OPEN) */
 #define RELAY_LOW_PORT          GPIOA
-#define RELAY_LOW_PIN           GPIO_PIN_15     /* Err1 LOW 알람 */
+#define RELAY_LOW_PIN           GPIO_PIN_10     /* Err1 LOW 알람 (PC15→PA10) */
 #define RELAY_HIGH_PORT         GPIOB
 #define RELAY_HIGH_PIN          GPIO_PIN_3      /* Err2 HIGH 알람 */
 #define RELAY_TRANS_PORT        GPIOB
@@ -164,59 +163,57 @@ extern "C" {
    LC 탱크 인덕턴스 조합 릴레이 4개
    ULN2003A #2로 구동 (4채널 사용, 3채널 여유)
    릴레이 ON/OFF 조합으로 인덕턴스 값 변경 → 공진주파수 미세 조정
-   ※ PF0/PF1은 HSE 크리스탈 전용 → LC_RELAY3/4를 PC7/PC8로 재배치
+   ※ 사용자 요청 반영: LC_RELAY1~4를 PC6~PC9로 재배치
    ================================================================ */
-/* LC_RELAY1~4 모두 GPIOC로 통합 — GPIOB DATA 버스(PB10~PB15)와 포트 분리 */
+/* LC_RELAY1/2/3/4를 GPIOC로 통합 (물리 배치 일관성) */
 #define LC_RELAY1_PORT          GPIOC
-#define LC_RELAY1_PIN           GPIO_PIN_9      /* 인덕턴스 L1 스위칭 (PB8→PC9) */
+#define LC_RELAY1_PIN           GPIO_PIN_6      /* 인덕턴스 L1 스위칭 (PB8→PC6) */
 #define LC_RELAY2_PORT          GPIOC
-#define LC_RELAY2_PIN           GPIO_PIN_15     /* 인덕턴스 L2 스위칭 */
+#define LC_RELAY2_PIN           GPIO_PIN_7      /* 인덕턴스 L2 스위칭 (PB9→PC7) */
 #define LC_RELAY3_PORT          GPIOC
-#define LC_RELAY3_PIN           GPIO_PIN_7      /* 인덕턴스 L3 스위칭 (PF0→PC7) */
+#define LC_RELAY3_PIN           GPIO_PIN_8      /* 인덕턴스 L3 스위칭 (PF0→PC8) */
 #define LC_RELAY4_PORT          GPIOC
-#define LC_RELAY4_PIN           GPIO_PIN_8      /* 인덕턴스 L4 스위칭 (PF1→PC8) */
+#define LC_RELAY4_PIN           GPIO_PIN_9      /* 인덕턴스 L4 스위칭 (PF1→PC9) */
 
 /* ================================================================
-   여유 핀 7개 (확장용)
-   방법C 적용으로 PD2, PB0, PB1, PB2 임시
+   여유 핀 6개 (확장용)
+   현재 배치 기준: SENSOR/BUZZER 재배치 반영
    ================================================================ */
 #define SPARE1_PORT             GPIOA
 #define SPARE1_PIN              GPIO_PIN_5      /* 여유 #1: ADC2_IN13 또는 GPIO */
 #define SPARE2_PORT             GPIOB
-#define SPARE2_PIN              GPIO_PIN_8      /* 여유 #2: PB8 (was LC_RELAY1) → I2C1_SCL(AF4) 후보 */
+#define SPARE2_PIN              GPIO_PIN_2      /* 여유 #2: PB2 */
 #define SPARE3_PORT             GPIOB
-#define SPARE3_PIN              GPIO_PIN_9      /* 여유 #3: I2C1_SDA 또는 GPIO */
-#define SPARE4_PORT             GPIOD
-#define SPARE4_PIN              GPIO_PIN_2      /* 여유 #4: GPIO (was LCD_D4) */
+#define SPARE3_PIN              GPIO_PIN_8      /* 여유 #3: PB8 */
+#define SPARE4_PORT             GPIOB
+#define SPARE4_PIN              GPIO_PIN_9      /* 여유 #4: PB9 */
 #define SPARE5_PORT             GPIOB
-#define SPARE5_PIN              GPIO_PIN_0      /* 여유 #5: GPIO (was LED_NORMAL) */
-#define SPARE6_PORT             GPIOB
-#define SPARE6_PIN              GPIO_PIN_1      /* 여유 #6: GPIO (was LED_HL_SET) */
-#define SPARE7_PORT             GPIOB
-#define SPARE7_PIN              GPIO_PIN_2      /* 여유 #7: GPIO (was LED_8POWER) */
+#define SPARE5_PIN              GPIO_PIN_5      /* 여유 #5: PB5 (BUZZER PC5 재배치) */
+#define SPARE6_PORT             GPIOC
+#define SPARE6_PIN              GPIO_PIN_13     /* 여유 #6: PC13 (SENSOR PD2 재배치) */
 
 /* ================================================================
    부저
    ================================================================ */
-#define BUZZER_PORT             GPIOB
+#define BUZZER_PORT             GPIOC
 #define BUZZER_PIN              GPIO_PIN_5
 
 /* ================================================================
    외부 제어 입력 5개 (광커플러 절연, TLP281-4 + TLP181)
    - REMOTE: 발진 ON/OFF
    - BCD1~3: 8단계 출력 선택
-   - SENSOR_INPUT: 외부 센서/비상 정지 (PA10 재할당, was RELAY_ADDR)
+   - SENSOR_INPUT: 외부 센서/비상 정지 (PD2)
    ================================================================ */
-#define EXT_REMOTE_PORT         GPIOC
-#define EXT_REMOTE_PIN          GPIO_PIN_6      /* 광커플러 CH1 (TLP281-4) */
+#define EXT_REMOTE_PORT         GPIOA
+#define EXT_REMOTE_PIN          GPIO_PIN_15     /* 광커플러 CH1 (TLP281-4, PC6→PA15) */
 #define EXT_BCD1_PORT           GPIOC
 #define EXT_BCD1_PIN            GPIO_PIN_10     /* 광커플러 CH2 (TLP281-4) */
 #define EXT_BCD2_PORT           GPIOC
 #define EXT_BCD2_PIN            GPIO_PIN_11     /* 광커플러 CH3 (TLP281-4) */
 #define EXT_BCD3_PORT           GPIOC
 #define EXT_BCD3_PIN            GPIO_PIN_12     /* 광커플러 CH4 (TLP281-4) */
-#define SENSOR_INPUT_PORT       GPIOA
-#define SENSOR_INPUT_PIN        GPIO_PIN_10     /* 광커플러 SENSOR (TLP181, was RELAY_ADDR) */
+#define SENSOR_INPUT_PORT       GPIOD
+#define SENSOR_INPUT_PIN        GPIO_PIN_2      /* 광커플러 SENSOR (PC13→PD2 재배치) */
 
 /* ================================================================
    디버그 UART (USART1, PB6/PB7 AF7)
@@ -237,7 +234,7 @@ extern "C" {
 #define HSE_CRYSTAL_FREQ        8000000U        /* 8 MHz */
 
 /* ================================================================
-   GPIO 클럭 활성화 매크로 (LQFP80: A~D 포트)
+   GPIO 클럭 활성화 매크로 (LQFP64: A~D 포트)
    PF0/PF1은 HSE 크리스탈 전용 → GPIOF 클럭 불필요
    ================================================================ */
 #define GPIO_CLOCKS_ENABLE() do { \

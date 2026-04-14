@@ -1,84 +1,4 @@
-"""회로 참조 Markdown을 HTML로 변환하는 스크립트."""
-
-from __future__ import annotations
-
-import argparse
-from datetime import datetime
-from html import unescape
-from pathlib import Path
-import re
-
-import markdown
-
-
-DOCS_DIR = Path(__file__).resolve().parent
-DEFAULT_SRC = DOCS_DIR / "circuit_ref_64pin.md"
-DEFAULT_DST = DOCS_DIR / "circuit_ref_64pin.html"
-
-CODE_BLOCK_RE = re.compile(
-    r"<pre><code(?: class=\"language-([^\"]+)\")?>(.*?)</code></pre>",
-    re.DOTALL,
-)
-BLOCKQUOTE_RE = re.compile(r"<blockquote>\s*<p>(.*?)</p>\s*</blockquote>", re.DOTALL)
-DIAGRAM_TOKENS = ("┌", "┐", "└", "┘", "│", "─", "├", "┤", "┬", "┴", "┼", "▶", "◀", "═", "╾")
-
-
-def classify_code_block(language: str | None, content: str) -> tuple[str, str]:
-    text = unescape(content)
-    if any(token in text for token in DIAGRAM_TOKENS):
-        return "diagram", "회로도 / 블록도"
-    if language in {"c", "cpp", "python", "sh", "bash"}:
-        return "source", "코드 예시"
-    if "=" in text and ";" not in text and "{" not in text:
-        return "formula", "계산식 / 파라미터"
-    return "plain", "참고 블록"
-
-
-def decorate_code_blocks(html_body: str) -> str:
-    def replace(match: re.Match[str]) -> str:
-        language = match.group(1)
-        content = match.group(2)
-        block_class, label = classify_code_block(language, content)
-        lang_attr = f' class="language-{language}"' if language else ""
-        return (
-            f'<div class="pre-block {block_class}">'
-            f'<div class="pre-label">{label}</div>'
-            f'<pre><code{lang_attr}>{content}</code></pre>'
-            f'</div>'
-        )
-
-    return CODE_BLOCK_RE.sub(replace, html_body)
-
-
-def decorate_blockquotes(html_body: str) -> str:
-    def replace(match: re.Match[str]) -> str:
-        content = match.group(1).strip()
-        normalized = unescape(content)
-        if normalized.startswith("⚠"):
-            box_class = "warning-box"
-        elif normalized.startswith("✅"):
-            box_class = "ok-box"
-        else:
-            box_class = "info-box"
-        return f'<div class="{box_class}"><p>{content}</p></div>'
-
-    return BLOCKQUOTE_RE.sub(replace, html_body)
-
-
-def build_document(src_path: Path) -> str:
-    md_text = src_path.read_text(encoding="utf-8")
-    renderer = markdown.Markdown(
-        extensions=["tables", "fenced_code", "toc", "nl2br", "sane_lists"],
-        extension_configs={"toc": {"title": "목차", "toc_depth": "2-3"}},
-        output_format="html5",
-    )
-    html_body = renderer.convert(md_text)
-    html_body = decorate_code_blocks(html_body)
-    html_body = decorate_blockquotes(html_body)
-    toc_html = renderer.toc if renderer.toc else ""
-    generated_at = datetime.now().strftime("%Y-%m-%d %H:%M")
-
-    template = """<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -300,39 +220,113 @@ def build_document(src_path: Path) -> str:
     <header>
       <h1>메가소닉 게이트 드라이브 회로 참조 문서</h1>
       <div class="meta">
-        이 문서는 docs/SOURCE_FILE를 기준으로 자동 생성되었습니다. 생성 시각: GENERATED_AT
+        이 문서는 docs/cubemx_64pin_onepage_checklist.md를 기준으로 자동 생성되었습니다. 생성 시각: 2026-04-14 19:41
       </div>
-      TOC_PLACEHOLDER
+      <section class="toc-box"><div class="toc"><span class="toctitle">목차</span><ul>
+<li><a href="#1">1) 전역 설정</a></li>
+<li><a href="#2">2) 필수 핀 매핑 (핵심만)</a><ul>
+<li><a href="#hrtim">HRTIM / 고속</a></li>
+<li><a href="#lcdled-74hct574-x2">LCD/LED 래치 (74HCT574 x2)</a></li>
+<li><a href="#_1">릴레이 / 부저</a></li>
+<li><a href="#lc">LC 릴레이</a></li>
+<li><a href="#_2">통신 / 외부입력</a></li>
+<li><a href="#adc">버튼 / ADC / 디버그</a></li>
+</ul>
+</li>
+<li><a href="#3">3) 충돌 방지 체크</a></li>
+<li><a href="#4-cubemx">4) CubeMX 생성 후 코드 확인</a></li>
+<li><a href="#5">5) 빌드/문서 생성</a></li>
+</ul>
+</div>
+</section>
     </header>
-    BODY_PLACEHOLDER
-    <div class="footer">SOURCE_FILE 기반 자동 생성 문서</div>
+    <h1 id="stm32g474retx-lqfp64-cubemx">STM32G474RETx LQFP64 CubeMX 한 장 점검표</h1>
+<div class="info-box"><p>목적: CubeMX(.ioc) 핀 설정을 1회에 맞추기 위한 최종 체크리스트<br>
+기준: include/config.h, docs/cubemx_64pin_pin_table.md</p></div>
+<hr>
+<h2 id="1">1) 전역 설정</h2>
+<ul>
+<li>[ ] MCU: STM32G474RETx (LQFP64)</li>
+<li>[ ] SYS Debug: Serial Wire</li>
+<li>[ ] RCC HSE: Crystal/Ceramic Resonator (PF0/PF1)</li>
+<li>[ ] Project Manager Toolchain: CMake</li>
+<li>[ ] BOOT0(핀 61): GPIO로 사용하지 않음</li>
+</ul>
+<hr>
+<h2 id="2">2) 필수 핀 매핑 (핵심만)</h2>
+<h3 id="hrtim">HRTIM / 고속</h3>
+<ul>
+<li>[ ] PA8 = HRTIM1_CHA1 (AF13, Very High)</li>
+<li>[ ] PA9 = HRTIM1_CHA2 (AF13, Very High)</li>
+</ul>
+<h3 id="lcdled-74hct574-x2">LCD/LED 래치 (74HCT574 x2)</h3>
+<ul>
+<li>[ ] PB10~PB15 = DISP_D0~D5 (GPIO_Output, Medium)</li>
+<li>[ ] PC14 = CLK_LCD (GPIO_Output, Medium)</li>
+<li>[ ] PC15 = CLK_LED (GPIO_Output, Medium)</li>
+</ul>
+<h3 id="_1">릴레이 / 부저</h3>
+<ul>
+<li>[ ] PA10 = RELAY_LOW (GPIO_Output)</li>
+<li>[ ] PA11 = RELAY_GO (GPIO_Output)</li>
+<li>[ ] PA12 = RELAY_OPERATE (GPIO_Output)</li>
+<li>[ ] PB3 = RELAY_HIGH (GPIO_Output)</li>
+<li>[ ] PB4 = RELAY_TRANS (GPIO_Output)</li>
+<li>[ ] PC5 = BUZZER (GPIO_Output)</li>
+</ul>
+<h3 id="lc">LC 릴레이</h3>
+<ul>
+<li>[ ] PC6 = LC_RELAY1</li>
+<li>[ ] PC7 = LC_RELAY2</li>
+<li>[ ] PC8 = LC_RELAY3</li>
+<li>[ ] PC9 = LC_RELAY4</li>
+</ul>
+<h3 id="_2">통신 / 외부입력</h3>
+<ul>
+<li>[ ] PA2 = USART2_TX, PA3 = USART2_RX</li>
+<li>[ ] PB0 = MODBUS_DE, PB1 = MODBUS_RE_N</li>
+<li>[ ] PA15 = EXT_REMOTE</li>
+<li>[ ] PC10 = EXT_BCD1, PC11 = EXT_BCD2, PC12 = EXT_BCD3</li>
+<li>[ ] PD2 = SENSOR_INPUT</li>
+</ul>
+<h3 id="adc">버튼 / ADC / 디버그</h3>
+<ul>
+<li>[ ] PC0~PC4 = BTN_START_STOP/MODE/UP/DOWN/SET (Pull-up)</li>
+<li>[ ] PA0 = ADC1_IN1, PA1 = ADC1_IN2, PA6 = ADC2_IN3, PA7 = ADC2_IN4</li>
+<li>[ ] PB6 = USART1_TX, PB7 = USART1_RX</li>
+<li>[ ] PA13/PA14 = SWD 전용</li>
+</ul>
+<hr>
+<h2 id="3">3) 충돌 방지 체크</h2>
+<ul>
+<li>[ ] RELAY_LOW가 PC15가 아니라 PA10으로 설정되어 있음</li>
+<li>[ ] CLK_LCD/CLK_LED가 PB8/PB9가 아니라 PC14/PC15로 설정되어 있음</li>
+<li>[ ] BUZZER가 PB5가 아니라 PC5로 설정되어 있음</li>
+<li>[ ] SENSOR_INPUT이 PC13이 아니라 PD2로 설정되어 있음</li>
+<li>[ ] PB8/PB9는 Spare(GPIO_Input No pull)로 남겨둠</li>
+<li>[ ] PF0/PF1은 HSE 전용으로 유지</li>
+</ul>
+<hr>
+<h2 id="4-cubemx">4) CubeMX 생성 후 코드 확인</h2>
+<ul>
+<li>[ ] include/config.h의 핀 정의와 .ioc가 동일</li>
+<li>[ ] src/gpio_init.c의 초기 출력값이 모두 안전 상태(LOW)</li>
+<li>[ ] HRTIM 핀 속도 Very High 적용 확인</li>
+<li>[ ] 버튼 입력 Pull-up 적용 확인</li>
+</ul>
+<hr>
+<h2 id="5">5) 빌드/문서 생성</h2>
+<div class="pre-block source"><div class="pre-label">코드 예시</div><pre><code class="language-bash">cmake -B build -G &quot;Ninja&quot; -DCMAKE_BUILD_TYPE=Debug
+cmake --build build
+cmake --build build --target docs_html
+</code></pre></div>
+<p>생성 HTML:</p>
+<ul>
+<li>docs/circuit_ref_64pin.html</li>
+<li>docs/cubemx_64pin_pin_table.html</li>
+<li>docs/cubemx_64pin_onepage_checklist.html</li>
+</ul>
+    <div class="footer">cubemx_64pin_onepage_checklist.md 기반 자동 생성 문서</div>
   </main>
 </body>
 </html>
-"""
-
-    toc_box = f'<section class="toc-box">{toc_html}</section>' if toc_html else ""
-    return (
-        template.replace("GENERATED_AT", generated_at)
-      .replace("SOURCE_FILE", src_path.name)
-        .replace("TOC_PLACEHOLDER", toc_box)
-        .replace("BODY_PLACEHOLDER", html_body)
-    )
-
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description="회로 문서 Markdown -> HTML 변환")
-    parser.add_argument("--src", default=str(DEFAULT_SRC), help="입력 Markdown 파일 경로")
-    parser.add_argument("--dst", default=str(DEFAULT_DST), help="출력 HTML 파일 경로")
-    args = parser.parse_args()
-
-    src_path = Path(args.src).resolve()
-    dst_path = Path(args.dst).resolve()
-
-    final_html = build_document(src_path)
-    dst_path.write_text(final_html, encoding="utf-8")
-    print(f"OK -> {dst_path.name} ({dst_path.stat().st_size:,} bytes)")
-
-
-if __name__ == "__main__":
-    main()

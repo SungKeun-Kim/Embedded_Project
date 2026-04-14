@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="md_to_html.py">
+<title>메가소닉 게이트 드라이브 회로 참조 문서</title>
+<style>
+  :root {
+    --ink: #17212b;
+    --muted: #617286;
+    --line: #ccd6e3;
+    --soft: #f4f7fb;
+    --panel: #ffffff;
+    --brand: #0b4f6c;
+    --brand-soft: #eaf4fa;
+    --accent: #d97d54;
+    --warn-bg: #fff3e7;
+    --warn-line: #d97706;
+    --ok-bg: #edf9f1;
+    --ok-line: #15803d;
+    --info-bg: #eef6ff;
+    --info-line: #2563eb;
+  }
+  * { box-sizing: border-box; }
+  @page {
+    size: A4;
+    margin: 14mm 12mm 14mm 12mm;
+  }
+  @media print {
+    body { background: #fff; font-size: 9pt; }
+    .page { max-width: none; padding: 0; }
+    .meta, .toc-box { page-break-inside: avoid; }
+    h2 { page-break-before: always; }
+    h2:first-of-type { page-break-before: avoid; }
+    .pre-block, table { page-break-inside: avoid; }
+  }
+  body {
+    margin: 0;
+    background: linear-gradient(180deg, #eef5fb 0%, #f8fbfd 180px, #f7f8fa 100%);
+    color: var(--ink);
+    font-family: "Malgun Gothic", "맑은 고딕", "Noto Sans KR", sans-serif;
+    line-height: 1.65;
+  }
+  .page {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 28px 24px 40px;
+  }
+  h1 {
+    margin: 0;
+    padding-bottom: 12px;
+    font-size: 30px;
+    color: var(--brand);
+    border-bottom: 3px solid var(--brand);
+  }
+  h2 {
+    margin-top: 36px;
+    padding: 10px 14px;
+    font-size: 24px;
+    color: var(--brand);
+    background: var(--brand-soft);
+    border-left: 6px solid var(--brand);
+    border-radius: 10px;
+  }
+  h3 {
+    margin-top: 28px;
+    font-size: 18px;
+    color: #1c5d38;
+  }
+  h4 {
+    margin-top: 20px;
+    font-size: 15px;
+    color: #344255;
+  }
+  p, li { word-break: keep-all; }
+  .meta {
+    margin: 18px 0 24px;
+    padding: 14px 18px;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    color: var(--muted);
+  }
+  .toc-box {
+    margin: 0 0 28px;
+    padding: 18px 20px;
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+  }
+  .toc-box .toc > ul, .toc-box .toc > ol {
+    margin: 0;
+    padding-left: 22px;
+  }
+  .toc-box li { margin: 5px 0; }
+  .toc-box a {
+    color: var(--brand);
+    text-decoration: none;
+  }
+  .toc-box a:hover { text-decoration: underline; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0 18px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+    display: block;
+    overflow-x: auto;
+  }
+  thead th {
+    background: #e6eef7;
+    color: var(--brand);
+  }
+  th, td {
+    border: 1px solid var(--line);
+    padding: 8px 10px;
+    text-align: left;
+    vertical-align: top;
+    white-space: nowrap;
+  }
+  td { white-space: normal; }
+  tr:nth-child(even) td { background: #fbfdff; }
+  .pre-block {
+    margin: 16px 0 22px;
+  }
+  .pre-label {
+    display: inline-block;
+    margin: 0 0 8px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--brand);
+    background: var(--brand-soft);
+  }
+  .pre-block pre {
+    margin: 0;
+    padding: 16px 18px;
+    overflow-x: auto;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    background: #f8fafc;
+    box-shadow: 0 10px 24px rgba(17, 24, 39, 0.05);
+    white-space: pre;
+  }
+  .pre-block code {
+    font-family: "D2Coding", "Cascadia Mono", "Consolas", "Noto Sans Mono CJK KR", monospace;
+    font-variant-ligatures: none;
+    font-size: 13px;
+    line-height: 1.42;
+    letter-spacing: 0;
+  }
+  .pre-block.diagram pre {
+    background: linear-gradient(180deg, #f9fbfd 0%, #f2f7fb 100%);
+    border-color: #bfd3e1;
+  }
+  .pre-block.formula pre {
+    background: #f8fbf6;
+    border-color: #c9dec7;
+  }
+  .pre-block.source pre {
+    background: #152232;
+    border-color: #152232;
+  }
+  .pre-block.source code {
+    color: #eef4fb;
+  }
+  code {
+    padding: 2px 6px;
+    border-radius: 6px;
+    background: #edf2f7;
+    font-family: "D2Coding", "Cascadia Mono", "Consolas", monospace;
+    font-size: 0.95em;
+  }
+  .pre-block pre code {
+    padding: 0;
+    background: transparent;
+  }
+  .warning-box, .ok-box, .info-box {
+    margin: 14px 0;
+    padding: 12px 16px;
+    border-left: 5px solid;
+    border-radius: 12px;
+  }
+  .warning-box {
+    background: var(--warn-bg);
+    border-color: var(--warn-line);
+  }
+  .ok-box {
+    background: var(--ok-bg);
+    border-color: var(--ok-line);
+  }
+  .info-box {
+    background: var(--info-bg);
+    border-color: var(--info-line);
+  }
+  blockquote { margin: 0; }
+  hr {
+    border: 0;
+    border-top: 1px solid var(--line);
+    margin: 28px 0;
+  }
+  a { color: var(--brand); }
+  .footer {
+    margin-top: 32px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 13px;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <h1>메가소닉 게이트 드라이브 회로 참조 문서</h1>
+      <div class="meta">
+        이 문서는 docs/circuit_ref_64pin.md를 기준으로 자동 생성되었습니다. 생성 시각: 2026-04-15 02:57
+      </div>
+      <section class="toc-box"><div class="toc"><span class="toctitle">목차</span><ul>
+<li><a href="#1">1. 문서 목적</a></li>
+<li><a href="#2-64pin">2. 64pin 전환 핵심 요약</a><ul>
+<li><a href="#21">2.1 변경 핵심 (필수 재배치)</a></li>
+<li><a href="#22">2.2 여유 핀 변화</a></li>
+</ul>
+</li>
+<li><a href="#3">3. 핀 재편성 원칙</a><ul>
+<li><a href="#31">3.1 기능 우선 원칙</a></li>
+<li><a href="#32">3.2 아트웍 편의 원칙</a></li>
+</ul>
+</li>
+<li><a href="#4-64pin">4. 기능별 64pin 핀맵</a><ul>
+<li><a href="#41-pwm-hrtim">4.1 메가소닉 PWM (HRTIM)</a></li>
+<li><a href="#42-lcd1602-led-74hct574-x2-c">4.2 LCD1602 + LED (74HCT574 x2, 방법 C)</a></li>
+<li><a href="#43-5">4.3 버튼 (5개)</a></li>
+<li><a href="#44-rs-485-modbus-rtu">4.4 RS-485 (Modbus RTU)</a></li>
+<li><a href="#45-adc">4.5 ADC 계측</a></li>
+<li><a href="#46">4.6 외부 제어 입력 (광절연)</a></li>
+<li><a href="#47">4.7 알람 릴레이</a></li>
+<li><a href="#48-lc">4.8 LC 탱크 릴레이</a></li>
+<li><a href="#49">4.9 기타</a></li>
+</ul>
+</li>
+<li><a href="#5-64pin">5. 물리적 군집 관점 라우팅 가이드 (64pin)</a><ul>
+<li><a href="#51">5.1 디스플레이 군집 (하측/우하측 권장)</a></li>
+<li><a href="#52">5.2 외부입력 군집 (하측/좌하측 권장)</a></li>
+<li><a href="#53">5.3 전력/고속 군집</a></li>
+</ul>
+</li>
+<li><a href="#6-64pin-spare">6. 64pin 기준 spare 핀</a></li>
+<li><a href="#7-64pin">7. 설계 체크리스트 (64pin)</a></li>
+<li><a href="#8">8. 문서 관계</a></li>
+</ul>
+</div>
+</section>
+    </header>
+    <h1 id="64pin">메가소닉 메인보드 회로 참조 (64pin 재편성)</h1>
+<div class="info-box"><p>대상: STM32G474RETx LQFP64 기반 메가소닉 메인보드<br>
+기준: 기능 우선 + 아트웍 편의(물리적 핀 군집화)<br>
+레거시 80핀 문서: docs/circuit_ref_80pin.md</p></div>
+<hr>
+<h2 id="1">1. 문서 목적</h2>
+<p>이 문서는 기존 80핀 배치에서 64핀 패키지로 전환할 때 필요한 회로/핀맵 재편성 기준을 정리한다.<br>
+핵심 목표는 다음 2가지다.</p>
+<ul>
+<li>기능 유지: HRTIM, ADC, RS-485, LCD/LED 래치, 알람/릴레이, 외부입력 기능을 동일하게 유지</li>
+<li>아트웍 최적화: 신호 성격별로 핀을 가능한 한 같은 포트/인접 군으로 배치해 배선 단순화</li>
+</ul>
+<hr>
+<h2 id="2-64pin">2. 64pin 전환 핵심 요약</h2>
+<h3 id="21">2.1 변경 핵심 (필수 재배치)</h3>
+<table>
+<thead>
+<tr>
+<th>기능</th>
+<th>80pin</th>
+<th>64pin</th>
+<th>변경 이유</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LCD 래치 클럭</td>
+<td>PD8</td>
+<td>PC14</td>
+<td>LQFP64에서 PD8 미사용, GPIOC 상단 핀으로 재배치</td>
+</tr>
+<tr>
+<td>LED 래치 클럭</td>
+<td>PD9</td>
+<td>PC15</td>
+<td>LQFP64에서 PD9 미사용, GPIOC 상단 핀으로 재배치</td>
+</tr>
+<tr>
+<td>SENSOR 입력</td>
+<td>PD0</td>
+<td>PD2</td>
+<td>외부입력의 독립 라인 확보 및 PC13 여유 핀 회수</td>
+</tr>
+<tr>
+<td>LOW_ALARM</td>
+<td>PC15</td>
+<td>PA10</td>
+<td>BOOT0 핀 인접 충돌 회피 및 알람 출력 안정화</td>
+</tr>
+<tr>
+<td>BUZZER</td>
+<td>PB5</td>
+<td>PC5</td>
+<td>디스플레이/외부입력 라우팅 단순화를 위한 재배치</td>
+</tr>
+</tbody>
+</table>
+<h3 id="22">2.2 여유 핀 변화</h3>
+<ul>
+<li>64pin 재배치(클럭/알람 포함) 후 spare 재조정</li>
+<li>BUZZER, SENSOR 재배치 반영 후 최종 여유 6개 유지</li>
+</ul>
+<p>최종 spare:</p>
+<ul>
+<li>PA5</li>
+<li>PB2</li>
+<li>PB5</li>
+<li>PB8</li>
+<li>PB9</li>
+<li>PC13</li>
+</ul>
+<hr>
+<h2 id="3">3. 핀 재편성 원칙</h2>
+<h3 id="31">3.1 기능 우선 원칙</h3>
+<ul>
+<li>고속/타이밍 민감 신호는 유지</li>
+<li>HRTIM PWM: PA8/PA9 유지</li>
+<li>ADC 4채널: PA0/PA1/PA6/PA7 유지</li>
+<li>RS-485: PA2/PA3 + PB0/PB1 유지</li>
+</ul>
+<h3 id="32">3.2 아트웍 편의 원칙</h3>
+<ul>
+<li>디스플레이 버스 군집화:</li>
+<li>PC14/PC15 + PB10~PB15로 통일</li>
+<li>외부 입력 군집화:</li>
+<li>PC10/PC11/PC12 + PD2(SENSOR)</li>
+<li>릴레이 군집화:</li>
+<li>LC 릴레이는 PC6~PC9 유지</li>
+<li>알람 릴레이는 PA10/PA11/PA12/PB3/PB4 유지</li>
+</ul>
+<hr>
+<h2 id="4-64pin">4. 기능별 64pin 핀맵</h2>
+<h3 id="41-pwm-hrtim">4.1 메가소닉 PWM (HRTIM)</h3>
+<table>
+<thead>
+<tr>
+<th>핀</th>
+<th>기능</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PA8</td>
+<td>HRTIM1_CHA1</td>
+<td>하이사이드 게이트 드라이브</td>
+</tr>
+<tr>
+<td>PA9</td>
+<td>HRTIM1_CHA2</td>
+<td>로우사이드 게이트 드라이브</td>
+</tr>
+</tbody>
+</table>
+<h3 id="42-lcd1602-led-74hct574-x2-c">4.2 LCD1602 + LED (74HCT574 x2, 방법 C)</h3>
+<table>
+<thead>
+<tr>
+<th>핀</th>
+<th>기능</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PB10~PB15</td>
+<td>공유 DATA[0..5]</td>
+<td>LCD/LED 공용 6비트 버스</td>
+</tr>
+<tr>
+<td>PC14</td>
+<td>CLK_LCD</td>
+<td>74HCT574 #1 래치 클럭</td>
+</tr>
+<tr>
+<td>PC15</td>
+<td>CLK_LED</td>
+<td>74HCT574 #2 래치 클럭</td>
+</tr>
+</tbody>
+</table>
+<p>버스 동작:</p>
+<ul>
+<li>LCD 출력: PB10~PB15 데이터 셋팅 -&gt; PC14 상승엣지 래치</li>
+<li>LED 출력: PB10~PB15 데이터 셋팅 -&gt; PC15 상승엣지 래치</li>
+</ul>
+<h3 id="43-5">4.3 버튼 (5개)</h3>
+<table>
+<thead>
+<tr>
+<th>핀</th>
+<th>기능</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PC0</td>
+<td>BTN_START_STOP</td>
+</tr>
+<tr>
+<td>PC1</td>
+<td>BTN_MODE</td>
+</tr>
+<tr>
+<td>PC2</td>
+<td>BTN_UP</td>
+</tr>
+<tr>
+<td>PC3</td>
+<td>BTN_DOWN</td>
+</tr>
+<tr>
+<td>PC4</td>
+<td>BTN_SET</td>
+</tr>
+</tbody>
+</table>
+<h3 id="44-rs-485-modbus-rtu">4.4 RS-485 (Modbus RTU)</h3>
+<table>
+<thead>
+<tr>
+<th>핀</th>
+<th>기능</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PA2</td>
+<td>USART2_TX</td>
+</tr>
+<tr>
+<td>PA3</td>
+<td>USART2_RX</td>
+</tr>
+<tr>
+<td>PB0</td>
+<td>RS-485 DE</td>
+</tr>
+<tr>
+<td>PB1</td>
+<td>RS-485 /RE</td>
+</tr>
+</tbody>
+</table>
+<h3 id="45-adc">4.5 ADC 계측</h3>
+<table>
+<thead>
+<tr>
+<th>핀</th>
+<th>기능</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PA0</td>
+<td>ADC1_IN1 (Forward)</td>
+</tr>
+<tr>
+<td>PA1</td>
+<td>ADC1_IN2 (Reflected)</td>
+</tr>
+<tr>
+<td>PA6</td>
+<td>ADC2_IN3 (Current)</td>
+</tr>
+<tr>
+<td>PA7</td>
+<td>ADC2_IN4 (Voltage)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="46">4.6 외부 제어 입력 (광절연)</h3>
+<table>
+<thead>
+<tr>
+<th>핀</th>
+<th>기능</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PA15</td>
+<td>REMOTE</td>
+</tr>
+<tr>
+<td>PC10</td>
+<td>BCD1</td>
+</tr>
+<tr>
+<td>PC11</td>
+<td>BCD2</td>
+</tr>
+<tr>
+<td>PC12</td>
+<td>BCD3</td>
+</tr>
+<tr>
+<td>PD2</td>
+<td>SENSOR_INPUT</td>
+</tr>
+</tbody>
+</table>
+<h3 id="47">4.7 알람 릴레이</h3>
+<table>
+<thead>
+<tr>
+<th>핀</th>
+<th>기능</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PA11</td>
+<td>RELAY_GO</td>
+</tr>
+<tr>
+<td>PA12</td>
+<td>RELAY_OPERATE</td>
+</tr>
+<tr>
+<td>PA10</td>
+<td>RELAY_LOW</td>
+</tr>
+<tr>
+<td>PB3</td>
+<td>RELAY_HIGH</td>
+</tr>
+<tr>
+<td>PB4</td>
+<td>RELAY_TRANSDUCER</td>
+</tr>
+</tbody>
+</table>
+<h3 id="48-lc">4.8 LC 탱크 릴레이</h3>
+<table>
+<thead>
+<tr>
+<th>핀</th>
+<th>기능</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PC6</td>
+<td>LC_RELAY1</td>
+</tr>
+<tr>
+<td>PC7</td>
+<td>LC_RELAY2</td>
+</tr>
+<tr>
+<td>PC8</td>
+<td>LC_RELAY3</td>
+</tr>
+<tr>
+<td>PC9</td>
+<td>LC_RELAY4</td>
+</tr>
+</tbody>
+</table>
+<h4 id="481-4">4.8.1 공진 튜닝 인덕턴스 조합표 (고정 + 릴레이 4개)</h4>
+<p>자동 공진 탐색에서 저인덕턴스(2MHz 근처) 분해능을 높이기 위해,<br>
+2진 가중(2/4/8/16uH) 대신 고정 인덕턴스 + 릴레이 조합 구조를 사용한다.</p>
+<ul>
+<li>고정 인덕턴스:</li>
+<li>L_BASE = 3.3uH || 3.9uH = <strong>1.79uH</strong> (근사)</li>
+<li>릴레이 분기 인덕턴스:</li>
+<li>bit0 (LC_RELAY1, PC6): L1 = 1.5uH || 2.2uH = <strong>0.89uH</strong></li>
+<li>bit1 (LC_RELAY2, PC7): L2 = <strong>2.7uH</strong></li>
+<li>bit2 (LC_RELAY3, PC8): L3 = <strong>4.7uH</strong></li>
+<li>bit3 (LC_RELAY4, PC9): L4 = <strong>6.8uH</strong></li>
+</ul>
+<p>총 인덕턴스:</p>
+<ul>
+<li>L_total = L_BASE + (bit0?L1:0) + (bit1?L2:0) + (bit2?L3:0) + (bit3?L4:0)</li>
+<li>범위: <strong>1.79uH ~ 16.88uH</strong> (16조합)</li>
+</ul>
+<p>주요 타깃 근사:</p>
+<ul>
+<li>1.76uH 목표: 0000 -&gt; 1.79uH</li>
+<li>2.64uH 목표: 0001 -&gt; 2.68uH</li>
+<li>16.9uH 목표: 1111 -&gt; 16.88uH</li>
+</ul>
+<p>16조합 테이블:</p>
+<table>
+<thead>
+<tr>
+<th>b3 b2 b1 b0</th>
+<th style="text-align: right;">추가 L (uH)</th>
+<th style="text-align: right;">L_total (uH)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0000</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">1.79</td>
+</tr>
+<tr>
+<td>0001</td>
+<td style="text-align: right;">0.89</td>
+<td style="text-align: right;">2.68</td>
+</tr>
+<tr>
+<td>0010</td>
+<td style="text-align: right;">2.70</td>
+<td style="text-align: right;">4.49</td>
+</tr>
+<tr>
+<td>0011</td>
+<td style="text-align: right;">3.59</td>
+<td style="text-align: right;">5.38</td>
+</tr>
+<tr>
+<td>0100</td>
+<td style="text-align: right;">4.70</td>
+<td style="text-align: right;">6.49</td>
+</tr>
+<tr>
+<td>0101</td>
+<td style="text-align: right;">5.59</td>
+<td style="text-align: right;">7.38</td>
+</tr>
+<tr>
+<td>0110</td>
+<td style="text-align: right;">7.40</td>
+<td style="text-align: right;">9.19</td>
+</tr>
+<tr>
+<td>0111</td>
+<td style="text-align: right;">8.29</td>
+<td style="text-align: right;">10.08</td>
+</tr>
+<tr>
+<td>1000</td>
+<td style="text-align: right;">6.80</td>
+<td style="text-align: right;">8.59</td>
+</tr>
+<tr>
+<td>1001</td>
+<td style="text-align: right;">7.69</td>
+<td style="text-align: right;">9.48</td>
+</tr>
+<tr>
+<td>1010</td>
+<td style="text-align: right;">9.50</td>
+<td style="text-align: right;">11.29</td>
+</tr>
+<tr>
+<td>1011</td>
+<td style="text-align: right;">10.39</td>
+<td style="text-align: right;">12.18</td>
+</tr>
+<tr>
+<td>1100</td>
+<td style="text-align: right;">11.50</td>
+<td style="text-align: right;">13.29</td>
+</tr>
+<tr>
+<td>1101</td>
+<td style="text-align: right;">12.39</td>
+<td style="text-align: right;">14.18</td>
+</tr>
+<tr>
+<td>1110</td>
+<td style="text-align: right;">14.20</td>
+<td style="text-align: right;">15.99</td>
+</tr>
+<tr>
+<td>1111</td>
+<td style="text-align: right;">15.09</td>
+<td style="text-align: right;">16.88</td>
+</tr>
+</tbody>
+</table>
+<h4 id="482-c-lut-16-x-3-c">4.8.2 C값별 공진 주파수 LUT (16조합 x 3종 C)</h4>
+<p>공진 주파수는 아래 식으로 계산한다.</p>
+<ul>
+<li>f_res = 1 / (2<em>pi</em>sqrt(L_total*C))</li>
+<li>L_total: 4.8.1 조합표 값 (uH)</li>
+<li>C: 트랜스듀서 정전용량 (1.5nF / 2.4nF / 3.6nF)</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>b3 b2 b1 b0</th>
+<th style="text-align: right;">L_total (uH)</th>
+<th style="text-align: right;">f_res @1.5nF (kHz)</th>
+<th style="text-align: right;">f_res @2.4nF (kHz)</th>
+<th style="text-align: right;">f_res @3.6nF (kHz)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0000</td>
+<td style="text-align: right;">1.79</td>
+<td style="text-align: right;">3071.5</td>
+<td style="text-align: right;">2428.2</td>
+<td style="text-align: right;">1982.6</td>
+</tr>
+<tr>
+<td>0001</td>
+<td style="text-align: right;">2.68</td>
+<td style="text-align: right;">2510.2</td>
+<td style="text-align: right;">1984.5</td>
+<td style="text-align: right;">1620.3</td>
+</tr>
+<tr>
+<td>0010</td>
+<td style="text-align: right;">4.49</td>
+<td style="text-align: right;">1939.3</td>
+<td style="text-align: right;">1533.2</td>
+<td style="text-align: right;">1251.8</td>
+</tr>
+<tr>
+<td>0011</td>
+<td style="text-align: right;">5.38</td>
+<td style="text-align: right;">1771.7</td>
+<td style="text-align: right;">1400.6</td>
+<td style="text-align: right;">1143.6</td>
+</tr>
+<tr>
+<td>0100</td>
+<td style="text-align: right;">6.49</td>
+<td style="text-align: right;">1613.1</td>
+<td style="text-align: right;">1275.2</td>
+<td style="text-align: right;">1041.2</td>
+</tr>
+<tr>
+<td>0101</td>
+<td style="text-align: right;">7.38</td>
+<td style="text-align: right;">1512.7</td>
+<td style="text-align: right;">1195.9</td>
+<td style="text-align: right;">976.4</td>
+</tr>
+<tr>
+<td>0110</td>
+<td style="text-align: right;">9.19</td>
+<td style="text-align: right;">1355.6</td>
+<td style="text-align: right;">1071.7</td>
+<td style="text-align: right;">875.0</td>
+</tr>
+<tr>
+<td>0111</td>
+<td style="text-align: right;">10.08</td>
+<td style="text-align: right;">1294.3</td>
+<td style="text-align: right;">1023.3</td>
+<td style="text-align: right;">835.5</td>
+</tr>
+<tr>
+<td>1000</td>
+<td style="text-align: right;">8.59</td>
+<td style="text-align: right;">1402.1</td>
+<td style="text-align: right;">1108.5</td>
+<td style="text-align: right;">905.0</td>
+</tr>
+<tr>
+<td>1001</td>
+<td style="text-align: right;">9.48</td>
+<td style="text-align: right;">1334.7</td>
+<td style="text-align: right;">1055.1</td>
+<td style="text-align: right;">861.5</td>
+</tr>
+<tr>
+<td>1010</td>
+<td style="text-align: right;">11.29</td>
+<td style="text-align: right;">1223.0</td>
+<td style="text-align: right;">966.9</td>
+<td style="text-align: right;">789.4</td>
+</tr>
+<tr>
+<td>1011</td>
+<td style="text-align: right;">12.18</td>
+<td style="text-align: right;">1177.5</td>
+<td style="text-align: right;">930.9</td>
+<td style="text-align: right;">760.1</td>
+</tr>
+<tr>
+<td>1100</td>
+<td style="text-align: right;">13.29</td>
+<td style="text-align: right;">1127.2</td>
+<td style="text-align: right;">891.2</td>
+<td style="text-align: right;">727.6</td>
+</tr>
+<tr>
+<td>1101</td>
+<td style="text-align: right;">14.18</td>
+<td style="text-align: right;">1091.3</td>
+<td style="text-align: right;">862.7</td>
+<td style="text-align: right;">704.4</td>
+</tr>
+<tr>
+<td>1110</td>
+<td style="text-align: right;">15.99</td>
+<td style="text-align: right;">1027.7</td>
+<td style="text-align: right;">812.4</td>
+<td style="text-align: right;">663.4</td>
+</tr>
+<tr>
+<td>1111</td>
+<td style="text-align: right;">16.88</td>
+<td style="text-align: right;">1000.2</td>
+<td style="text-align: right;">790.7</td>
+<td style="text-align: right;">645.6</td>
+</tr>
+</tbody>
+</table>
+<p>참고:</p>
+<ul>
+<li>펌웨어 기본 채널 운용 범위(500~2000kHz) 기준에서, C=1.5nF는 0010~1111 조합이 유효 대역에 들어온다.</li>
+<li>C=2.4nF, 3.6nF는 0001~1111 조합 대부분이 유효 대역에 들어오며, 0000은 2MHz 초과 가능성이 높다.</li>
+</ul>
+<h3 id="49">4.9 기타</h3>
+<table>
+<thead>
+<tr>
+<th>핀</th>
+<th>기능</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PA4</td>
+<td>DAC1_OUT1 (BUCK FB 제어)</td>
+</tr>
+<tr>
+<td>PC5</td>
+<td>BUZZER</td>
+</tr>
+<tr>
+<td>PB6</td>
+<td>USART1_TX (Debug)</td>
+</tr>
+<tr>
+<td>PB7</td>
+<td>USART1_RX (Debug)</td>
+</tr>
+<tr>
+<td>PA13</td>
+<td>SWDIO</td>
+</tr>
+<tr>
+<td>PA14</td>
+<td>SWCLK</td>
+</tr>
+<tr>
+<td>PF0</td>
+<td>HSE OSC_IN</td>
+</tr>
+<tr>
+<td>PF1</td>
+<td>HSE OSC_OUT</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="5-64pin">5. 물리적 군집 관점 라우팅 가이드 (64pin)</h2>
+<div class="info-box"><p>아래 군집은 배선 난이도/길이/크로스토크를 줄이기 위한 권장 배치다.</p></div>
+<h3 id="51">5.1 디스플레이 군집 (하측/우하측 권장)</h3>
+<ul>
+<li>PC14, PC15, PB10~PB15</li>
+<li>20핀 커넥터를 MCU 인접에 배치하고, DATA+CLK를 한 면에서 바로 인출</li>
+</ul>
+<h3 id="52">5.2 외부입력 군집 (하측/좌하측 권장)</h3>
+<ul>
+<li>PA15, PC10~PC13</li>
+<li>PA15, PC10~PC12, PD2</li>
+<li>광커플러(TLP281-4 + TLP181) 입력단을 같은 영역으로 묶어 GND 리턴 경로 단순화</li>
+</ul>
+<h3 id="53">5.3 전력/고속 군집</h3>
+<ul>
+<li>HRTIM: PA8/PA9는 UCC21520까지 최단거리</li>
+<li>ADC: PA0/PA1/PA6/PA7은 아날로그 섬으로 분리</li>
+<li>RS-485: PA2/PA3 + PB0/PB1는 트랜시버 근접 배치</li>
+</ul>
+<hr>
+<h2 id="6-64pin-spare">6. 64pin 기준 spare 핀</h2>
+<table>
+<thead>
+<tr>
+<th>분류</th>
+<th>핀</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>spare</td>
+<td>PA5</td>
+<td>ADC2_IN13 겸용</td>
+</tr>
+<tr>
+<td>spare</td>
+<td>PB2</td>
+<td>GPIO 확장</td>
+</tr>
+<tr>
+<td>spare</td>
+<td>PB5</td>
+<td>GPIO 확장</td>
+</tr>
+<tr>
+<td>spare</td>
+<td>PB8</td>
+<td>GPIO 확장</td>
+</tr>
+<tr>
+<td>spare</td>
+<td>PB9</td>
+<td>GPIO 확장</td>
+</tr>
+<tr>
+<td>spare</td>
+<td>PC13</td>
+<td>GPIO 확장</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="7-64pin">7. 설계 체크리스트 (64pin)</h2>
+<ul>
+<li>[ ] LCD/LED 래치 클럭이 PC14/PC15로 반영되었는지 확인</li>
+<li>[ ] SENSOR 입력이 PD2로 반영되었는지 확인</li>
+<li>[ ] BUZZER가 PC5로 반영되었는지 확인</li>
+<li>[ ] 디스플레이 커넥터가 PC14/15 및 PB10~PB15 근접 배치인지 확인</li>
+<li>[ ] 외부입력 광커플러가 PC10~13 중심으로 배치되었는지 확인</li>
+<li>[ ] HRTIM PWM 트레이스(PA8/PA9) 최단거리 배선 확인</li>
+<li>[ ] ADC 입력 라인과 디지털 스위칭 라인 분리 확인</li>
+</ul>
+<hr>
+<h2 id="8">8. 문서 관계</h2>
+<ul>
+<li>64핀 주 문서: docs/circuit_ref_64pin.md</li>
+<li>64핀 HTML: docs/circuit_ref_64pin.html</li>
+<li>80핀 레거시: docs/circuit_ref_80pin.md</li>
+</ul>
+<div class="info-box"><p>운영/코드/지침은 본 문서(64pin)를 기본 기준으로 유지한다.</p></div>
+    <div class="footer">circuit_ref_64pin.md 기반 자동 생성 문서</div>
+  </main>
+</body>
+</html>
