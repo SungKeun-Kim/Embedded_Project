@@ -54,6 +54,7 @@ Thumbs.db
 **/fp-info-cache
 **/_autosave-*
 **/*.lck
+**/.history/
 
 # KiCad 다운로드 라이브러리 (Down_Lib) — 용량 크고 재생성 가능
 **/Down_Lib/
