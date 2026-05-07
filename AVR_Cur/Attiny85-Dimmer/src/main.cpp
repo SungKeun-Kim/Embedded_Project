@@ -68,7 +68,7 @@ const uint8_t TRIGGER_PULSE_WIDTH = 20;      // 트리거 펄스 폭 (20 × 25μ
 const uint8_t ZC_OFFSET = 16;               // ZC 오프셋 (16 × 25μs = 0.4ms)
 const uint16_t SAFETY_TIMEOUT = 420;         // 10.5ms (50Hz 대응, ZC 미검출시 타임아웃)
 const uint16_t MIN_ZC_PERIOD = 280;          // 7ms (노이즈 필터)
-const uint16_t MAX_ZC_PERIOD = 440;          // ZC 주기 유효 상한 (50Hz + 빠른칩 대응)
+const uint16_t MAX_ZC_PERIOD = 450;          // ZC 주기 유효 상한 (50Hz + 빠른칩 대응 여유)
 const uint16_t ZC_PERIOD_REF = 332;          // 기준 주기 (60Hz @ 8MHz, 25μs 단위)
 // minDim: ZC 이후 최소 지연(틱). 작을수록 더 밝음.
 // 응용은 초음파 세척기 전력 제어(트라이악 위상 → 브릿지 정류 등 비선형 부하). ZC 직후 점화가
@@ -76,10 +76,11 @@ const uint16_t ZC_PERIOD_REF = 332;          // 기준 주기 (60Hz @ 8MHz, 25μ
 // 최대출력 손실은 반주기 대비 약 0.25~0.3%/틱 수준으로 미미한 편.
 const uint16_t MIN_DIM_DEFAULT = 128;        // 부팅·비율 기준 (332틱 대비 128틱 ≈ 38.6%)
 const uint16_t MIN_DIM_BASE = 128;           // 캘리브/런타임 minDim = avgPeriod × 이값 / ZC_PERIOD_REF
-const uint16_t MAX_DIM_DEFAULT = 312;        // 기본값 (부팅 시, 보수적)
-const uint8_t MAX_DIM_MARGIN = 20;           // maxDim 계산 시 여유 (측정주기 - 20)
-                                             // 332 - 20 = 312 (old 10틱 margin 복원)
-const uint16_t MAX_DIM_MIN = 312;            // maxDim 하한 (느린칩 대응)
+const uint16_t MAX_DIM_DEFAULT = 310;        // 기본값 (부팅 시, 보수적)
+const uint8_t MAX_DIM_MARGIN = 20;           // maxDim 기본 여유 (측정주기 - 20)
+const uint8_t MAX_DIM_GUARD = 2;             // 제로크로스 경계 넘김 방지용 추가 가드(2틱)
+                                             // 332 - 20 - 2 = 310
+const uint16_t MAX_DIM_MIN = 310;            // maxDim 하한 (느린칩 대응)
 const uint16_t MAX_DIM_MAX = 391;            // maxDim 상한 (50Hz 대응)
 const uint16_t MIN_DIM_MIN = 115;            // minDim 하한 (경험적 안정 래치 한계)
 const uint16_t MIN_DIM_MAX = 161;            // minDim 상한 (50Hz 대응)
@@ -190,7 +191,7 @@ void setup() {
     uint16_t avgPeriod = periodSum / 8;
     
     // maxDim 계산 (avgPeriod - margin)
-    int16_t calcMax = (int16_t)avgPeriod - MAX_DIM_MARGIN;
+    int16_t calcMax = (int16_t)avgPeriod - MAX_DIM_MARGIN - MAX_DIM_GUARD;
     if (calcMax < (int16_t)MAX_DIM_MIN) calcMax = MAX_DIM_MIN;
     if (calcMax > (int16_t)MAX_DIM_MAX) calcMax = MAX_DIM_MAX;
     maxDim = (uint16_t)calcMax;
@@ -334,7 +335,7 @@ void loop() {
       if (periodCount >= 16) {
         uint16_t avg = periodAccum / 16;
 
-        int16_t calcMax = (int16_t)avg - MAX_DIM_MARGIN;
+        int16_t calcMax = (int16_t)avg - MAX_DIM_MARGIN - MAX_DIM_GUARD;
         if (calcMax < (int16_t)MAX_DIM_MIN) calcMax = MAX_DIM_MIN;
         if (calcMax > (int16_t)MAX_DIM_MAX) calcMax = MAX_DIM_MAX;
 
