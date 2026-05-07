@@ -1,0 +1,291 @@
+<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word">
+<head><meta charset="utf-8">
+<style>
+body{font-family:'맑은 고딕',sans-serif;font-size:10pt;margin:2cm 2.5cm;line-height:1.6}
+h1{color:#1A3C6E;font-size:16pt;border-bottom:2px solid #1A3C6E;padding-bottom:4px;page-break-before:always}
+h1:first-of-type{page-break-before:auto}
+h2{color:#2A5C8E;font-size:13pt}
+table{border-collapse:collapse;width:100%;margin:8px 0}
+th,td{border:1px solid #999;padding:5px 8px;font-size:9pt}
+th{background:#D6E4F0;text-align:center;font-weight:bold}
+.warn{color:#CC0000;font-weight:bold;border-left:4px solid #CC0000;padding:6px 12px;background:#FFF0F0;margin:8px 0}
+.tip{color:#006600;border-left:4px solid #006600;padding:6px 12px;background:#F0FFF0;margin:8px 0}
+.lcd{font-family:Consolas,monospace;font-size:12pt;background:#C8E6B0;border:2px solid #666;padding:8px 12px;display:inline-block;margin:6px 0;color:#222}
+.cover{text-align:center;margin-top:120px}
+.cover h1{border:none;color:#1A3C6E;font-size:26pt}
+.cover h2{color:#333;font-size:18pt;border:none}
+.caption{text-align:center;font-style:italic;color:#666;font-size:9pt;margin-top:4px}
+img{max-width:100%;display:block;margin:8px auto}
+</style></head><body>
+
+<div class="cover">
+<h1>CSF JET Multi Megasonic Generator</h1>
+<h2>LCD 패널 운전 매뉴얼</h2>
+<br><img src="LCD_Display.png" width="500"><br><br>
+<p>문서 버전: v1.0 | 적용 보드: STM32G474 기반<br>작성일: 2026-05-07</p>
+</div>
+
+<h1>1. 제품 사양</h1>
+<table>
+<tr><th>항목</th><th>사양</th></tr>
+<tr><td>작동 주파수</td><td>10CH (CH0~CH9), 500 kHz ~ 2.2 MHz</td></tr>
+<tr><td>최대 출력</td><td>10 W</td></tr>
+<tr><td>출력 설정 범위</td><td>0.10 W ~ 10.00 W (0.01 W 단위)</td></tr>
+<tr><td>표시 장치</td><td>LCD1602 (2행 × 16문자)</td></tr>
+<tr><td>상태 LED</td><td>6개 (NORMAL / H·L SET / 8 POWER / REMOTE / EXT / TX RX)</td></tr>
+<tr><td>버튼</td><td>5개 (START/STOP, MODE, UP, DOWN, SET)</td></tr>
+<tr><td>통신</td><td>RS-485 Half-Duplex, Modbus RTU</td></tr>
+<tr><td>기본 통신 속도</td><td>9600 bps</td></tr>
+<tr><td>운전 모드</td><td>NORMAL / REMOTE / EXT</td></tr>
+</table>
+
+<h1>2. 전면 조작 패널 구성</h1>
+<img src="panel_layout.png" width="550">
+<p class="caption">[그림 2-1] 전면 조작 패널 배치도</p>
+
+<h2>2.1 LED 표시등 (6개)</h2>
+<table>
+<tr><th>위치</th><th>명칭</th><th>의미</th></tr>
+<tr><td>좌측 D1</td><td><b>NORMAL</b></td><td>NORMAL 모드 활성 시 점등</td></tr>
+<tr><td>좌측 D2</td><td><b>H/L SET</b></td><td>HIGH/LOW 알람 설정 모드 시 점등</td></tr>
+<tr><td>좌측 D3</td><td><b>8 POWER</b></td><td>8단계 출력 설정 모드 시 점등</td></tr>
+<tr><td>우측 D4</td><td><b>REMOTE</b></td><td>REMOTE 모드 활성 시 점등 (운전 중 점멸)</td></tr>
+<tr><td>우측 D5</td><td><b>EXT</b></td><td>EXT(통신) 모드 활성 시 점등</td></tr>
+<tr><td>우측 D6</td><td><b>TX RX</b></td><td>RS-485 통신 송수신 시 점멸</td></tr>
+</table>
+
+<h2>2.2 버튼 (5개)</h2>
+<table>
+<tr><th>버튼</th><th>실크 인쇄</th><th>기본 기능</th><th>EXT 부가기능</th></tr>
+<tr><td>TS1</td><td><b>START/STOP</b></td><td>발진 시작/정지</td><td>ADDR 설정 진입</td></tr>
+<tr><td>TS2</td><td><b>MODE</b></td><td>모드/화면 전환</td><td>BPS 설정 전환</td></tr>
+<tr><td>TS3</td><td><b>UP</b></td><td>값 증가</td><td>ADDR/BPS 값 증가</td></tr>
+<tr><td>TS4</td><td><b>DOWN</b></td><td>값 감소</td><td>ADDR/BPS 값 감소</td></tr>
+<tr><td>TS5</td><td><b>SET</b></td><td>선택/확정/저장</td><td>설정 확정 저장</td></tr>
+</table>
+
+<h2>2.3 LCD 기본 화면 레이아웃</h2>
+<table>
+<tr><th>위치</th><th>표시 내용</th><th>예시</th></tr>
+<tr><td>1행 좌측</td><td>출력 전력</td><td><code>OUT 0.50W</code></td></tr>
+<tr><td>1행 우측</td><td>주파수</td><td><code>F1000k</code></td></tr>
+<tr><td>2행 좌측</td><td>운전 모드</td><td><code>NOR</code> / <code>REM</code> / <code>EXT</code></td></tr>
+<tr><td>2행 중앙</td><td>RUN/STOP</td><td><code>RUN</code> / <code>STOP</code></td></tr>
+<tr><td>2행 우측</td><td>통신 주소</td><td><code>ADR01</code></td></tr>
+</table>
+
+<h1>3. 전원 투입 전 점검</h1>
+<ol>
+<li>AC/DC 전원 규격이 장비 사양과 일치하는가?</li>
+<li>보호접지(PE)가 정확히 연결되었는가?</li>
+<li>트랜스듀서/출력 라인이 올바르게 결선되었는가?</li>
+<li>SENSOR 입력이 정상(SHORT) 상태인가?</li>
+<li>REMOTE 단자 사용 여부가 운전 계획과 일치하는가?</li>
+<li>RS-485 A/B 극성이 마스터 장치와 일치하는가?</li>
+<li>슬레이브 주소 충돌 없는가?</li>
+</ol>
+<p class="warn">⚠ 경고: SENSOR 단자가 OPEN 상태이면 전원 투입 즉시 Err7이 발생한다.</p>
+
+<h1>4. 전원 ON 및 모드 진입</h1>
+<p>전원 ON → LCD 초기화면 → <b>NORMAL 모드</b> 자동 진입</p>
+<img src="mode_flowchart.png" width="500">
+<p class="caption">[그림 4-1] 모드 전환 흐름도</p>
+
+<h2>4.1 부팅 시 키 조합</h2>
+<table>
+<tr><th>키 조합</th><th>진입 모드</th><th>설명</th></tr>
+<tr><td>전원 ON + <b>SET + DOWN</b> 유지</td><td>NORMAL</td><td>강제 NORMAL 복귀</td></tr>
+<tr><td>전원 ON + <b>SET + MODE</b> 유지</td><td>REMOTE</td><td>외부 접점 제어</td></tr>
+<tr><td>전원 ON + <b>UP + MODE</b> 유지</td><td>EXT</td><td>통신 제어</td></tr>
+</table>
+
+<h1>5. 모드별 운전 방법</h1>
+<img src="lcd_screens.png" width="560">
+<p class="caption">[그림 5-1] 모드별 LCD 화면 예시</p>
+
+<h2>5.1 NORMAL 모드 (D1 점등)</h2>
+<p>로컬 패널에서 직접 운전하는 기본 모드.</p>
+<table>
+<tr><th>키</th><th>동작</th></tr>
+<tr><td>START/STOP</td><td>발진 시작 ↔ 정지 토글</td></tr>
+<tr><td>UP / DOWN</td><td>출력 설정값 ±0.01 W 조정</td></tr>
+<tr><td>SET</td><td>현재 설정값 Flash 저장</td></tr>
+<tr><td>MODE</td><td>H/L SET → 8 POWER → NORMAL 순환</td></tr>
+</table>
+<p><b>권장 운전 절차:</b> ①UP/DOWN으로 출력 조정 → ②START/STOP으로 시작 → ③실측 안정화 확인 → ④SET 저장</p>
+<div class="lcd">OUT 0.50W F1000k<br>NOR RUN&nbsp;&nbsp;ADR01</div>
+
+<h2>5.2 H/L SET 모드 (D2 점등)</h2>
+<p>HIGH/LOW 알람 임계값 설정 모드.</p>
+<table>
+<tr><th>키</th><th>동작</th></tr>
+<tr><td>SET</td><td>HIGH ↔ LOW 항목 전환, 저장</td></tr>
+<tr><td>UP / DOWN</td><td>알람 임계값 조정</td></tr>
+<tr><td>MODE</td><td>8 POWER 모드로 이동</td></tr>
+<tr><td>START/STOP</td><td>동작 없음 (실수 방지)</td></tr>
+</table>
+<div class="lcd">H/L ALARM SET&nbsp;&nbsp;&nbsp;<br>HIGH: 8.00W&nbsp;&nbsp;▲▼</div>
+<p class="tip">💡 HIGH는 정상 출력보다 충분히 높게, LOW는 충분히 낮게 설정. 과도하게 좁으면 오경보 발생.</p>
+
+<h2>5.3 8 POWER 모드 (D3 점등)</h2>
+<p>Step별 출력 레시피 운전 모드.</p>
+<table>
+<tr><th>키</th><th>동작</th></tr>
+<tr><td>SET</td><td>Step 선택/확정</td></tr>
+<tr><td>UP / DOWN</td><td>Step별 출력값 조정</td></tr>
+<tr><td>MODE</td><td>NORMAL 모드로 복귀</td></tr>
+</table>
+<div class="lcd">8POWER&nbsp;&nbsp;STEP:3<br>SET: 1.50W&nbsp;&nbsp;&nbsp;▲▼</div>
+
+<h2>5.4 REMOTE 모드 (D4 점등)</h2>
+<p>외부 접점 신호로 ON/OFF 제어. 로컬 키 입력 제한.</p>
+<p><b>진입:</b> 전원 ON + SET + MODE &nbsp;|&nbsp; <b>복귀:</b> 전원 ON + SET + DOWN</p>
+<div class="lcd">OUT 0.50W F1000k<br>REM RUN&nbsp;&nbsp;ADR01</div>
+
+<h2>5.5 EXT 모드 (D5 점등)</h2>
+<p>RS-485 Modbus RTU 통신 및 주소/BPS 설정.</p>
+<table>
+<tr><th>키</th><th>동작</th></tr>
+<tr><td>START/STOP</td><td>ADDR 설정 화면 진입</td></tr>
+<tr><td>MODE</td><td>ADDR ↔ BPS 항목 전환</td></tr>
+<tr><td>UP / DOWN</td><td>값 변경</td></tr>
+<tr><td>SET</td><td>확정 저장</td></tr>
+</table>
+<p><b>진입:</b> 전원 ON + UP + MODE &nbsp;|&nbsp; <b>복귀:</b> 전원 ON + SET + DOWN</p>
+<div class="lcd">EXT COMM SET&nbsp;&nbsp;&nbsp;&nbsp;<br>ADR:01&nbsp;&nbsp;BPS:96</div>
+<p><b>운전순서:</b> ①EXT 진입 → ②START/STOP(ADDR) → ③MODE(항목) → ④UP/DOWN(값) → ⑤SET(저장) → ⑥마스터 Modbus 시작</p>
+
+<h1>6. 키 조합 빠른 참조표</h1>
+<table>
+<tr><th>구분</th><th>조합</th><th>동작</th></tr>
+<tr><td>에러 해제</td><td>MODE + DOWN (2초)</td><td>Err1/Err2/Err5 해제</td></tr>
+<tr><td>NORMAL 진입</td><td>전원 ON + SET + DOWN</td><td>NORMAL 모드</td></tr>
+<tr><td>REMOTE 진입</td><td>전원 ON + SET + MODE</td><td>REMOTE 모드</td></tr>
+<tr><td>EXT 진입</td><td>전원 ON + UP + MODE</td><td>EXT 모드</td></tr>
+<tr><td>EXT ADDR/BPS</td><td>START/STOP → MODE → UP/DOWN → SET</td><td>통신 설정</td></tr>
+</table>
+<p class="warn">⛔ Err7/Err8은 키 조합으로 해제 불가. 반드시 전원 OFF → 센서 확인 → 전원 ON.</p>
+
+<h1>7. 주파수 채널 설정</h1>
+<table>
+<tr><th>채널</th><th>주파수(kHz)</th><th>비고</th></tr>
+<tr><td>CH0</td><td>500</td><td>저주파 시작</td></tr>
+<tr><td>CH1</td><td>700</td><td></td></tr>
+<tr><td>CH2</td><td>900</td><td></td></tr>
+<tr><td>CH3</td><td>1100</td><td></td></tr>
+<tr><td>CH4</td><td>1300</td><td></td></tr>
+<tr><td>CH5</td><td>1500</td><td></td></tr>
+<tr><td>CH6</td><td>1700</td><td></td></tr>
+<tr><td>CH7</td><td>1900</td><td></td></tr>
+<tr><td>CH8</td><td>2100</td><td></td></tr>
+<tr><td>CH9</td><td>2200</td><td>상한 채널</td></tr>
+</table>
+<p class="tip">ℹ 채널 변경 시 1초간 출력 정지 후 새 주파수 전환. 고주파(2MHz↑)는 단계 상승 권장.</p>
+
+<h1>8. 에러 코드 및 복구</h1>
+<table>
+<tr><th>코드</th><th>명칭</th><th>발생 조건</th><th>해제 방법</th></tr>
+<tr><td>Err1</td><td>LOW ALARM</td><td>출력 &lt; LOW 임계, 5초 지속</td><td>MODE+DOWN(2초)</td></tr>
+<tr><td>Err2</td><td>HIGH ALARM</td><td>출력 &gt; HIGH 임계, 5초 지속</td><td>MODE+DOWN(2초)</td></tr>
+<tr><td>Err5</td><td>TRANSDUCER</td><td>진동자/부하 이상, 5초 지속</td><td>MODE+DOWN(2초)</td></tr>
+<tr><td>Err6</td><td>SETTING ERROR</td><td>허용 범위 밖 설정 시도</td><td>값 재입력</td></tr>
+<tr><td style="color:red;font-weight:bold">Err7</td><td>SENSOR OFF</td><td>정지 중 SENSOR 오픈</td><td><b>전원 사이클</b></td></tr>
+<tr><td style="color:red;font-weight:bold">Err8</td><td>SENSOR RUN</td><td>운전 중 SENSOR 오픈</td><td><b>전원 사이클</b></td></tr>
+</table>
+<div class="lcd">** ERROR **&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>Err1 LOW ALARM</div>
+
+<h2>8.1 에러별 조치</h2>
+<p><b>Err1:</b> 출력선/부하 확인 → LOW 임계값 확인 → MODE+DOWN(2초) 해제 → 재기동</p>
+<p><b>Err2:</b> 설정값/부하 비교 → HIGH 임계값 재검토 → MODE+DOWN(2초) 해제 → 단계 재시험</p>
+<p><b>Err5:</b> 트랜스듀서/케이블 점검 → MODE+DOWN(2초) 해제 → 저출력 재시험</p>
+<p><b>Err7/Err8:</b> 출력 정지 확인 → SENSOR 물리 점검 → <b>전원 OFF</b> → SENSOR 정상 확인 → 전원 ON</p>
+
+<h1>9. RS-485 Modbus RTU 통신</h1>
+<img src="rs485_wiring.png" width="500">
+<p class="caption">[그림 9-1] RS-485 배선도</p>
+
+<h2>9.1 물리 사양</h2>
+<table>
+<tr><th>항목</th><th>사양</th></tr>
+<tr><td>규격</td><td>RS-485 Half-Duplex</td></tr>
+<tr><td>배선</td><td>A/B 2선 + GND</td></tr>
+<tr><td>종단 저항</td><td>라인 양단 120 Ω</td></tr>
+<tr><td>보레이트</td><td>9600 / 19200 / 38400 / 115200 bps</td></tr>
+<tr><td>데이터</td><td>8-N-1 또는 8-E-1</td></tr>
+<tr><td>CRC</td><td>CRC-16 (0xA001)</td></tr>
+</table>
+
+<h2>9.2 기능 코드 / 접근 정책</h2>
+<table>
+<tr><th>FC</th><th>기능</th><th>NORMAL</th><th>REMOTE</th><th>EXT</th></tr>
+<tr><td>0x03</td><td>Holding Register 읽기</td><td>○</td><td>○</td><td>○</td></tr>
+<tr><td>0x06</td><td>단일 Register 쓰기</td><td>△</td><td>△</td><td>○</td></tr>
+<tr><td>0x10</td><td>복수 Register 쓰기</td><td>△</td><td>△</td><td>○</td></tr>
+</table>
+
+<h2>9.3 레지스터 맵</h2>
+<p><b>제어 그룹:</b></p>
+<table>
+<tr><th>주소</th><th>R/W</th><th>항목</th><th>단위/범위</th></tr>
+<tr><td>0x0000</td><td>R/W</td><td>RUN 제어</td><td>0=OFF, 1=ON</td></tr>
+<tr><td>0x0001</td><td>R/W</td><td>출력 설정값</td><td>×0.01W (10~1000)</td></tr>
+<tr><td>0x0002</td><td>R</td><td>실측 출력</td><td>×0.01W</td></tr>
+<tr><td>0x0003</td><td>R/W</td><td>주파수 채널</td><td>0~9</td></tr>
+<tr><td>0x0004</td><td>R</td><td>현재 주파수</td><td>×0.1kHz</td></tr>
+<tr><td>0x0005</td><td>R</td><td>상태 플래그</td><td>bit field</td></tr>
+<tr><td>0x0006</td><td>R/W</td><td>운전 모드</td><td>0=NOR, 1=REM, 2=EXT</td></tr>
+<tr><td>0x0007</td><td>R/W</td><td>슬레이브 주소</td><td>1~247</td></tr>
+</table>
+<p><b>알람/진단 그룹:</b></p>
+<table>
+<tr><th>주소</th><th>R/W</th><th>항목</th><th>범위</th></tr>
+<tr><td>0x0010</td><td>R/W</td><td>HIGH 알람</td><td>×0.01W</td></tr>
+<tr><td>0x0011</td><td>R/W</td><td>LOW 알람</td><td>×0.01W</td></tr>
+<tr><td>0x0012</td><td>R</td><td>에러 상태</td><td>bit field</td></tr>
+<tr><td>0x0013</td><td>W</td><td>에러 리셋</td><td>1=리셋</td></tr>
+<tr><td>0x0017</td><td>R</td><td>펌웨어 버전</td><td>major/minor</td></tr>
+</table>
+
+<h2>9.4 통신 프레임 예시</h2>
+<p><b>상태 읽기:</b> <code>[ADDR] [03] [00 00] [00 08] [CRC]</code> → 0x0000부터 8개 읽기</p>
+<p><b>출력 설정:</b> <code>[ADDR] [06] [00 01] [00 64] [CRC]</code> → 1.00W (100×0.01)</p>
+<p><b>채널 설정:</b> <code>[ADDR] [06] [00 03] [00 09] [CRC]</code> → CH9</p>
+
+<h1>10. 트러블슈팅</h1>
+<table>
+<tr><th>증상</th><th>원인 후보</th><th>조치</th></tr>
+<tr><td>통신 응답 없음</td><td>A/B 반전, 주소/BPS 불일치</td><td>배선·주소·속도 재확인</td></tr>
+<tr><td>출력 직후 정지</td><td>SENSOR 오픈, 알람 과민</td><td>SENSOR·알람값 점검</td></tr>
+<tr><td>출력 ≠ 목표</td><td>부하 변동</td><td>저출력 재튜닝 후 단계 상승</td></tr>
+<tr><td>Err7 반복</td><td>SENSOR 배선 불안정</td><td>센서 회로 물리 점검/교체</td></tr>
+<tr><td>REMOTE 불안정</td><td>접점 바운스</td><td>접점 품질 개선, 3초 간격</td></tr>
+</table>
+
+<h1>11. 유지보수 점검</h1>
+<table>
+<tr><th>주기</th><th>점검 항목</th></tr>
+<tr><td>일일</td><td>케이블/커넥터 이탈, LCD/LED 정상, 알람 이력</td></tr>
+<tr><td>주간</td><td>출력 재현성, 통신 응답, 주소 충돌</td></tr>
+<tr><td>월간</td><td>트랜스듀서 절연, 알람 임계값, 펌웨어/설정 백업</td></tr>
+</table>
+
+<h1>12. 출하·설치 체크리스트</h1>
+<p><b>출하 전:</b></p>
+<p>☐ 기본 부팅, LCD 표시 정상<br>☐ NORMAL/REMOTE/EXT 진입 조합 확인<br>☐ START/STOP 동작 확인<br>☐ 알람 해제 조합 확인 (Err7 제외)<br>☐ RS-485 기본 통신 확인 (FC03)</p>
+<p><b>설치 후:</b></p>
+<p>☐ 현장 주소 할당<br>☐ BPS/패리티 일치<br>☐ 저전력 시험<br>☐ 보호 동작(Err7/Err8) 확인</p>
+
+<h1>부록 — 판넬 라벨 권장안</h1>
+<table>
+<tr><th>항목</th><th>키 조합</th></tr>
+<tr><td>NORMAL</td><td>PWR ON + SET+DOWN</td></tr>
+<tr><td>REMOTE</td><td>PWR ON + SET+MODE</td></tr>
+<tr><td>EXT</td><td>PWR ON + UP+MODE</td></tr>
+<tr><td>ADDR/BPS</td><td>START/STOP → MODE → UP/DOWN → SET</td></tr>
+<tr><td>ERROR RESET</td><td>MODE+DOWN (2s)</td></tr>
+</table>
+
+<hr>
+<p style="text-align:center;color:#666;font-size:9pt">본 문서는 기존 HS AUP Multi Generator 매뉴얼의 7세그먼트(FND) 표시를 LCD1602 기반 UI로 전환한 운전 매뉴얼이다.<br>펌웨어 RC 확정 후 v1.0 정식 발행한다.</p>
+
+</body></html>
