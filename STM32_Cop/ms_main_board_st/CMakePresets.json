@@ -1,0 +1,49 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 22,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "stm32g474-base",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/gcc-arm-none-eabi.cmake",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      },
+      "environment": {
+        "ARM_TOOLCHAIN_PATH": "C:/ST/STM32CubeCLT_1.19.0/GNU-tools-for-STM32"
+      }
+    },
+    {
+      "name": "stm32g474-debug",
+      "displayName": "STM32G474 Debug",
+      "inherits": "stm32g474-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "stm32g474-release",
+      "displayName": "STM32G474 Release",
+      "inherits": "stm32g474-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "stm32g474-debug",
+      "configurePreset": "stm32g474-debug"
+    },
+    {
+      "name": "stm32g474-release",
+      "configurePreset": "stm32g474-release"
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+config load ms_main_board.ioc
+exit
