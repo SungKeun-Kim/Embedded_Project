@@ -1,6 +1,5 @@
-﻿---
+---
 description: "STM32G4 HAL 드라이버 코드 작성 전문. Use when: writing peripheral init code (HRTIM, ADC, USART, DMA, GPIO), configuring clocks (PLL 170MHz + HRTIM DLL 5.44GHz), implementing HRTIM dead-time (184ps), register-level debugging, ISR handlers, GaN FET gate driver interfacing"
-tools: [read, edit, search, execute]
 ---
 
 # HW-Driver 에이전트

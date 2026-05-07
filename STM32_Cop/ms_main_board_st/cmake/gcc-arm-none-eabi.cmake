@@ -12,12 +12,20 @@ else()
     set(TOOLCHAIN_PREFIX "arm-none-eabi-")
 endif()
 
-set(CMAKE_C_COMPILER   "${TOOLCHAIN_PREFIX}gcc")
-set(CMAKE_ASM_COMPILER "${TOOLCHAIN_PREFIX}gcc")
-set(CMAKE_CXX_COMPILER "${TOOLCHAIN_PREFIX}g++")
-set(CMAKE_OBJCOPY      "${TOOLCHAIN_PREFIX}objcopy")
-set(CMAKE_OBJDUMP      "${TOOLCHAIN_PREFIX}objdump")
-set(CMAKE_SIZE         "${TOOLCHAIN_PREFIX}size")
+# Windows에서 Generic 타깃은 CMAKE_EXECUTABLE_SUFFIX가 비어 있을 수 있어
+# 툴체인 바이너리에 .exe를 명시적으로 붙인다.
+if(WIN32)
+    set(TOOL_EXE_SUFFIX ".exe")
+else()
+    set(TOOL_EXE_SUFFIX "")
+endif()
+
+set(CMAKE_C_COMPILER   "${TOOLCHAIN_PREFIX}gcc${TOOL_EXE_SUFFIX}")
+set(CMAKE_ASM_COMPILER "${TOOLCHAIN_PREFIX}gcc${TOOL_EXE_SUFFIX}")
+set(CMAKE_CXX_COMPILER "${TOOLCHAIN_PREFIX}g++${TOOL_EXE_SUFFIX}")
+set(CMAKE_OBJCOPY      "${TOOLCHAIN_PREFIX}objcopy${TOOL_EXE_SUFFIX}")
+set(CMAKE_OBJDUMP      "${TOOLCHAIN_PREFIX}objdump${TOOL_EXE_SUFFIX}")
+set(CMAKE_SIZE         "${TOOLCHAIN_PREFIX}size${TOOL_EXE_SUFFIX}")
 
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 
@@ -29,7 +37,7 @@ set(CMAKE_C_FLAGS_INIT
 set(CMAKE_ASM_FLAGS_INIT
     "${MCU_FLAGS} -fdata-sections -ffunction-sections")
 set(CMAKE_EXE_LINKER_FLAGS_INIT
-    "${MCU_FLAGS} -Wl,--gc-sections -specs=nano.specs -specs=nosys.specs -lc -lm -lnosys")
+    "${MCU_FLAGS} -Wl,--gc-sections,--no-warn-rwx-segments -specs=nano.specs -lc -lm")
 
 # 빌드 타입별 최적화
 set(CMAKE_C_FLAGS_DEBUG          "-Og -g3 -DDEBUG" CACHE STRING "")

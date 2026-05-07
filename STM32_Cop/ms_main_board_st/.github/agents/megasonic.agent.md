@@ -1,6 +1,5 @@
 ---
 description: "메가소닉 발진 제어 로직 전문. Use when: implementing megasonic control, HRTIM frequency/duty management, 7-channel frequency table (500kHz~2MHz), soft-start, output level control (0.01W), 8-step power selection, alarm system (Err1~Err8), relay output, REMOTE external control, channel switching (1s pause)"
-tools: [read, edit, search]
 ---
 
 # Megasonic 에이전트

@@ -18,15 +18,15 @@ void MegasonicCtrl_Init(void)
 {
     g_us_state.running        = false;
     g_us_state.soft_starting  = false;
-    g_us_state.mode           = MODE_CONTINUOUS;
+    g_us_state.mode           = MODE_NORMAL;
     g_us_state.target_freq    = FREQ_DEFAULT;
     g_us_state.target_duty    = DUTY_DEFAULT;
     g_us_state.current_duty   = 0;
-    g_us_state.pulse_on_ms    = PULSE_ON_DEFAULT;
-    g_us_state.pulse_off_ms   = PULSE_OFF_DEFAULT;
-    g_us_state.sweep_start_freq = SWEEP_START_DEFAULT;
-    g_us_state.sweep_end_freq   = SWEEP_END_DEFAULT;
-    g_us_state.sweep_time_ms    = SWEEP_TIME_DEFAULT;
+    g_us_state.pulse_on_ms    = 1000;
+    g_us_state.pulse_off_ms   = 1000;
+    g_us_state.sweep_start_freq = FREQ_MIN;
+    g_us_state.sweep_end_freq   = FREQ_MAX;
+    g_us_state.sweep_time_ms    = 1000;
 }
 
 void MegasonicCtrl_Start(void)
@@ -86,51 +86,15 @@ void MegasonicCtrl_Update(void)
 
     /* ---- 모드별 처리 ---- */
     switch (g_us_state.mode) {
-    case MODE_CONTINUOUS:
+    case MODE_NORMAL:
+    case MODE_REMOTE:
+    case MODE_EXT:
         /* 목표 듀티/주파수 즉시 적용 */
         if (g_us_state.current_duty != g_us_state.target_duty) {
             g_us_state.current_duty = g_us_state.target_duty;
             MegasonicPWM_SetDuty(g_us_state.current_duty);
         }
         break;
-
-    case MODE_PULSE: {
-        uint32_t phase_ms = s_pulse_on_phase
-                          ? g_us_state.pulse_on_ms
-                          : g_us_state.pulse_off_ms;
-        if ((now - s_mode_tick) >= phase_ms) {
-            s_mode_tick = now;
-            s_pulse_on_phase = !s_pulse_on_phase;
-            if (s_pulse_on_phase) {
-                g_us_state.current_duty = g_us_state.target_duty;
-            } else {
-                g_us_state.current_duty = 0;
-            }
-            MegasonicPWM_SetDuty(g_us_state.current_duty);
-        }
-        break;
-    }
-
-    case MODE_SWEEP: {
-        uint32_t elapsed = now - s_mode_tick;
-        if (elapsed >= g_us_state.sweep_time_ms) {
-            s_mode_tick = now;
-            elapsed = 0;
-        }
-        /* 선형 주파수 스윕 */
-        int32_t delta = (int32_t)g_us_state.sweep_end_freq
-                      - (int32_t)g_us_state.sweep_start_freq;
-        uint16_t cur_freq = (uint16_t)(
-            (int32_t)g_us_state.sweep_start_freq
-            + delta * (int32_t)elapsed / (int32_t)g_us_state.sweep_time_ms);
-        MegasonicPWM_SetFrequency(cur_freq);
-
-        if (g_us_state.current_duty != g_us_state.target_duty) {
-            g_us_state.current_duty = g_us_state.target_duty;
-            MegasonicPWM_SetDuty(g_us_state.current_duty);
-        }
-        break;
-    }
 
     default:
         break;
@@ -142,8 +106,7 @@ void MegasonicCtrl_SetFrequency(uint16_t freq_01khz)
     if (freq_01khz < FREQ_MIN) freq_01khz = FREQ_MIN;
     if (freq_01khz > FREQ_MAX) freq_01khz = FREQ_MAX;
     g_us_state.target_freq = freq_01khz;
-    if (g_us_state.running && !g_us_state.soft_starting
-        && g_us_state.mode != MODE_SWEEP) {
+    if (g_us_state.running && !g_us_state.soft_starting) {
         MegasonicPWM_SetFrequency(freq_01khz);
     }
 }

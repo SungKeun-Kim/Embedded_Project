@@ -19,8 +19,8 @@ _Min_Stack_Size = 0x400;  /* 1024 bytes */
 MEMORY
 {
   FLASH (rx)     : ORIGIN = 0x08000000, LENGTH = 512K
-  RAM   (xrw)    : ORIGIN = 0x20000000, LENGTH = 96K   /* SRAM1 80K + SRAM2 16K */
-  CCMRAM (xrw)   : ORIGIN = 0x10000000, LENGTH = 32K   /* CCM SRAM */
+  RAM   (rw)     : ORIGIN = 0x20000000, LENGTH = 96K   /* SRAM1 80K + SRAM2 16K */
+  CCMRAM (rw)    : ORIGIN = 0x10000000, LENGTH = 32K   /* CCM SRAM */
 }
 
 /* Sections */

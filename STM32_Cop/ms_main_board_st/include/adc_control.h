@@ -10,6 +10,7 @@ extern "C" {
 #endif
 
 #include <stdint.h>
+#include "stm32g4xx_hal.h"
 
 /** @brief ADC 핸들 (외부 참조용) */
 extern ADC_HandleTypeDef hadc1;

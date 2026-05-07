@@ -58,14 +58,36 @@ extern "C" {
 #define SOFT_START_STEP_MS      10U         /* 10 ms 간격 증가 */
 
 /* ================================================================
-   운전 모드 (매뉴얼 준수: NORMAL / REMOTE / EXT)
+   운전 모드
+   기존 펌웨어 메뉴/Modbus 호환을 위해 CONT/PULSE/SWEEP을 기본으로 유지하고
+   매뉴얼 표기는 NORMAL/REMOTE/EXT 별칭으로 제공한다.
    ================================================================ */
 typedef enum {
-    MODE_NORMAL  = 0,   /* 기본 모드: 전면 패널 조작 + REMOTE 외부 입력 */
-    MODE_REMOTE  = 1,   /* REMOTE 전용: 외부 입력으로만 ON/OFF, 패널 버튼 비활성 */
-    MODE_EXT     = 2,   /* EXT 모드: RS-485 Modbus 읽기/쓰기 모두 가능 */
+    MODE_CONTINUOUS = 0,
+    MODE_PULSE      = 1,
+    MODE_SWEEP      = 2,
     MODE_COUNT
 } OperatingMode_t;
+
+#define MODE_NORMAL MODE_CONTINUOUS
+#define MODE_REMOTE MODE_PULSE
+#define MODE_EXT    MODE_SWEEP
+
+/* ================================================================
+   펄스/스윕 파라미터 (ms, ×0.1kHz)
+   ================================================================ */
+#define PULSE_ON_DEFAULT         1000U      /* 1.0 s */
+#define PULSE_ON_MIN             100U       /* 0.1 s */
+#define PULSE_ON_MAX             60000U     /* 60 s */
+#define PULSE_OFF_DEFAULT        1000U      /* 1.0 s */
+#define PULSE_OFF_MIN            100U       /* 0.1 s */
+#define PULSE_OFF_MAX            60000U     /* 60 s */
+
+#define SWEEP_START_DEFAULT      FREQ_MIN
+#define SWEEP_END_DEFAULT        FREQ_MAX
+#define SWEEP_TIME_DEFAULT       5000U      /* 5 s */
+#define SWEEP_TIME_MIN           500U       /* 0.5 s */
+#define SWEEP_TIME_MAX           60000U     /* 60 s */
 
 /* ================================================================
    설정 모드 (MODE 버튼으로 순환)

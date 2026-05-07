@@ -28,13 +28,31 @@ message("Build type: ${CMAKE_BUILD_TYPE}")
 set(CUBEMX_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cmake/stm32cubemx")
 set(DRIVERS_HAL_CORE "${CMAKE_CURRENT_SOURCE_DIR}/Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal.c")
 set(SKIP_FIRMWARE_TARGET FALSE)
+set(CUBEMX_STANDALONE_TEMPLATE FALSE)
+set(CUBEMX_STANDALONE_LAYOUT FALSE)
 
-if(NOT EXISTS "${CUBEMX_DIR}/CMakeLists.txt" AND NOT EXISTS "${DRIVERS_HAL_CORE}")
+# CubeMX가 생성하는 최상위 CMakeLists는 독립 프로젝트 템플릿일 수 있다.
+# 이 경우 루트 CMake와 타겟 충돌이 발생하므로 자동으로 수동 모드로 폴백한다.
+if(EXISTS "${CUBEMX_DIR}/CMakeLists.txt")
+    file(READ "${CUBEMX_DIR}/CMakeLists.txt" CUBEMX_TOP_CMAKE LIMIT 4096)
+    string(FIND "${CUBEMX_TOP_CMAKE}" "This file is generated only once" CUBEMX_TEMPLATE_TAG)
+    if(NOT CUBEMX_TEMPLATE_TAG EQUAL -1)
+        set(CUBEMX_STANDALONE_TEMPLATE TRUE)
+    endif()
+endif()
+
+if(EXISTS "${CUBEMX_DIR}/Src/main.c" AND EXISTS "${CUBEMX_DIR}/Inc/main.h")
+    set(CUBEMX_STANDALONE_LAYOUT TRUE)
+endif()
+
+if(NOT EXISTS "${CUBEMX_DIR}/CMakeLists.txt"
+   AND NOT CUBEMX_STANDALONE_LAYOUT
+   AND NOT EXISTS "${DRIVERS_HAL_CORE}")
     message(WARNING "-- [MODE] CubeMX/Drivers 소스 미발견: 펌웨어 타겟 생성을 건너뜁니다. (docs_html 사용 가능)")
     set(SKIP_FIRMWARE_TARGET TRUE)
 endif()
 
-if(EXISTS "${CUBEMX_DIR}/CMakeLists.txt")
+if(EXISTS "${CUBEMX_DIR}/CMakeLists.txt" AND NOT CUBEMX_STANDALONE_TEMPLATE)
     # ============================================================
     # 모드 A: STM32CubeMX 자동 생성 (HAL/CMSIS/링커/스타트업 위임)
     # ============================================================
@@ -57,13 +75,112 @@ if(EXISTS "${CUBEMX_DIR}/CMakeLists.txt")
     # 잘못된 libob.a 의존성 제거 (cpp 파일 사용 시)
     list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ob)
 
+elseif(CUBEMX_STANDALONE_LAYOUT)
+    # ============================================================
+    # 모드 A2: CubeMX 생성물 연동 단일 CMake 구성
+    # ============================================================
+    message("-- [MODE] CubeMX 연동 단일 CMake 구성 사용")
+
+    set(DRIVERS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Drivers")
+    set(CACHE_DRIVERS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/.cache/STM32CubeG4/Drivers")
+    if(NOT EXISTS "${DRIVERS_DIR}/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_tim.c"
+       AND EXISTS "${CACHE_DRIVERS_DIR}/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_tim.c")
+        message(STATUS "-- [MODE] Drivers가 불완전하여 .cache/STM32CubeG4/Drivers 경로로 폴백합니다.")
+        set(DRIVERS_DIR "${CACHE_DRIVERS_DIR}")
+    endif()
+
+    set(CMSIS_INCLUDE_DIRS
+        "${DRIVERS_DIR}/CMSIS/Include"
+        "${DRIVERS_DIR}/CMSIS/Device/ST/STM32G4xx/Include"
+    )
+    set(CMSIS_SOURCES
+        "${DRIVERS_DIR}/CMSIS/Device/ST/STM32G4xx/Source/Templates/system_stm32g4xx.c"
+    )
+
+    set(HAL_DIR "${DRIVERS_DIR}/STM32G4xx_HAL_Driver")
+    set(HAL_INCLUDE_DIRS "${HAL_DIR}/Inc")
+    set(HAL_SOURCES
+        "${HAL_DIR}/Src/stm32g4xx_hal.c"
+        "${HAL_DIR}/Src/stm32g4xx_hal_cortex.c"
+        "${HAL_DIR}/Src/stm32g4xx_hal_rcc.c"
+        "${HAL_DIR}/Src/stm32g4xx_hal_rcc_ex.c"
+        "${HAL_DIR}/Src/stm32g4xx_hal_gpio.c"
+        "${HAL_DIR}/Src/stm32g4xx_hal_tim.c"
+        "${HAL_DIR}/Src/stm32g4xx_hal_tim_ex.c"
+        "${HAL_DIR}/Src/stm32g4xx_hal_uart.c"
+        "${HAL_DIR}/Src/stm32g4xx_hal_uart_ex.c"
+        "${HAL_DIR}/Src/stm32g4xx_hal_adc.c"
+        "${HAL_DIR}/Src/stm32g4xx_hal_adc_ex.c"
+        "${HAL_DIR}/Src/stm32g4xx_hal_dma.c"
+        "${HAL_DIR}/Src/stm32g4xx_hal_dma_ex.c"
+        "${HAL_DIR}/Src/stm32g4xx_hal_exti.c"
+        "${HAL_DIR}/Src/stm32g4xx_hal_flash.c"
+        "${HAL_DIR}/Src/stm32g4xx_hal_flash_ex.c"
+        "${HAL_DIR}/Src/stm32g4xx_hal_flash_ramfunc.c"
+        "${HAL_DIR}/Src/stm32g4xx_hal_pwr.c"
+        "${HAL_DIR}/Src/stm32g4xx_hal_pwr_ex.c"
+        "${HAL_DIR}/Src/stm32g4xx_hal_hrtim.c"
+    )
+
+    set(APP_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include")
+    file(GLOB APP_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c")
+
+    if(EXISTS "${CUBEMX_DIR}/startup_stm32g474xx.s")
+        set(STARTUP_SOURCE "${CUBEMX_DIR}/startup_stm32g474xx.s")
+    else()
+        set(STARTUP_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/startup/startup_stm32g474xx.s")
+    endif()
+
+    if(EXISTS "${CUBEMX_DIR}/STM32G474XX_FLASH.ld")
+        set(LINKER_SCRIPT "${CUBEMX_DIR}/STM32G474XX_FLASH.ld")
+    else()
+        set(LINKER_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/ldscripts/STM32G474METx_FLASH.ld")
+    endif()
+
+    add_executable(${PROJECT_NAME}
+        ${APP_SOURCES}
+        ${HAL_SOURCES}
+        ${CMSIS_SOURCES}
+        ${STARTUP_SOURCE}
+    )
+
+    target_include_directories(${PROJECT_NAME} PRIVATE
+        ${APP_INCLUDE_DIRS}
+        ${HAL_INCLUDE_DIRS}
+        ${CMSIS_INCLUDE_DIRS}
+        "${CUBEMX_DIR}/Inc"
+    )
+
+    target_compile_definitions(${PROJECT_NAME} PRIVATE
+        USE_HAL_DRIVER
+        STM32G474xx
+    )
+
+    target_link_options(${PROJECT_NAME} PRIVATE
+        -T${LINKER_SCRIPT}
+        -Wl,-Map=${PROJECT_NAME}.map,--cref
+    )
+
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        LINK_DEPENDS "${LINKER_SCRIPT}"
+    )
+
 elseif(NOT SKIP_FIRMWARE_TARGET)
     # ============================================================
     # 모드 B: 수동 구성 (Drivers/ 직접 참조)
     # ============================================================
+    if(CUBEMX_STANDALONE_TEMPLATE)
+        message(STATUS "-- [MODE] CubeMX 독립 CMake 템플릿 감지: 수동 구성으로 폴백")
+    endif()
     message("-- [MODE] 수동 구성 (Drivers/ 직접 참조)")
 
     set(DRIVERS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Drivers")
+    set(CACHE_DRIVERS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/.cache/STM32CubeG4/Drivers")
+    if(NOT EXISTS "${DRIVERS_DIR}/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_tim.c"
+       AND EXISTS "${CACHE_DRIVERS_DIR}/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_tim.c")
+        message(WARNING "-- [MODE] Drivers가 불완전하여 .cache/STM32CubeG4/Drivers 경로로 폴백합니다.")
+        set(DRIVERS_DIR "${CACHE_DRIVERS_DIR}")
+    endif()
 
     # CMSIS
     set(CMSIS_INCLUDE_DIRS
@@ -83,7 +200,6 @@ elseif(NOT SKIP_FIRMWARE_TARGET)
         "${HAL_DIR}/Src/stm32g4xx_hal_rcc.c"
         "${HAL_DIR}/Src/stm32g4xx_hal_rcc_ex.c"
         "${HAL_DIR}/Src/stm32g4xx_hal_gpio.c"
-        "${HAL_DIR}/Src/stm32g4xx_hal_gpio_ex.c"
         "${HAL_DIR}/Src/stm32g4xx_hal_tim.c"
         "${HAL_DIR}/Src/stm32g4xx_hal_tim_ex.c"
         "${HAL_DIR}/Src/stm32g4xx_hal_uart.c"
@@ -178,6 +294,24 @@ if(TARGET ${PROJECT_NAME})
                 -c "program ${PROJECT_NAME}.elf verify reset exit"
             DEPENDS ${PROJECT_NAME}
             COMMENT "=== OpenOCD로 플래시 업로드 ==="
+        )
+    endif()
+
+    find_program(STM32PROG STM32_Programmer_CLI
+        HINTS
+            "C:/ST/STM32CubeCLT_1.19.0/STM32CubeProgrammer/bin"
+            "C:/Program Files/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin"
+    )
+    if(STM32PROG)
+        add_custom_target(probe_stlink
+            COMMAND ${STM32PROG} -l stlink
+            COMMENT "=== STM32_Programmer_CLI: ST-LINK 연결 확인 ==="
+        )
+
+        add_custom_target(flash_stm32prog
+            COMMAND ${STM32PROG} -c port=SWD mode=UR reset=HWrst -d $<TARGET_FILE:${PROJECT_NAME}> -v -rst
+            DEPENDS ${PROJECT_NAME}
+            COMMENT "=== STM32_Programmer_CLI로 플래시 업로드 ==="
         )
     endif()
 endif()

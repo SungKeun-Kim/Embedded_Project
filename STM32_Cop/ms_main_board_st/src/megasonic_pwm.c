@@ -54,7 +54,7 @@ void MegasonicPWM_Init(void)
     timer_cfg.DACSynchro     = HRTIM_DACSYNC_NONE;
     timer_cfg.PreloadEnable  = HRTIM_PRELOAD_ENABLED;
     timer_cfg.UpdateGating   = HRTIM_UPDATEGATING_INDEPENDENT;
-    timer_cfg.BurstMode      = HRTIM_UPDATEONBURSTDMA_INDEPENDENT;
+    timer_cfg.BurstMode      = HRTIM_TIMERBURSTMODE_MAINTAINCLOCK;
     timer_cfg.RepetitionUpdate = HRTIM_UPDATEONREPETITION_DISABLED;
     timer_cfg.PushPull       = HRTIM_TIMPUSHPULLMODE_DISABLED;
     timer_cfg.FaultEnable    = HRTIM_TIMFAULTENABLE_NONE;

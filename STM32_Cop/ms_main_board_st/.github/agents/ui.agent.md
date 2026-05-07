@@ -1,6 +1,5 @@
-﻿---
+---
 description: "LCD1602 캐릭터 디스플레이, 6개 LED 표시등, 5개 버튼, 모드 FSM UI 구현 전문. Use when: writing menu state machine (NORMAL/REMOTE/EXT/H-L SET/8POWER/FREQ SET), LCD screen rendering, button event handling (5-button + combo), LED indicator logic, HD44780 display code, value editing (0.01W units)"
-tools: [read, edit, search]
 ---
 
 # UI 에이전트

@@ -10,6 +10,7 @@
 #include "params.h"
 #include "stm32g4xx_hal.h"
 #include <stdio.h>
+#include <stdarg.h>
 
 static uint8_t  s_need_refresh;
 static uint32_t s_last_refresh_tick;
@@ -17,6 +18,17 @@ static uint32_t s_last_refresh_tick;
 /* 16자 행 버퍼 (NULL 포함 17바이트) */
 static char s_line0[17];
 static char s_line1[17];
+
+/* 임의 포맷 문자열을 LCD 16자 라인으로 안전하게 정규화 */
+static void FormatLine(char *dst, const char *fmt, ...)
+{
+    char tmp[64];
+    va_list ap;
+    va_start(ap, fmt);
+    vsnprintf(tmp, sizeof(tmp), fmt, ap);
+    va_end(ap);
+    snprintf(dst, 17, "%-16.16s", tmp);
+}
 
 /* 전방 선언 */
 static void RenderMain(void);
@@ -90,104 +102,104 @@ static void RenderMain(void)
 {
     /* 1행: FREQ:28.0k  RUN */
     uint16_t f = g_us_state.target_freq;
-    snprintf(s_line0, sizeof(s_line0), "FREQ:%2u.%ukHz %s",
-             f / 10, f % 10,
-             g_us_state.running ? "RUN" : "STP");
+    FormatLine(s_line0, "F:%u.%uK %s",
+               f / 10, f % 10,
+               g_us_state.running ? "RUN" : "STP");
 
     /* 2행: DUTY:45.0%  CONT */
     uint16_t d = g_us_state.current_duty;
-    snprintf(s_line1, sizeof(s_line1), "DUTY:%3u.%u%% %s",
-             d / 10, d % 10,
-             ModeStr(g_us_state.mode));
+    FormatLine(s_line1, "D:%u.%u%% %s",
+               d / 10, d % 10,
+               ModeStr(g_us_state.mode));
 }
 
 static void RenderFreq(void)
 {
     uint16_t f = g_us_state.target_freq;
-    snprintf(s_line0, sizeof(s_line0), "[FREQ SETTING]  ");
-    snprintf(s_line1, sizeof(s_line1), " %2u.%u kHz      ", f / 10, f % 10);
+    FormatLine(s_line0, "[FREQ SETTING]");
+    FormatLine(s_line1, " %u.%u kHz", f / 10, f % 10);
 }
 
 static void RenderDuty(void)
 {
     uint16_t d = g_us_state.target_duty;
-    snprintf(s_line0, sizeof(s_line0), "[DUTY SETTING]  ");
-    snprintf(s_line1, sizeof(s_line1), " %3u.%u %%       ", d / 10, d % 10);
+    FormatLine(s_line0, "[DUTY SETTING]");
+    FormatLine(s_line1, " %u.%u %%", d / 10, d % 10);
 }
 
 static void RenderMode(void)
 {
     static const char *names[] = {"Continuous", "Pulse", "Sweep"};
     uint8_t m = (uint8_t)g_us_state.mode;
-    snprintf(s_line0, sizeof(s_line0), "[MODE SELECT]   ");
-    snprintf(s_line1, sizeof(s_line1), ">%-15s", (m < MODE_COUNT) ? names[m] : "???");
+    FormatLine(s_line0, "[MODE SELECT]");
+    FormatLine(s_line1, ">%-15s", (m < MODE_COUNT) ? names[m] : "???");
 }
 
 static void RenderModbus(void)
 {
-    snprintf(s_line0, sizeof(s_line0), "[MODBUS CONFIG] ");
-    snprintf(s_line1, sizeof(s_line1), "ADDR BAUD PARITY");
+    FormatLine(s_line0, "[MODBUS CONFIG]");
+    FormatLine(s_line1, "ADDR BAUD PARITY");
 }
 
 static void RenderModbusAddr(void)
 {
-    snprintf(s_line0, sizeof(s_line0), "[MODBUS ADDR]   ");
-    snprintf(s_line1, sizeof(s_line1), " Addr: %3u      ", g_modbus_cfg.address);
+    FormatLine(s_line0, "[MODBUS ADDR]");
+    FormatLine(s_line1, " Addr: %3u", g_modbus_cfg.address);
 }
 
 static void RenderModbusBaud(void)
 {
-    snprintf(s_line0, sizeof(s_line0), "[MODBUS BAUD]   ");
-    snprintf(s_line1, sizeof(s_line1), " %6lu bps     ", (unsigned long)g_modbus_cfg.baudrate);
+    FormatLine(s_line0, "[MODBUS BAUD]");
+    FormatLine(s_line1, " %lu bps", (unsigned long)g_modbus_cfg.baudrate);
 }
 
 static void RenderModbusParity(void)
 {
     static const char *par[] = {"None", "Even", "Odd"};
     uint8_t p = g_modbus_cfg.parity;
-    snprintf(s_line0, sizeof(s_line0), "[MODBUS PARITY] ");
-    snprintf(s_line1, sizeof(s_line1), " Parity: %-6s ", (p <= 2) ? par[p] : "???");
+    FormatLine(s_line0, "[MODBUS PARITY]");
+    FormatLine(s_line1, " Parity: %-6s", (p <= 2) ? par[p] : "???");
 }
 
 static void RenderPulseOn(void)
 {
-    snprintf(s_line0, sizeof(s_line0), "[PULSE ON TIME] ");
-    snprintf(s_line1, sizeof(s_line1), " %5u ms       ", g_us_state.pulse_on_ms);
+    FormatLine(s_line0, "[PULSE ON TIME]");
+    FormatLine(s_line1, " %5u ms", g_us_state.pulse_on_ms);
 }
 
 static void RenderPulseOff(void)
 {
-    snprintf(s_line0, sizeof(s_line0), "[PULSE OFF TIME]");
-    snprintf(s_line1, sizeof(s_line1), " %5u ms       ", g_us_state.pulse_off_ms);
+    FormatLine(s_line0, "[PULSE OFF TIME]");
+    FormatLine(s_line1, " %5u ms", g_us_state.pulse_off_ms);
 }
 
 static void RenderSweepStart(void)
 {
     uint16_t f = g_us_state.sweep_start_freq;
-    snprintf(s_line0, sizeof(s_line0), "[SWEEP START]   ");
-    snprintf(s_line1, sizeof(s_line1), " %2u.%u kHz      ", f / 10, f % 10);
+    FormatLine(s_line0, "[SWEEP START]");
+    FormatLine(s_line1, " %u.%u kHz", f / 10, f % 10);
 }
 
 static void RenderSweepEnd(void)
 {
     uint16_t f = g_us_state.sweep_end_freq;
-    snprintf(s_line0, sizeof(s_line0), "[SWEEP END]     ");
-    snprintf(s_line1, sizeof(s_line1), " %2u.%u kHz      ", f / 10, f % 10);
+    FormatLine(s_line0, "[SWEEP END]");
+    FormatLine(s_line1, " %u.%u kHz", f / 10, f % 10);
 }
 
 static void RenderSweepTime(void)
 {
-    snprintf(s_line0, sizeof(s_line0), "[SWEEP TIME]    ");
-    snprintf(s_line1, sizeof(s_line1), " %5u ms       ", g_us_state.sweep_time_ms);
+    FormatLine(s_line0, "[SWEEP TIME]");
+    FormatLine(s_line1, " %5u ms", g_us_state.sweep_time_ms);
 }
 
 static void RenderInfo(void)
 {
     uint32_t sec = HAL_GetTick() / 1000;
-    snprintf(s_line0, sizeof(s_line0), "FW v%u.%u.%u      ",
-             FW_VERSION_MAJOR, FW_VERSION_MINOR, FW_VERSION_PATCH);
-    snprintf(s_line1, sizeof(s_line1), "Up:%02luh%02lum%02lus   ",
-             (unsigned long)(sec / 3600),
-             (unsigned long)((sec % 3600) / 60),
-             (unsigned long)(sec % 60));
+    FormatLine(s_line0, "FW v%u.%u.%u",
+               FW_VERSION_MAJOR, FW_VERSION_MINOR, FW_VERSION_PATCH);
+    FormatLine(s_line1, "Up:%02luh%02lum%02lus",
+               (unsigned long)(sec / 3600),
+               (unsigned long)((sec % 3600) / 60),
+               (unsigned long)(sec % 60));
 }

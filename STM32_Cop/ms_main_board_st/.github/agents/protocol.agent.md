@@ -1,6 +1,5 @@
-﻿---
+---
 description: "Modbus RTU RS-485 프로토콜 구현 전문. Use when: writing Modbus frame parsing, CRC-16 calculation, register read/write handlers, RS-485 DE/RE control, USART2 communication, function code 0x03/0x06/0x10 processing, mode-based access control (NORMAL/REMOTE read-only, EXT read-write)"
-tools: [read, edit, search]
 ---
 
 # Protocol 에이전트

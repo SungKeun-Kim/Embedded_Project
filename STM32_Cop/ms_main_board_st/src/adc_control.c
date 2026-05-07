@@ -21,7 +21,7 @@ void ADC_Control_Init(void)
 {
     ADC_ChannelConfTypeDef ch_cfg = {0};
 
-    __HAL_RCC_ADC1_CLK_ENABLE();
+    __HAL_RCC_ADC12_CLK_ENABLE();
 
     /* ADC1 기본 설정 — 소프트웨어 트리거, 단일 변환 */
     hadc1.Instance                   = ADC1;
@@ -37,11 +37,11 @@ void ADC_Control_Init(void)
     /* 채널 설정 — PA0 (ADC1_IN0) */
     ch_cfg.Channel      = ADC_POT_CHANNEL;
     ch_cfg.Rank         = ADC_REGULAR_RANK_1;
-    ch_cfg.SamplingTime = ADC_SAMPLETIME_71CYCLES_5;
+    ch_cfg.SamplingTime = ADC_SAMPLETIME_92CYCLES_5;
     HAL_ADC_ConfigChannel(&hadc1, &ch_cfg);
 
     /* ADC 교정 */
-    HAL_ADCEx_Calibration_Start(&hadc1);
+    HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED);
 
     /* 버퍼 초기화 */
     for (uint8_t i = 0; i < ADC_FILTER_SAMPLES; i++) {
