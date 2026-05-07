@@ -1,0 +1,265 @@
+(footprint "D_SMB"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "Diode SMB (DO-214AA)")
+	(tags "Diode SMB (DO-214AA)")
+	(property "Reference" "REF**"
+		(at 0 -3 0)
+		(layer "F.SilkS")
+		(uuid "a4b6f6a7-8d0a-4fb0-8180-698e83eb4f4c")
+		(effects
+			(font
+				(size 1.1 1.1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "D_SMB"
+		(at 0 3.1 0)
+		(layer "F.Fab")
+		(uuid "19c09f5f-43d1-48f5-a7d8-19c7c21caab7")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "fdbf9801-a108-4a80-9894-9fa71f670396")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "b7754683-411a-4843-ac41-de6f43a28e23")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(duplicate_pad_numbers_are_jumpers no)
+	(fp_line
+		(start -3.66 -2.15)
+		(end -3.66 2.15)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "039c0d36-19f6-4424-af1a-960cf64ba45b")
+	)
+	(fp_line
+		(start -3.66 -2.15)
+		(end 2.15 -2.15)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "2dcac950-c18d-4d17-ad4d-62d6c58260d2")
+	)
+	(fp_line
+		(start -3.66 2.15)
+		(end 2.15 2.15)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "9f22c88d-9e28-43db-96ad-ad78cd5f9df6")
+	)
+	(fp_line
+		(start -0.9 0)
+		(end -0.45 0)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "012670c8-ebaa-4057-b835-9d01af480150")
+	)
+	(fp_line
+		(start -0.4 -1)
+		(end -0.4 1)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "4f58b738-935d-451b-bd18-7f028fc3d544")
+	)
+	(fp_line
+		(start -0.4 0)
+		(end 0.55 -0.95)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "f7517bd0-3487-4a28-b87c-9f9757d4c83f")
+	)
+	(fp_line
+		(start -0.4 0)
+		(end 0.55 0.95)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "0cc9e683-05df-4038-83d6-8bf6bdd263e2")
+	)
+	(fp_line
+		(start 0.55 -0.95)
+		(end 0.55 0.95)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "d698a47b-f4b4-4fee-be88-7683574f720f")
+	)
+	(fp_line
+		(start 0.95 0)
+		(end 0.55 0)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "822f008e-976e-4f8f-a969-364117670230")
+	)
+	(fp_line
+		(start -3.75 -2.25)
+		(end 3.65 -2.25)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "be3a694f-6f7b-471b-be79-e46107a4a0cf")
+	)
+	(fp_line
+		(start -3.75 2.25)
+		(end -3.75 -2.25)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "1cefa14e-8894-43a0-900c-0f52b6d9ec60")
+	)
+	(fp_line
+		(start 3.65 -2.25)
+		(end 3.65 2.25)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "7823b7ad-daee-4798-b8e0-644db8788ba3")
+	)
+	(fp_line
+		(start 3.65 2.25)
+		(end -3.75 2.25)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "334b1fc8-b4a8-41c4-a55a-7248d78c7fb9")
+	)
+	(fp_line
+		(start -2.3 2)
+		(end -2.3 -2)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "f8edc40b-df31-4b27-88d6-58be4b5f9cb5")
+	)
+	(fp_line
+		(start 2.3 -2)
+		(end -2.3 -2)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "f971d1c7-b364-4754-a087-df964dd730a6")
+	)
+	(fp_line
+		(start 2.3 -2)
+		(end 2.3 2)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "fbfa5e65-2bd5-4c90-afc2-e7ea5c84918c")
+	)
+	(fp_line
+		(start 2.3 2)
+		(end -2.3 2)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "e8fbe907-61f3-474c-8f48-eae65b9f47dc")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 -3 0)
+		(layer "F.Fab")
+		(uuid "733c8e0d-8b9d-4b98-8dfa-1457e7019082")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" smd roundrect
+		(at -2.3 0)
+		(size 2.5 2.8)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(roundrect_rratio 0.1086956522)
+		(uuid "104b8f80-c3a1-424d-a04e-cee91b217578")
+	)
+	(pad "2" smd roundrect
+		(at 2.3 0)
+		(size 2.5 2.8)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(roundrect_rratio 0.1086956522)
+		(uuid "b1409dbb-50f8-49f9-8bd1-eb53375abd32")
+	)
+	(embedded_fonts no)
+	(model "${KICAD10_3DMODEL_DIR}/Diode_SMD.3dshapes/D_SMB.step"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)

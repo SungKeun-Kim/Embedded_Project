@@ -1,0 +1,2028 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<export version="E">
+  <design>
+    <source>D:\01_AllData\06_Embedded_Proj\KiCAD\ELSONIC\Multi_Mega_Display_V2\Multi_Mega_Display_V2.kicad_sch</source>
+    <date>2026-04-23T03:01:01</date>
+    <tool>Eeschema 10.0.1</tool>
+    <sheet number="1" name="/" tstamps="/">
+      <title_block>
+        <title/>
+        <company/>
+        <rev/>
+        <date/>
+        <source>Multi_Mega_Display_V2.kicad_sch</source>
+        <comment number="1" value=""/>
+        <comment number="2" value=""/>
+        <comment number="3" value=""/>
+        <comment number="4" value=""/>
+        <comment number="5" value=""/>
+        <comment number="6" value=""/>
+        <comment number="7" value=""/>
+        <comment number="8" value=""/>
+        <comment number="9" value=""/>
+      </title_block>
+    </sheet>
+  </design>
+  <components>
+    <comp ref="BZ1">
+      <value>SF1205A</value>
+      <footprint>03_MyFoot_Active:Buzzer_12x9.5RM7.6</footprint>
+      <fields>
+        <field name="Footprint">03_MyFoot_Active:Buzzer_12x9.5RM7.6</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Device" part="Buzzer" description="Buzzer, polarized"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="quartz resonator ceramic"/>
+      <property name="ki_fp_filters" value="*Buzzer*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>4f565b5e-6228-42c3-b1c1-7b16015cb81c</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C1">
+      <value>CL21B104K</value>
+      <footprint>04_MyFoot_Passive:C_2012Metric</footprint>
+      <fields>
+        <field name="LCSC">C1711</field>
+        <field name="Footprint">04_MyFoot_Passive:C_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="04_MyLib_Passive" part="C_Small" description="Unpolarized capacitor, small symbol"/>
+      <property name="LCSC" value="C1711"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="capacitor cap"/>
+      <property name="ki_fp_filters" value="C_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>a72cf755-e871-4e23-a8a0-55a2f04b8f02</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C2">
+      <value>CL21B104K</value>
+      <footprint>04_MyFoot_Passive:C_2012Metric</footprint>
+      <fields>
+        <field name="LCSC">C1711</field>
+        <field name="Footprint">04_MyFoot_Passive:C_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="04_MyLib_Passive" part="C_Small" description="Unpolarized capacitor, small symbol"/>
+      <property name="LCSC" value="C1711"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="capacitor cap"/>
+      <property name="ki_fp_filters" value="C_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>5a70ac1c-a660-466d-9d64-80fb234c6caa</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C3">
+      <value>CL31B475K</value>
+      <footprint>04_MyFoot_Passive:C_3216Metric</footprint>
+      <fields>
+        <field name="LCSC">C1872</field>
+        <field name="Footprint">04_MyFoot_Passive:C_3216Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="04_MyLib_Passive" part="C_Small" description="Unpolarized capacitor, small symbol"/>
+      <property name="LCSC" value="C1872"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="capacitor cap"/>
+      <property name="ki_fp_filters" value="C_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>bf7d16a5-3f58-480b-a319-5df67bbe2165</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C4">
+      <value>CL21B104K</value>
+      <footprint>04_MyFoot_Passive:C_2012Metric</footprint>
+      <fields>
+        <field name="LCSC">C1711</field>
+        <field name="Footprint">04_MyFoot_Passive:C_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="04_MyLib_Passive" part="C_Small" description="Unpolarized capacitor, small symbol"/>
+      <property name="LCSC" value="C1711"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="capacitor cap"/>
+      <property name="ki_fp_filters" value="C_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>0c1e4168-efd3-4192-93bd-56e1409a8879</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C5">
+      <value>CL21B104K</value>
+      <footprint>04_MyFoot_Passive:C_2012Metric</footprint>
+      <fields>
+        <field name="LCSC">C1711</field>
+        <field name="Footprint">04_MyFoot_Passive:C_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="04_MyLib_Passive" part="C_Small" description="Unpolarized capacitor, small symbol"/>
+      <property name="LCSC" value="C1711"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="capacitor cap"/>
+      <property name="ki_fp_filters" value="C_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>2015718d-a467-41fd-85a4-94c7a165e8c0</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C6">
+      <value>CL21B104K</value>
+      <footprint>04_MyFoot_Passive:C_2012Metric</footprint>
+      <fields>
+        <field name="LCSC">C1711</field>
+        <field name="Footprint">04_MyFoot_Passive:C_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="04_MyLib_Passive" part="C_Small" description="Unpolarized capacitor, small symbol"/>
+      <property name="LCSC" value="C1711"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="capacitor cap"/>
+      <property name="ki_fp_filters" value="C_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>e236f7f6-3299-4256-bb9e-a9a542a32067</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C7">
+      <value>CL31B475K</value>
+      <footprint>04_MyFoot_Passive:C_3216Metric</footprint>
+      <fields>
+        <field name="LCSC">C1872</field>
+        <field name="Footprint">04_MyFoot_Passive:C_3216Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="04_MyLib_Passive" part="C_Small" description="Unpolarized capacitor, small symbol"/>
+      <property name="LCSC" value="C1872"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="capacitor cap"/>
+      <property name="ki_fp_filters" value="C_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>42c84dbe-c7cb-42fc-a645-f3cb95bed806</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C8">
+      <value>CL21B104K</value>
+      <footprint>04_MyFoot_Passive:C_2012Metric</footprint>
+      <fields>
+        <field name="LCSC">C1711</field>
+        <field name="Footprint">04_MyFoot_Passive:C_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="04_MyLib_Passive" part="C_Small" description="Unpolarized capacitor, small symbol"/>
+      <property name="LCSC" value="C1711"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="capacitor cap"/>
+      <property name="ki_fp_filters" value="C_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>a87fedc2-b4bb-4547-aaf6-a83faed20de3</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C9">
+      <value>CL21B104K</value>
+      <footprint>04_MyFoot_Passive:C_2012Metric</footprint>
+      <fields>
+        <field name="LCSC">C1711</field>
+        <field name="Footprint">04_MyFoot_Passive:C_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="04_MyLib_Passive" part="C_Small" description="Unpolarized capacitor, small symbol"/>
+      <property name="LCSC" value="C1711"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="capacitor cap"/>
+      <property name="ki_fp_filters" value="C_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>ac1a9d17-ccec-463d-a83d-7ae4cc4b5e46</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C10">
+      <value>CL21B104K</value>
+      <footprint>04_MyFoot_Passive:C_2012Metric</footprint>
+      <fields>
+        <field name="LCSC">C1711</field>
+        <field name="Footprint">04_MyFoot_Passive:C_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="04_MyLib_Passive" part="C_Small" description="Unpolarized capacitor, small symbol"/>
+      <property name="LCSC" value="C1711"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="capacitor cap"/>
+      <property name="ki_fp_filters" value="C_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>0bd0a6cd-ee06-44f6-877b-5661e021208c</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C11">
+      <value>CL21B104K</value>
+      <footprint>04_MyFoot_Passive:C_2012Metric</footprint>
+      <fields>
+        <field name="LCSC">C1711</field>
+        <field name="Footprint">04_MyFoot_Passive:C_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="04_MyLib_Passive" part="C_Small" description="Unpolarized capacitor, small symbol"/>
+      <property name="LCSC" value="C1711"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="capacitor cap"/>
+      <property name="ki_fp_filters" value="C_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>33a7fb94-a6b9-47f1-bace-17d4e41a2db6</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C12">
+      <value>CL21B104K</value>
+      <footprint>04_MyFoot_Passive:C_2012Metric</footprint>
+      <fields>
+        <field name="LCSC">C1711</field>
+        <field name="Footprint">04_MyFoot_Passive:C_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="04_MyLib_Passive" part="C_Small" description="Unpolarized capacitor, small symbol"/>
+      <property name="LCSC" value="C1711"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="capacitor cap"/>
+      <property name="ki_fp_filters" value="C_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>96fcab19-b733-445d-9e40-71d4f9f8becc</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="D1">
+      <value>GRN</value>
+      <footprint>03_MyFoot_Active:LED_NORMAL</footprint>
+      <description>Light emitting diode</description>
+      <fields>
+        <field name="Sim.Pins">1=K 2=A</field>
+        <field name="Footprint">03_MyFoot_Active:LED_NORMAL</field>
+        <field name="Datasheet"/>
+        <field name="Description">Light emitting diode</field>
+      </fields>
+      <libsource lib="03_MyLib_Active" part="LED" description="Light emitting diode"/>
+      <property name="Sim.Pins" value="1=K 2=A"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="LED diode"/>
+      <property name="ki_fp_filters" value="LED* LED_SMD:* LED_THT:*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>fc8e3ed4-01c7-49bb-8b1b-17125e9defc9</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="D2">
+      <value>RED</value>
+      <footprint>03_MyFoot_Active:LED_H_LSET</footprint>
+      <description>Light emitting diode</description>
+      <fields>
+        <field name="Sim.Pins">1=K 2=A</field>
+        <field name="Footprint">03_MyFoot_Active:LED_H_LSET</field>
+        <field name="Datasheet"/>
+        <field name="Description">Light emitting diode</field>
+      </fields>
+      <libsource lib="03_MyLib_Active" part="LED" description="Light emitting diode"/>
+      <property name="Sim.Pins" value="1=K 2=A"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="LED diode"/>
+      <property name="ki_fp_filters" value="LED* LED_SMD:* LED_THT:*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>3916ac8c-a221-4eb1-b2fd-b3150dc472d9</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="D3">
+      <value>GRN</value>
+      <footprint>03_MyFoot_Active:LED_8POWER</footprint>
+      <description>Light emitting diode</description>
+      <fields>
+        <field name="Sim.Pins">1=K 2=A</field>
+        <field name="Footprint">03_MyFoot_Active:LED_8POWER</field>
+        <field name="Datasheet"/>
+        <field name="Description">Light emitting diode</field>
+      </fields>
+      <libsource lib="03_MyLib_Active" part="LED" description="Light emitting diode"/>
+      <property name="Sim.Pins" value="1=K 2=A"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="LED diode"/>
+      <property name="ki_fp_filters" value="LED* LED_SMD:* LED_THT:*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>1369c949-a484-4f42-9973-58d54b7a9e27</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="D4">
+      <value>RED</value>
+      <footprint>03_MyFoot_Active:LED_REMOTE</footprint>
+      <description>Light emitting diode</description>
+      <fields>
+        <field name="Sim.Pins">1=K 2=A</field>
+        <field name="Footprint">03_MyFoot_Active:LED_REMOTE</field>
+        <field name="Datasheet"/>
+        <field name="Description">Light emitting diode</field>
+      </fields>
+      <libsource lib="03_MyLib_Active" part="LED" description="Light emitting diode"/>
+      <property name="Sim.Pins" value="1=K 2=A"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="LED diode"/>
+      <property name="ki_fp_filters" value="LED* LED_SMD:* LED_THT:*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>d9d330e6-aba7-4b7b-83c6-a2672698b091</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="D5">
+      <value>GRN</value>
+      <footprint>03_MyFoot_Active:LED_EXT</footprint>
+      <description>Light emitting diode</description>
+      <fields>
+        <field name="Sim.Pins">1=K 2=A</field>
+        <field name="Footprint">03_MyFoot_Active:LED_EXT</field>
+        <field name="Datasheet"/>
+        <field name="Description">Light emitting diode</field>
+      </fields>
+      <libsource lib="03_MyLib_Active" part="LED" description="Light emitting diode"/>
+      <property name="Sim.Pins" value="1=K 2=A"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="LED diode"/>
+      <property name="ki_fp_filters" value="LED* LED_SMD:* LED_THT:*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>0202ef92-390a-40cf-8281-c0ed7f7f6972</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="D6">
+      <value>RED</value>
+      <footprint>03_MyFoot_Active:LED_TXRX</footprint>
+      <description>Light emitting diode</description>
+      <fields>
+        <field name="Sim.Pins">1=K 2=A</field>
+        <field name="Footprint">03_MyFoot_Active:LED_TXRX</field>
+        <field name="Datasheet"/>
+        <field name="Description">Light emitting diode</field>
+      </fields>
+      <libsource lib="03_MyLib_Active" part="LED" description="Light emitting diode"/>
+      <property name="Sim.Pins" value="1=K 2=A"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="LED diode"/>
+      <property name="ki_fp_filters" value="LED* LED_SMD:* LED_THT:*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>b3963ab3-deac-41a4-863a-1edc0da5c7f4</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="D7">
+      <value>LL4148</value>
+      <footprint>03_MyFoot_Active:LL4148_MELF</footprint>
+      <fields>
+        <field name="Sim.Device"/>
+        <field name="Sim.Pins"/>
+        <field name="LCSC">C68883</field>
+        <field name="Footprint">03_MyFoot_Active:LL4148_MELF</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="" part="LL4148_1" description=""/>
+      <property name="Sim.Device" value=""/>
+      <property name="Sim.Pins" value=""/>
+      <property name="LCSC" value="C68883"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_fp_filters" value="D*DO?41*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>2b0b66ba-9e86-401a-81e4-26ee153af284</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="J2">
+      <value>Conn_01x01</value>
+      <footprint>06_MyFoot_Mechanical:MTHole_3.5mm_7.5mmPad_GND</footprint>
+      <fields>
+        <field name="Footprint">06_MyFoot_Mechanical:MTHole_3.5mm_7.5mmPad_GND</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Connector_Generic" part="Conn_01x01" description="Generic connector, single row, 01x01, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="connector"/>
+      <property name="ki_fp_filters" value="Connector*:*_1x??_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>b5791b1b-2319-4f87-a7fe-1f5702e1ab1d</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="J3">
+      <value>Conn_01x01</value>
+      <footprint>06_MyFoot_Mechanical:MTHole_3.5mm_7.5mmPad_GND</footprint>
+      <fields>
+        <field name="Footprint">06_MyFoot_Mechanical:MTHole_3.5mm_7.5mmPad_GND</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Connector_Generic" part="Conn_01x01" description="Generic connector, single row, 01x01, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="connector"/>
+      <property name="ki_fp_filters" value="Connector*:*_1x??_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>8645a4f9-2608-4fc2-939c-ac6747977317</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="J4">
+      <value>Conn_01x01</value>
+      <footprint>06_MyFoot_Mechanical:MTHole_3.5mm_7.5mmPad_GND</footprint>
+      <fields>
+        <field name="Footprint">06_MyFoot_Mechanical:MTHole_3.5mm_7.5mmPad_GND</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Connector_Generic" part="Conn_01x01" description="Generic connector, single row, 01x01, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="connector"/>
+      <property name="ki_fp_filters" value="Connector*:*_1x??_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>95e2cc88-b7e4-4455-b878-4cda286782fb</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="J5">
+      <value>Conn_01x01</value>
+      <footprint>06_MyFoot_Mechanical:MTHole_3.5mm_7.5mmPad_GND</footprint>
+      <fields>
+        <field name="Footprint">06_MyFoot_Mechanical:MTHole_3.5mm_7.5mmPad_GND</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Connector_Generic" part="Conn_01x01" description="Generic connector, single row, 01x01, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="connector"/>
+      <property name="ki_fp_filters" value="Connector*:*_1x??_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>5a5a7378-7430-49fa-9810-db068a785998</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="J6">
+      <value>Conn_02x10_Odd_Even</value>
+      <footprint>02_MyFoot_Connectors:IDC-Header_2x10_P2.54mm_Vertical</footprint>
+      <fields>
+        <field name="Footprint">02_MyFoot_Connectors:IDC-Header_2x10_P2.54mm_Vertical</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="02_MyLib_Connectors" part="Conn_02x10_Odd_Even" description=""/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="connector"/>
+      <property name="ki_fp_filters" value="Connector*:*_2x??_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>d2fd7f6e-ab39-4885-9bdc-14b35deca8e1</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="3"/>
+            <pin num="5"/>
+            <pin num="7"/>
+            <pin num="9"/>
+            <pin num="11"/>
+            <pin num="13"/>
+            <pin num="15"/>
+            <pin num="17"/>
+            <pin num="19"/>
+            <pin num="2"/>
+            <pin num="4"/>
+            <pin num="6"/>
+            <pin num="8"/>
+            <pin num="10"/>
+            <pin num="12"/>
+            <pin num="14"/>
+            <pin num="16"/>
+            <pin num="18"/>
+            <pin num="20"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="LCD1">
+      <value>LC1602A</value>
+      <footprint>06_MyFoot_Mechanical:LC1602A</footprint>
+      <fields>
+        <field name="Footprint">06_MyFoot_Mechanical:LC1602A</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="05_MyLib_Others" part="LC1602A" description=""/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_fp_filters" value="*WC*1602A*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>60910c95-150b-4574-8e86-cd1df5b4dafb</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="6"/>
+            <pin num="5"/>
+            <pin num="4"/>
+            <pin num="7"/>
+            <pin num="8"/>
+            <pin num="9"/>
+            <pin num="10"/>
+            <pin num="11"/>
+            <pin num="12"/>
+            <pin num="13"/>
+            <pin num="14"/>
+            <pin num="2"/>
+            <pin num="1"/>
+            <pin num="3"/>
+            <pin num="15"/>
+            <pin num="16"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="Q1">
+      <value>KRC105S</value>
+      <footprint>03_MyFoot_Active:SOT-23_KRC105S</footprint>
+      <fields>
+        <field name="LCSC">C112793</field>
+        <field name="Footprint">03_MyFoot_Active:SOT-23_KRC105S</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="03_MyLib_Active" part="KRC105S" description=""/>
+      <property name="LCSC" value="C112793"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_fp_filters" value="SOT?23* SC?59*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>72c36876-f81c-482e-9b37-68596e71afdb</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="3"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R1">
+      <value>W4J0470</value>
+      <footprint>04_MyFoot_Passive:R_3216Metric</footprint>
+      <fields>
+        <field name="LCSC">C25384</field>
+        <field name="Footprint">04_MyFoot_Passive:R_3216Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="04_MyLib_Passive" part="R" description=""/>
+      <property name="LCSC" value="C25384"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <property name="ki_fp_filters" value="R_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>bb109d8e-7c03-45d3-b86d-5454208bbeb5</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R2">
+      <value>W8J0561</value>
+      <footprint>04_MyFoot_Passive:R_2012Metric</footprint>
+      <fields>
+        <field name="LCSC">C25319</field>
+        <field name="Footprint">04_MyFoot_Passive:R_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="04_MyLib_Passive" part="R" description=""/>
+      <property name="LCSC" value="C25319"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <property name="ki_fp_filters" value="R_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>b4cd350f-1f9c-4389-8eac-319c44135411</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R3">
+      <value>W8J0561</value>
+      <footprint>04_MyFoot_Passive:R_2012Metric</footprint>
+      <fields>
+        <field name="LCSC">C25319</field>
+        <field name="Footprint">04_MyFoot_Passive:R_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="04_MyLib_Passive" part="R" description=""/>
+      <property name="LCSC" value="C25319"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <property name="ki_fp_filters" value="R_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>777e1c04-4818-4ba9-8467-a20deafae561</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R4">
+      <value>W8J0561</value>
+      <footprint>04_MyFoot_Passive:R_2012Metric</footprint>
+      <fields>
+        <field name="LCSC">C25319</field>
+        <field name="Footprint">04_MyFoot_Passive:R_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="04_MyLib_Passive" part="R" description=""/>
+      <property name="LCSC" value="C25319"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <property name="ki_fp_filters" value="R_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>53fb5c4a-aadd-4f48-9bc7-13511b348198</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R5">
+      <value>W8J0561</value>
+      <footprint>04_MyFoot_Passive:R_2012Metric</footprint>
+      <fields>
+        <field name="LCSC">C25319</field>
+        <field name="Footprint">04_MyFoot_Passive:R_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="04_MyLib_Passive" part="R" description=""/>
+      <property name="LCSC" value="C25319"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <property name="ki_fp_filters" value="R_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>20410a56-1a60-40f1-8c19-8baa52b52224</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R6">
+      <value>W8J0561</value>
+      <footprint>04_MyFoot_Passive:R_2012Metric</footprint>
+      <fields>
+        <field name="LCSC">C25319</field>
+        <field name="Footprint">04_MyFoot_Passive:R_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="04_MyLib_Passive" part="R" description=""/>
+      <property name="LCSC" value="C25319"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <property name="ki_fp_filters" value="R_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>bc051d87-477d-4906-8cc7-20b32cbf8262</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R7">
+      <value>W8J0561</value>
+      <footprint>04_MyFoot_Passive:R_2012Metric</footprint>
+      <fields>
+        <field name="LCSC">C25319</field>
+        <field name="Footprint">04_MyFoot_Passive:R_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="04_MyLib_Passive" part="R" description=""/>
+      <property name="LCSC" value="C25319"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <property name="ki_fp_filters" value="R_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>b6e8c80a-2e97-4fe5-adde-ebefcf809799</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R8">
+      <value>W8J0103</value>
+      <footprint>04_MyFoot_Passive:R_2012Metric</footprint>
+      <fields>
+        <field name="LCSC">C25612</field>
+        <field name="Footprint">04_MyFoot_Passive:R_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="04_MyLib_Passive" part="R" description=""/>
+      <property name="LCSC" value="C25612"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <property name="ki_fp_filters" value="R_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>d0ad2565-9cde-43fa-bf48-0da57357741e</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R9">
+      <value>W8J0103</value>
+      <footprint>04_MyFoot_Passive:R_2012Metric</footprint>
+      <fields>
+        <field name="LCSC">C25612</field>
+        <field name="Footprint">04_MyFoot_Passive:R_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="04_MyLib_Passive" part="R" description=""/>
+      <property name="LCSC" value="C25612"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <property name="ki_fp_filters" value="R_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>eaf2181f-785e-495a-9924-3f2a3be7a94a</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R10">
+      <value>W8J0103</value>
+      <footprint>04_MyFoot_Passive:R_2012Metric</footprint>
+      <fields>
+        <field name="LCSC">C25612</field>
+        <field name="Footprint">04_MyFoot_Passive:R_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="04_MyLib_Passive" part="R" description=""/>
+      <property name="LCSC" value="C25612"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <property name="ki_fp_filters" value="R_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>c5cb8606-ffcf-4ecb-9fe8-e99ce42d982e</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R11">
+      <value>W4J0220</value>
+      <footprint>04_MyFoot_Passive:R_3216Metric</footprint>
+      <fields>
+        <field name="LCSC">C25364</field>
+        <field name="Footprint">04_MyFoot_Passive:R_3216Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="04_MyLib_Passive" part="R" description=""/>
+      <property name="LCSC" value="C25364"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <property name="ki_fp_filters" value="R_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>7b68cdaf-9482-4696-a2af-bab67a3ef498</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R12">
+      <value>W8J0103</value>
+      <footprint>04_MyFoot_Passive:R_2012Metric</footprint>
+      <fields>
+        <field name="LCSC">C25612</field>
+        <field name="Footprint">04_MyFoot_Passive:R_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="04_MyLib_Passive" part="R" description=""/>
+      <property name="LCSC" value="C25612"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <property name="ki_fp_filters" value="R_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>345881cb-d8a1-41b5-abc6-ad4f77043f82</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R13">
+      <value>W8J0103</value>
+      <footprint>04_MyFoot_Passive:R_2012Metric</footprint>
+      <fields>
+        <field name="LCSC">C25612</field>
+        <field name="Footprint">04_MyFoot_Passive:R_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="04_MyLib_Passive" part="R" description=""/>
+      <property name="LCSC" value="C25612"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <property name="ki_fp_filters" value="R_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>2c96748b-2b53-4626-a7d1-4e5e50dd628e</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="RV1">
+      <value>3362P103</value>
+      <footprint>04_MyFoot_Passive:TRIM_3362P</footprint>
+      <fields>
+        <field name="Footprint">04_MyFoot_Passive:TRIM_3362P</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="04_MyLib_Passive" part="R_POT" description=""/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_keywords" value="resistor variable"/>
+      <property name="ki_fp_filters" value="Potentiometer*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>9d3203be-202e-402b-95ea-6186293cab90</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="3"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="TS1">
+      <value>TS1103D</value>
+      <footprint>06_MyFoot_Mechanical:SW_PUSH-12mm</footprint>
+      <fields>
+        <field name="MF"/>
+        <field name="MAXIMUM_PACKAGE_HEIGHT"/>
+        <field name="Package"/>
+        <field name="Price"/>
+        <field name="Check_prices"/>
+        <field name="STANDARD"/>
+        <field name="PARTREV"/>
+        <field name="SnapEDA_Link"/>
+        <field name="MP"/>
+        <field name="Description_1"/>
+        <field name="MANUFACTURER"/>
+        <field name="Availability"/>
+        <field name="SNAPEDA_PN"/>
+        <field name="Footprint">06_MyFoot_Mechanical:SW_PUSH-12mm</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="06_MyLib_Mechanical" part="TS1103D" description=""/>
+      <property name="MF" value=""/>
+      <property name="MAXIMUM_PACKAGE_HEIGHT" value=""/>
+      <property name="Package" value=""/>
+      <property name="Price" value=""/>
+      <property name="Check_prices" value=""/>
+      <property name="STANDARD" value=""/>
+      <property name="PARTREV" value=""/>
+      <property name="SnapEDA_Link" value=""/>
+      <property name="MP" value=""/>
+      <property name="Description_1" value=""/>
+      <property name="MANUFACTURER" value=""/>
+      <property name="Availability" value=""/>
+      <property name="SNAPEDA_PN" value=""/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>82f192fd-b1d0-409a-8e7c-ff2ce661351c</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+            <pin num="3"/>
+            <pin num="4"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="TS2">
+      <value>TS1103D</value>
+      <footprint>06_MyFoot_Mechanical:SW_PUSH-12mm</footprint>
+      <fields>
+        <field name="MF"/>
+        <field name="MAXIMUM_PACKAGE_HEIGHT"/>
+        <field name="Package"/>
+        <field name="Price"/>
+        <field name="Check_prices"/>
+        <field name="STANDARD"/>
+        <field name="PARTREV"/>
+        <field name="SnapEDA_Link"/>
+        <field name="MP"/>
+        <field name="Description_1"/>
+        <field name="MANUFACTURER"/>
+        <field name="Availability"/>
+        <field name="SNAPEDA_PN"/>
+        <field name="Footprint">06_MyFoot_Mechanical:SW_PUSH-12mm</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="06_MyLib_Mechanical" part="TS1103D" description=""/>
+      <property name="MF" value=""/>
+      <property name="MAXIMUM_PACKAGE_HEIGHT" value=""/>
+      <property name="Package" value=""/>
+      <property name="Price" value=""/>
+      <property name="Check_prices" value=""/>
+      <property name="STANDARD" value=""/>
+      <property name="PARTREV" value=""/>
+      <property name="SnapEDA_Link" value=""/>
+      <property name="MP" value=""/>
+      <property name="Description_1" value=""/>
+      <property name="MANUFACTURER" value=""/>
+      <property name="Availability" value=""/>
+      <property name="SNAPEDA_PN" value=""/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>5e2faeb8-c5fc-4f2d-8fd1-c0ff32c1ef74</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+            <pin num="3"/>
+            <pin num="4"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="TS3">
+      <value>TS1103D</value>
+      <footprint>06_MyFoot_Mechanical:SW_PUSH-12mm</footprint>
+      <fields>
+        <field name="MF"/>
+        <field name="MAXIMUM_PACKAGE_HEIGHT"/>
+        <field name="Package"/>
+        <field name="Price"/>
+        <field name="Check_prices"/>
+        <field name="STANDARD"/>
+        <field name="PARTREV"/>
+        <field name="SnapEDA_Link"/>
+        <field name="MP"/>
+        <field name="Description_1"/>
+        <field name="MANUFACTURER"/>
+        <field name="Availability"/>
+        <field name="SNAPEDA_PN"/>
+        <field name="Footprint">06_MyFoot_Mechanical:SW_PUSH-12mm</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="06_MyLib_Mechanical" part="TS1103D" description=""/>
+      <property name="MF" value=""/>
+      <property name="MAXIMUM_PACKAGE_HEIGHT" value=""/>
+      <property name="Package" value=""/>
+      <property name="Price" value=""/>
+      <property name="Check_prices" value=""/>
+      <property name="STANDARD" value=""/>
+      <property name="PARTREV" value=""/>
+      <property name="SnapEDA_Link" value=""/>
+      <property name="MP" value=""/>
+      <property name="Description_1" value=""/>
+      <property name="MANUFACTURER" value=""/>
+      <property name="Availability" value=""/>
+      <property name="SNAPEDA_PN" value=""/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>67ca5514-b22a-4beb-9981-f6475a9f2ead</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+            <pin num="3"/>
+            <pin num="4"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="TS4">
+      <value>TS1103D</value>
+      <footprint>06_MyFoot_Mechanical:SW_PUSH-12mm</footprint>
+      <fields>
+        <field name="MF"/>
+        <field name="MAXIMUM_PACKAGE_HEIGHT"/>
+        <field name="Package"/>
+        <field name="Price"/>
+        <field name="Check_prices"/>
+        <field name="STANDARD"/>
+        <field name="PARTREV"/>
+        <field name="SnapEDA_Link"/>
+        <field name="MP"/>
+        <field name="Description_1"/>
+        <field name="MANUFACTURER"/>
+        <field name="Availability"/>
+        <field name="SNAPEDA_PN"/>
+        <field name="Footprint">06_MyFoot_Mechanical:SW_PUSH-12mm</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="06_MyLib_Mechanical" part="TS1103D" description=""/>
+      <property name="MF" value=""/>
+      <property name="MAXIMUM_PACKAGE_HEIGHT" value=""/>
+      <property name="Package" value=""/>
+      <property name="Price" value=""/>
+      <property name="Check_prices" value=""/>
+      <property name="STANDARD" value=""/>
+      <property name="PARTREV" value=""/>
+      <property name="SnapEDA_Link" value=""/>
+      <property name="MP" value=""/>
+      <property name="Description_1" value=""/>
+      <property name="MANUFACTURER" value=""/>
+      <property name="Availability" value=""/>
+      <property name="SNAPEDA_PN" value=""/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>93b7f1f9-1a22-455c-892b-2f2af2be9bca</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+            <pin num="3"/>
+            <pin num="4"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="TS5">
+      <value>TS1103D</value>
+      <footprint>06_MyFoot_Mechanical:SW_PUSH-12mm</footprint>
+      <fields>
+        <field name="MF"/>
+        <field name="MAXIMUM_PACKAGE_HEIGHT"/>
+        <field name="Package"/>
+        <field name="Price"/>
+        <field name="Check_prices"/>
+        <field name="STANDARD"/>
+        <field name="PARTREV"/>
+        <field name="SnapEDA_Link"/>
+        <field name="MP"/>
+        <field name="Description_1"/>
+        <field name="MANUFACTURER"/>
+        <field name="Availability"/>
+        <field name="SNAPEDA_PN"/>
+        <field name="Footprint">06_MyFoot_Mechanical:SW_PUSH-12mm</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="06_MyLib_Mechanical" part="TS1103D" description=""/>
+      <property name="MF" value=""/>
+      <property name="MAXIMUM_PACKAGE_HEIGHT" value=""/>
+      <property name="Package" value=""/>
+      <property name="Price" value=""/>
+      <property name="Check_prices" value=""/>
+      <property name="STANDARD" value=""/>
+      <property name="PARTREV" value=""/>
+      <property name="SnapEDA_Link" value=""/>
+      <property name="MP" value=""/>
+      <property name="Description_1" value=""/>
+      <property name="MANUFACTURER" value=""/>
+      <property name="Availability" value=""/>
+      <property name="SNAPEDA_PN" value=""/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>8d15d4f3-8fc8-47b1-b811-1fc019454b17</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+            <pin num="3"/>
+            <pin num="4"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="U1">
+      <value>74HCT574PWR</value>
+      <footprint>01_MyFoot_ICs:TSSOP-20_4.4x6.5mm_P0.65mm</footprint>
+      <fields>
+        <field name="LCSC">C2652839</field>
+        <field name="Footprint">01_MyFoot_ICs:TSSOP-20_4.4x6.5mm_P0.65mm</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="01_MyLib_ICs" part="74HCT574" description=""/>
+      <property name="LCSC" value="C2652839"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_fp_filters" value="DIP?20*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>a3ad25df-4fe8-45d7-a85d-cf619b12df4a</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="2"/>
+            <pin num="3"/>
+            <pin num="4"/>
+            <pin num="5"/>
+            <pin num="6"/>
+            <pin num="7"/>
+            <pin num="8"/>
+            <pin num="9"/>
+            <pin num="11"/>
+            <pin num="1"/>
+            <pin num="20"/>
+            <pin num="10"/>
+            <pin num="19"/>
+            <pin num="18"/>
+            <pin num="17"/>
+            <pin num="16"/>
+            <pin num="15"/>
+            <pin num="14"/>
+            <pin num="13"/>
+            <pin num="12"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="U2">
+      <value>74HCT574PWR</value>
+      <footprint>01_MyFoot_ICs:TSSOP-20_4.4x6.5mm_P0.65mm</footprint>
+      <fields>
+        <field name="LCSC">C2652839</field>
+        <field name="Footprint">01_MyFoot_ICs:TSSOP-20_4.4x6.5mm_P0.65mm</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="01_MyLib_ICs" part="74HCT574" description=""/>
+      <property name="LCSC" value="C2652839"/>
+      <property name="Sheetname" value="Multi_Mega_Display_V2"/>
+      <property name="Sheetfile" value="Multi_Mega_Display_V2.kicad_sch"/>
+      <property name="ki_fp_filters" value="DIP?20*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>e2bc0f7f-9ff4-45e4-8e14-fa023e2f7db7</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="2"/>
+            <pin num="3"/>
+            <pin num="4"/>
+            <pin num="5"/>
+            <pin num="6"/>
+            <pin num="7"/>
+            <pin num="8"/>
+            <pin num="9"/>
+            <pin num="11"/>
+            <pin num="1"/>
+            <pin num="20"/>
+            <pin num="10"/>
+            <pin num="19"/>
+            <pin num="18"/>
+            <pin num="17"/>
+            <pin num="16"/>
+            <pin num="15"/>
+            <pin num="14"/>
+            <pin num="13"/>
+            <pin num="12"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+  </components>
+  <libparts>
+    <libpart lib="" part="LL4148_1">
+      <footprints>
+        <fp>D*DO?41*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">D</field>
+        <field name="Value">LL4148</field>
+        <field name="Footprint">03_MyFoot_Active:LL4148_MELF</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+        <field name="Sim.Device"/>
+        <field name="Sim.Pins"/>
+      </fields>
+      <pins>
+        <pin num="1" name="K" type="passive"/>
+        <pin num="2" name="A" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="01_MyLib_ICs" part="74HCT574">
+      <footprints>
+        <fp>DIP?20*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">74HCT574</field>
+        <field name="Footprint">01_MyFoot_ICs:TSSOP-20_4.4x6.5mm_P0.65mm</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <pins>
+        <pin num="1" name="OE" type="input"/>
+        <pin num="2" name="D0" type="input"/>
+        <pin num="3" name="D1" type="input"/>
+        <pin num="4" name="D2" type="input"/>
+        <pin num="5" name="D3" type="input"/>
+        <pin num="6" name="D4" type="input"/>
+        <pin num="7" name="D5" type="input"/>
+        <pin num="8" name="D6" type="input"/>
+        <pin num="9" name="D7" type="input"/>
+        <pin num="10" name="GND" type="passive"/>
+        <pin num="11" name="Cp" type="input"/>
+        <pin num="12" name="Q7" type="tri_state"/>
+        <pin num="13" name="Q6" type="tri_state"/>
+        <pin num="14" name="Q5" type="tri_state"/>
+        <pin num="15" name="Q4" type="tri_state"/>
+        <pin num="16" name="Q3" type="tri_state"/>
+        <pin num="17" name="Q2" type="tri_state"/>
+        <pin num="18" name="Q1" type="tri_state"/>
+        <pin num="19" name="Q0" type="tri_state"/>
+        <pin num="20" name="VCC" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="02_MyLib_Connectors" part="Conn_02x10_Odd_Even">
+      <footprints>
+        <fp>Connector*:*_2x??_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">J</field>
+        <field name="Value">Conn_02x10_Odd_Even</field>
+        <field name="Footprint">02_MyFoot_Connectors:IDC-Header_2x10_P2.54mm_Vertical</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <pins>
+        <pin num="1" name="Pin_1" type="passive"/>
+        <pin num="2" name="Pin_2" type="passive"/>
+        <pin num="3" name="Pin_3" type="passive"/>
+        <pin num="4" name="Pin_4" type="passive"/>
+        <pin num="5" name="Pin_5" type="passive"/>
+        <pin num="6" name="Pin_6" type="passive"/>
+        <pin num="7" name="Pin_7" type="passive"/>
+        <pin num="8" name="Pin_8" type="passive"/>
+        <pin num="9" name="Pin_9" type="passive"/>
+        <pin num="10" name="Pin_10" type="passive"/>
+        <pin num="11" name="Pin_11" type="passive"/>
+        <pin num="12" name="Pin_12" type="passive"/>
+        <pin num="13" name="Pin_13" type="passive"/>
+        <pin num="14" name="Pin_14" type="passive"/>
+        <pin num="15" name="Pin_15" type="passive"/>
+        <pin num="16" name="Pin_16" type="power_out"/>
+        <pin num="17" name="Pin_17" type="passive"/>
+        <pin num="18" name="Pin_18" type="passive"/>
+        <pin num="19" name="Pin_19" type="power_out"/>
+        <pin num="20" name="Pin_20" type="power_out"/>
+      </pins>
+    </libpart>
+    <libpart lib="03_MyLib_Active" part="KRC105S">
+      <footprints>
+        <fp>SOT?23*</fp>
+        <fp>SC?59*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">Q</field>
+        <field name="Value">KRC105S</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <pins>
+        <pin num="1" name="B" type="passive"/>
+        <pin num="2" name="E" type="passive"/>
+        <pin num="3" name="C" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="03_MyLib_Active" part="LED">
+      <description>Light emitting diode</description>
+      <footprints>
+        <fp>LED*</fp>
+        <fp>LED_SMD:*</fp>
+        <fp>LED_THT:*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">D</field>
+        <field name="Value">LED</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description">Light emitting diode</field>
+        <field name="Sim.Pins">1=K 2=A</field>
+      </fields>
+      <pins>
+        <pin num="1" name="K" type="passive"/>
+        <pin num="2" name="A" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="04_MyLib_Passive" part="C_Small">
+      <description>Unpolarized capacitor, small symbol</description>
+      <footprints>
+        <fp>C_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">C</field>
+        <field name="Value">C_Small</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description">Unpolarized capacitor, small symbol</field>
+      </fields>
+      <pins>
+        <pin num="1" name="" type="passive"/>
+        <pin num="2" name="" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="04_MyLib_Passive" part="R">
+      <footprints>
+        <fp>R_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">R</field>
+        <field name="Value">R</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <pins>
+        <pin num="1" name="" type="passive"/>
+        <pin num="2" name="" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="04_MyLib_Passive" part="R_POT">
+      <footprints>
+        <fp>Potentiometer*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">RV</field>
+        <field name="Value">R_POT</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="passive"/>
+        <pin num="2" name="2" type="passive"/>
+        <pin num="3" name="3" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="05_MyLib_Others" part="LC1602A">
+      <footprints>
+        <fp>*WC*1602A*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">DS</field>
+        <field name="Value">LC1602A</field>
+        <field name="Footprint">06_MyFoot_Mechanical:LC1602A</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <pins>
+        <pin num="1" name="VSS" type="passive"/>
+        <pin num="2" name="VDD" type="passive"/>
+        <pin num="3" name="VO" type="input"/>
+        <pin num="4" name="RS" type="input"/>
+        <pin num="5" name="R/W" type="input"/>
+        <pin num="6" name="E" type="input"/>
+        <pin num="7" name="D0" type="input"/>
+        <pin num="8" name="D1" type="input"/>
+        <pin num="9" name="D2" type="input"/>
+        <pin num="10" name="D3" type="input"/>
+        <pin num="11" name="D4" type="input"/>
+        <pin num="12" name="D5" type="input"/>
+        <pin num="13" name="D6" type="input"/>
+        <pin num="14" name="D7" type="input"/>
+        <pin num="15" name="LED(+)" type="passive"/>
+        <pin num="16" name="LED(-)" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="06_MyLib_Mechanical" part="TS1103D">
+      <fields>
+        <field name="Reference">TS</field>
+        <field name="Value">TS1103D</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+        <field name="MF"/>
+        <field name="MAXIMUM_PACKAGE_HEIGHT"/>
+        <field name="Package"/>
+        <field name="Price"/>
+        <field name="Check_prices"/>
+        <field name="STANDARD"/>
+        <field name="PARTREV"/>
+        <field name="SnapEDA_Link"/>
+        <field name="MP"/>
+        <field name="Description_1"/>
+        <field name="MANUFACTURER"/>
+        <field name="Availability"/>
+        <field name="SNAPEDA_PN"/>
+      </fields>
+      <pins>
+        <pin num="1" name="" type="passive"/>
+        <pin num="2" name="" type="passive"/>
+        <pin num="3" name="" type="passive"/>
+        <pin num="4" name="" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Connector_Generic" part="Conn_01x01">
+      <description>Generic connector, single row, 01x01, script generated (kicad-library-utils/schlib/autogen/connector/)</description>
+      <footprints>
+        <fp>Connector*:*_1x??_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">J</field>
+        <field name="Value">Conn_01x01</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description">Generic connector, single row, 01x01, script generated (kicad-library-utils/schlib/autogen/connector/)</field>
+      </fields>
+      <pins>
+        <pin num="1" name="Pin_1" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Device" part="Buzzer">
+      <description>Buzzer, polarized</description>
+      <footprints>
+        <fp>*Buzzer*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">BZ</field>
+        <field name="Value">Buzzer</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description">Buzzer, polarized</field>
+      </fields>
+      <pins>
+        <pin num="1" name="+" type="passive"/>
+        <pin num="2" name="-" type="passive"/>
+      </pins>
+    </libpart>
+  </libparts>
+  <libraries>
+    <library logical="01_MyLib_ICs">
+      <uri>${KICAD_SYMBOL_DIR}/01_MyLib_ICs.kicad_sym</uri>
+    </library>
+    <library logical="02_MyLib_Connectors">
+      <uri>${KICAD_SYMBOL_DIR}/02_MyLib_Connectors.kicad_sym</uri>
+    </library>
+    <library logical="03_MyLib_Active">
+      <uri>${KICAD_SYMBOL_DIR}/03_MyLib_Active.kicad_sym</uri>
+    </library>
+    <library logical="04_MyLib_Passive">
+      <uri>${KICAD_SYMBOL_DIR}/04_MyLib_Passive.kicad_sym</uri>
+    </library>
+    <library logical="05_MyLib_Others">
+      <uri>${KICAD_SYMBOL_DIR}/05_MyLib_Others.kicad_sym</uri>
+    </library>
+    <library logical="06_MyLib_Mechanical">
+      <uri>${KICAD_SYMBOL_DIR}/06_MyLib_Mechanical.kicad_sym</uri>
+    </library>
+    <library logical="Connector_Generic">
+      <uri>${KICAD10_SYMBOL_DIR}/Connector_Generic.kicad_sym</uri>
+    </library>
+    <library logical="Device">
+      <uri>${KICAD10_SYMBOL_DIR}/Device.kicad_sym</uri>
+    </library>
+  </libraries>
+  <nets>
+    <net code="1" name="+3.3V" class="Default">
+      <node ref="C6" pin="2" pintype="passive"/>
+      <node ref="C7" pin="2" pintype="passive"/>
+      <node ref="J6" pin="14" pinfunction="Pin_14_14" pintype="passive"/>
+      <node ref="J6" pin="16" pinfunction="Pin_16_16" pintype="power_out"/>
+      <node ref="R10" pin="2" pintype="passive"/>
+      <node ref="R12" pin="2" pintype="passive"/>
+      <node ref="R13" pin="2" pintype="passive"/>
+      <node ref="R8" pin="2" pintype="passive"/>
+      <node ref="R9" pin="2" pintype="passive"/>
+    </net>
+    <net code="2" name="+5V" class="Default">
+      <node ref="C1" pin="2" pintype="passive"/>
+      <node ref="C2" pin="2" pintype="passive"/>
+      <node ref="C3" pin="2" pintype="passive"/>
+      <node ref="C4" pin="2" pintype="passive"/>
+      <node ref="J6" pin="17" pinfunction="Pin_17_17" pintype="passive"/>
+      <node ref="J6" pin="19" pinfunction="Pin_19_19" pintype="power_out"/>
+      <node ref="LCD1" pin="2" pinfunction="VDD_2" pintype="passive"/>
+      <node ref="R1" pin="2" pintype="passive"/>
+      <node ref="R11" pin="2" pintype="passive"/>
+      <node ref="RV1" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="U1" pin="20" pinfunction="VCC_20" pintype="passive"/>
+      <node ref="U2" pin="20" pinfunction="VCC_20" pintype="passive"/>
+    </net>
+    <net code="3" name="/BZ_OUT" class="Default">
+      <node ref="J6" pin="12" pinfunction="Pin_12_12" pintype="passive"/>
+      <node ref="Q1" pin="1" pinfunction="B_1" pintype="passive"/>
+    </net>
+    <net code="4" name="/CLK_LCD" class="Default">
+      <node ref="J6" pin="13" pinfunction="Pin_13_13" pintype="passive"/>
+      <node ref="U1" pin="11" pinfunction="Cp_11" pintype="input"/>
+    </net>
+    <net code="5" name="/CLK_LED" class="Default">
+      <node ref="J6" pin="15" pinfunction="Pin_15_15" pintype="passive"/>
+      <node ref="U2" pin="11" pinfunction="Cp_11" pintype="input"/>
+    </net>
+    <net code="6" name="/D0" class="Default">
+      <node ref="J6" pin="1" pinfunction="Pin_1_1" pintype="passive"/>
+      <node ref="U1" pin="2" pinfunction="D0_2" pintype="input"/>
+      <node ref="U2" pin="2" pinfunction="D0_2" pintype="input"/>
+    </net>
+    <net code="7" name="/D1" class="Default">
+      <node ref="J6" pin="3" pinfunction="Pin_3_3" pintype="passive"/>
+      <node ref="U1" pin="3" pinfunction="D1_3" pintype="input"/>
+      <node ref="U2" pin="3" pinfunction="D1_3" pintype="input"/>
+    </net>
+    <net code="8" name="/D2" class="Default">
+      <node ref="J6" pin="5" pinfunction="Pin_5_5" pintype="passive"/>
+      <node ref="U1" pin="4" pinfunction="D2_4" pintype="input"/>
+      <node ref="U2" pin="4" pinfunction="D2_4" pintype="input"/>
+    </net>
+    <net code="9" name="/D3" class="Default">
+      <node ref="J6" pin="7" pinfunction="Pin_7_7" pintype="passive"/>
+      <node ref="U1" pin="5" pinfunction="D3_5" pintype="input"/>
+      <node ref="U2" pin="5" pinfunction="D3_5" pintype="input"/>
+    </net>
+    <net code="10" name="/D4" class="Default">
+      <node ref="J6" pin="9" pinfunction="Pin_9_9" pintype="passive"/>
+      <node ref="U1" pin="6" pinfunction="D4_6" pintype="input"/>
+      <node ref="U2" pin="6" pinfunction="D4_6" pintype="input"/>
+    </net>
+    <net code="11" name="/D5" class="Default">
+      <node ref="J6" pin="11" pinfunction="Pin_11_11" pintype="passive"/>
+      <node ref="U1" pin="7" pinfunction="D5_7" pintype="input"/>
+      <node ref="U2" pin="7" pinfunction="D5_7" pintype="input"/>
+    </net>
+    <net code="12" name="/DOWN" class="Default">
+      <node ref="C11" pin="1" pintype="passive"/>
+      <node ref="J6" pin="8" pinfunction="Pin_8_8" pintype="passive"/>
+      <node ref="R12" pin="1" pintype="passive"/>
+      <node ref="TS4" pin="1" pintype="passive"/>
+      <node ref="TS4" pin="2" pintype="passive"/>
+    </net>
+    <net code="13" name="/MODE" class="Default">
+      <node ref="C9" pin="1" pintype="passive"/>
+      <node ref="J6" pin="4" pinfunction="Pin_4_4" pintype="passive"/>
+      <node ref="R9" pin="1" pintype="passive"/>
+      <node ref="TS2" pin="1" pintype="passive"/>
+      <node ref="TS2" pin="2" pintype="passive"/>
+    </net>
+    <net code="14" name="/SET" class="Default">
+      <node ref="C12" pin="1" pintype="passive"/>
+      <node ref="J6" pin="10" pinfunction="Pin_10_10" pintype="passive"/>
+      <node ref="R13" pin="1" pintype="passive"/>
+      <node ref="TS5" pin="1" pintype="passive"/>
+      <node ref="TS5" pin="2" pintype="passive"/>
+    </net>
+    <net code="15" name="/START_STOP" class="Default">
+      <node ref="C8" pin="1" pintype="passive"/>
+      <node ref="J6" pin="2" pinfunction="Pin_2_2" pintype="passive"/>
+      <node ref="R8" pin="1" pintype="passive"/>
+      <node ref="TS1" pin="1" pintype="passive"/>
+      <node ref="TS1" pin="2" pintype="passive"/>
+    </net>
+    <net code="16" name="/UP" class="Default">
+      <node ref="C10" pin="1" pintype="passive"/>
+      <node ref="J6" pin="6" pinfunction="Pin_6_6" pintype="passive"/>
+      <node ref="R10" pin="1" pintype="passive"/>
+      <node ref="TS3" pin="1" pintype="passive"/>
+      <node ref="TS3" pin="2" pintype="passive"/>
+    </net>
+    <net code="17" name="GND" class="Default">
+      <node ref="C1" pin="1" pintype="passive"/>
+      <node ref="C10" pin="2" pintype="passive"/>
+      <node ref="C11" pin="2" pintype="passive"/>
+      <node ref="C12" pin="2" pintype="passive"/>
+      <node ref="C2" pin="1" pintype="passive"/>
+      <node ref="C3" pin="1" pintype="passive"/>
+      <node ref="C4" pin="1" pintype="passive"/>
+      <node ref="C5" pin="1" pintype="passive"/>
+      <node ref="C6" pin="1" pintype="passive"/>
+      <node ref="C7" pin="1" pintype="passive"/>
+      <node ref="C8" pin="2" pintype="passive"/>
+      <node ref="C9" pin="2" pintype="passive"/>
+      <node ref="D1" pin="1" pinfunction="K_1" pintype="passive"/>
+      <node ref="D2" pin="1" pinfunction="K_1" pintype="passive"/>
+      <node ref="D3" pin="1" pinfunction="K_1" pintype="passive"/>
+      <node ref="D4" pin="1" pinfunction="K_1" pintype="passive"/>
+      <node ref="D5" pin="1" pinfunction="K_1" pintype="passive"/>
+      <node ref="D6" pin="1" pinfunction="K_1" pintype="passive"/>
+      <node ref="J6" pin="18" pinfunction="Pin_18_18" pintype="passive"/>
+      <node ref="J6" pin="20" pinfunction="Pin_20_20" pintype="power_out"/>
+      <node ref="LCD1" pin="1" pinfunction="VSS_1" pintype="passive"/>
+      <node ref="LCD1" pin="16" pinfunction="LED(-)_16" pintype="passive"/>
+      <node ref="LCD1" pin="5" pinfunction="R/W_5" pintype="input"/>
+      <node ref="Q1" pin="2" pinfunction="E_2" pintype="passive"/>
+      <node ref="RV1" pin="3" pinfunction="3_3" pintype="passive"/>
+      <node ref="TS1" pin="3" pintype="passive"/>
+      <node ref="TS1" pin="4" pintype="passive"/>
+      <node ref="TS2" pin="3" pintype="passive"/>
+      <node ref="TS2" pin="4" pintype="passive"/>
+      <node ref="TS3" pin="3" pintype="passive"/>
+      <node ref="TS3" pin="4" pintype="passive"/>
+      <node ref="TS4" pin="3" pintype="passive"/>
+      <node ref="TS4" pin="4" pintype="passive"/>
+      <node ref="TS5" pin="3" pintype="passive"/>
+      <node ref="TS5" pin="4" pintype="passive"/>
+      <node ref="U1" pin="1" pinfunction="OE_1" pintype="input"/>
+      <node ref="U1" pin="10" pinfunction="GND_10" pintype="passive"/>
+      <node ref="U2" pin="1" pinfunction="OE_1" pintype="input"/>
+      <node ref="U2" pin="10" pinfunction="GND_10" pintype="passive"/>
+    </net>
+    <net code="18" name="Net-(BZ1-+)" class="Default">
+      <node ref="BZ1" pin="1" pinfunction="+_1" pintype="passive"/>
+      <node ref="D7" pin="1" pinfunction="K_1" pintype="passive"/>
+      <node ref="R11" pin="1" pintype="passive"/>
+    </net>
+    <net code="19" name="Net-(BZ1--)" class="Default">
+      <node ref="BZ1" pin="2" pinfunction="-_2" pintype="passive"/>
+      <node ref="D7" pin="2" pinfunction="A_2" pintype="passive"/>
+      <node ref="Q1" pin="3" pinfunction="C_3" pintype="passive"/>
+    </net>
+    <net code="20" name="Net-(D1-A)" class="Default">
+      <node ref="D1" pin="2" pinfunction="A_2" pintype="passive"/>
+      <node ref="R2" pin="1" pintype="passive"/>
+    </net>
+    <net code="21" name="Net-(D2-A)" class="Default">
+      <node ref="D2" pin="2" pinfunction="A_2" pintype="passive"/>
+      <node ref="R3" pin="1" pintype="passive"/>
+    </net>
+    <net code="22" name="Net-(D3-A)" class="Default">
+      <node ref="D3" pin="2" pinfunction="A_2" pintype="passive"/>
+      <node ref="R4" pin="1" pintype="passive"/>
+    </net>
+    <net code="23" name="Net-(D4-A)" class="Default">
+      <node ref="D4" pin="2" pinfunction="A_2" pintype="passive"/>
+      <node ref="R5" pin="1" pintype="passive"/>
+    </net>
+    <net code="24" name="Net-(D5-A)" class="Default">
+      <node ref="D5" pin="2" pinfunction="A_2" pintype="passive"/>
+      <node ref="R6" pin="1" pintype="passive"/>
+    </net>
+    <net code="25" name="Net-(D6-A)" class="Default">
+      <node ref="D6" pin="2" pinfunction="A_2" pintype="passive"/>
+      <node ref="R7" pin="1" pintype="passive"/>
+    </net>
+    <net code="26" name="Net-(LCD1-D4)" class="Default">
+      <node ref="LCD1" pin="11" pinfunction="D4_11" pintype="input"/>
+      <node ref="U1" pin="17" pinfunction="Q2_17" pintype="tri_state"/>
+    </net>
+    <net code="27" name="Net-(LCD1-D5)" class="Default">
+      <node ref="LCD1" pin="12" pinfunction="D5_12" pintype="input"/>
+      <node ref="U1" pin="16" pinfunction="Q3_16" pintype="tri_state"/>
+    </net>
+    <net code="28" name="Net-(LCD1-D6)" class="Default">
+      <node ref="LCD1" pin="13" pinfunction="D6_13" pintype="input"/>
+      <node ref="U1" pin="15" pinfunction="Q4_15" pintype="tri_state"/>
+    </net>
+    <net code="29" name="Net-(LCD1-D7)" class="Default">
+      <node ref="LCD1" pin="14" pinfunction="D7_14" pintype="input"/>
+      <node ref="U1" pin="14" pinfunction="Q5_14" pintype="tri_state"/>
+    </net>
+    <net code="30" name="Net-(LCD1-E)" class="Default">
+      <node ref="LCD1" pin="6" pinfunction="E_6" pintype="input"/>
+      <node ref="U1" pin="18" pinfunction="Q1_18" pintype="tri_state"/>
+    </net>
+    <net code="31" name="Net-(LCD1-LED(+))" class="Default">
+      <node ref="LCD1" pin="15" pinfunction="LED(+)_15" pintype="passive"/>
+      <node ref="R1" pin="1" pintype="passive"/>
+    </net>
+    <net code="32" name="Net-(LCD1-RS)" class="Default">
+      <node ref="LCD1" pin="4" pinfunction="RS_4" pintype="input"/>
+      <node ref="U1" pin="19" pinfunction="Q0_19" pintype="tri_state"/>
+    </net>
+    <net code="33" name="Net-(LCD1-VO)" class="Default">
+      <node ref="C5" pin="2" pintype="passive"/>
+      <node ref="LCD1" pin="3" pinfunction="VO_3" pintype="input"/>
+      <node ref="RV1" pin="2" pinfunction="2_2" pintype="passive"/>
+    </net>
+    <net code="34" name="Net-(U2-Q0)" class="Default">
+      <node ref="R2" pin="2" pintype="passive"/>
+      <node ref="U2" pin="19" pinfunction="Q0_19" pintype="tri_state"/>
+    </net>
+    <net code="35" name="Net-(U2-Q1)" class="Default">
+      <node ref="R3" pin="2" pintype="passive"/>
+      <node ref="U2" pin="18" pinfunction="Q1_18" pintype="tri_state"/>
+    </net>
+    <net code="36" name="Net-(U2-Q2)" class="Default">
+      <node ref="R4" pin="2" pintype="passive"/>
+      <node ref="U2" pin="17" pinfunction="Q2_17" pintype="tri_state"/>
+    </net>
+    <net code="37" name="Net-(U2-Q3)" class="Default">
+      <node ref="R5" pin="2" pintype="passive"/>
+      <node ref="U2" pin="16" pinfunction="Q3_16" pintype="tri_state"/>
+    </net>
+    <net code="38" name="Net-(U2-Q4)" class="Default">
+      <node ref="R6" pin="2" pintype="passive"/>
+      <node ref="U2" pin="15" pinfunction="Q4_15" pintype="tri_state"/>
+    </net>
+    <net code="39" name="Net-(U2-Q5)" class="Default">
+      <node ref="R7" pin="2" pintype="passive"/>
+      <node ref="U2" pin="14" pinfunction="Q5_14" pintype="tri_state"/>
+    </net>
+    <net code="40" name="unconnected-(J2-Pin_1-Pad1)" class="Default">
+      <node ref="J2" pin="1" pinfunction="Pin_1_1" pintype="passive+no_connect"/>
+    </net>
+    <net code="41" name="unconnected-(J3-Pin_1-Pad1)" class="Default">
+      <node ref="J3" pin="1" pinfunction="Pin_1_1" pintype="passive+no_connect"/>
+    </net>
+    <net code="42" name="unconnected-(J4-Pin_1-Pad1)" class="Default">
+      <node ref="J4" pin="1" pinfunction="Pin_1_1" pintype="passive+no_connect"/>
+    </net>
+    <net code="43" name="unconnected-(J5-Pin_1-Pad1)" class="Default">
+      <node ref="J5" pin="1" pinfunction="Pin_1_1" pintype="passive+no_connect"/>
+    </net>
+    <net code="44" name="unconnected-(LCD1-D0-Pad7)" class="Default">
+      <node ref="LCD1" pin="7" pinfunction="D0_7" pintype="input+no_connect"/>
+    </net>
+    <net code="45" name="unconnected-(LCD1-D1-Pad8)" class="Default">
+      <node ref="LCD1" pin="8" pinfunction="D1_8" pintype="input+no_connect"/>
+    </net>
+    <net code="46" name="unconnected-(LCD1-D2-Pad9)" class="Default">
+      <node ref="LCD1" pin="9" pinfunction="D2_9" pintype="input+no_connect"/>
+    </net>
+    <net code="47" name="unconnected-(LCD1-D3-Pad10)" class="Default">
+      <node ref="LCD1" pin="10" pinfunction="D3_10" pintype="input+no_connect"/>
+    </net>
+    <net code="48" name="unconnected-(U1-D6-Pad8)" class="Default">
+      <node ref="U1" pin="8" pinfunction="D6_8" pintype="input+no_connect"/>
+    </net>
+    <net code="49" name="unconnected-(U1-D7-Pad9)" class="Default">
+      <node ref="U1" pin="9" pinfunction="D7_9" pintype="input+no_connect"/>
+    </net>
+    <net code="50" name="unconnected-(U1-Q6-Pad13)" class="Default">
+      <node ref="U1" pin="13" pinfunction="Q6_13" pintype="tri_state+no_connect"/>
+    </net>
+    <net code="51" name="unconnected-(U1-Q7-Pad12)" class="Default">
+      <node ref="U1" pin="12" pinfunction="Q7_12" pintype="tri_state+no_connect"/>
+    </net>
+    <net code="52" name="unconnected-(U2-D6-Pad8)" class="Default">
+      <node ref="U2" pin="8" pinfunction="D6_8" pintype="input+no_connect"/>
+    </net>
+    <net code="53" name="unconnected-(U2-D7-Pad9)" class="Default">
+      <node ref="U2" pin="9" pinfunction="D7_9" pintype="input+no_connect"/>
+    </net>
+    <net code="54" name="unconnected-(U2-Q6-Pad13)" class="Default">
+      <node ref="U2" pin="13" pinfunction="Q6_13" pintype="tri_state+no_connect"/>
+    </net>
+    <net code="55" name="unconnected-(U2-Q7-Pad12)" class="Default">
+      <node ref="U2" pin="12" pinfunction="Q7_12" pintype="tri_state+no_connect"/>
+    </net>
+  </nets>
+</export>

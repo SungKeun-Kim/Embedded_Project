@@ -1,0 +1,223 @@
+(footprint "R_Axial_Shunt_L22.2mm_W9.5mm_PS14.30mm_P25.40mm"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "Resistor, Axial_Shunt series, Box, pin pitch=25.4mm, 5W, length*width*height=22.2*9.5*9.5mm^3, shunt pin pitch = 14.30mm, http://www.vishay.com/docs/30217/cpsl.pdf")
+	(tags "Resistor Axial_Shunt series Box pin pitch 25.4mm 5W length 22.2mm width 9.5mm height 9.5mm shunt pin pitch 14.30mm")
+	(property "Reference" "REF**"
+		(at 12.7 -5.87 0)
+		(layer "F.SilkS")
+		(uuid "217807ab-cc7b-4501-9c2a-6b9f3ef03dc9")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "R_Axial_Shunt_L22.2mm_W9.5mm_PS14.30mm_P25.40mm"
+		(at 12.7 5.87 0)
+		(layer "F.Fab")
+		(uuid "a3647bc5-1cb4-43e0-9ec1-7a5fc8e8a750")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "0db88ecd-b44d-421d-bd3f-d3581a8f4ff8")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "88faef17-6b36-47ae-b642-b97221b4e49c")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "KiLib_Generator" "resistor/THT"
+		(at 0 0 0)
+		(layer "F.SilkS")
+		(hide yes)
+		(uuid "42b2a471-907f-4a9d-95cd-88bcba0be4ec")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr through_hole)
+	(duplicate_pad_numbers_are_jumpers no)
+	(fp_line
+		(start 1.48 -4.87)
+		(end 23.92 -4.87)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "42f28dd9-02c1-4013-8ff8-376f1d97bc95")
+	)
+	(fp_line
+		(start 1.48 -1.74)
+		(end 1.48 -4.87)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "b72a658a-385a-445b-87e5-e684ad1b9d18")
+	)
+	(fp_line
+		(start 1.48 1.74)
+		(end 1.48 4.87)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "cf1746fc-b80f-4721-a206-c409a5b93979")
+	)
+	(fp_line
+		(start 1.48 4.87)
+		(end 23.92 4.87)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "0c9ec690-2659-4ffc-83d1-85cb70dcc152")
+	)
+	(fp_line
+		(start 23.92 -4.87)
+		(end 23.92 -1.74)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "d62ce277-0909-4131-b1df-07089bdbfcbf")
+	)
+	(fp_line
+		(start 23.92 4.87)
+		(end 23.92 1.74)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "c0738311-8cbe-4db0-a2f0-7634e8d101c7")
+	)
+	(fp_rect
+		(start -1.75 -5)
+		(end 27.15 5)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "25801d1b-7a30-484c-8d05-98fd5d5371f3")
+	)
+	(fp_line
+		(start 0 0)
+		(end 1.6 0)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "61437a97-464c-4581-b2ee-0ad0030d04d9")
+	)
+	(fp_line
+		(start 25.4 0)
+		(end 23.8 0)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "d08e6d6b-f479-4bb8-920c-14c39648dccb")
+	)
+	(fp_rect
+		(start 1.6 -4.75)
+		(end 23.8 4.75)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "a5bbff09-a7bd-4faf-89c5-68dba781f329")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 12.7 0 0)
+		(layer "F.Fab")
+		(uuid "b3ea0545-1c22-4851-8e1d-aa8b25415780")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" thru_hole circle
+		(at 0 0)
+		(size 3 3)
+		(drill 1.5)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "3181119a-44b8-41d2-9c40-cbb780ca43c9")
+	)
+	(pad "2" thru_hole circle
+		(at 5.55 0)
+		(size 3 3)
+		(drill 1.5)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "a38bf6c5-85e8-4e46-8f82-63dcc0754a86")
+	)
+	(pad "3" thru_hole circle
+		(at 19.85 0)
+		(size 3 3)
+		(drill 1.5)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "0ac07cd0-8c4c-45c8-8905-2896d923f536")
+	)
+	(pad "4" thru_hole circle
+		(at 25.4 0)
+		(size 3 3)
+		(drill 1.5)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "d997d788-e011-4ea2-be95-c812a8e21864")
+	)
+	(embedded_fonts no)
+	(model "${KICAD10_3DMODEL_DIR}/Resistor_THT.3dshapes/R_Axial_Shunt_L22.2mm_W9.5mm_PS14.30mm_P25.40mm.step"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)

@@ -1,0 +1,167 @@
+(footprint "C_Rect_W7.0mm_P15.00mm"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "C, Rect series, Radial, pin pitch=15.00mm, length*width=19*7mm^2, Capacitor, http://www.wima.com/EN/WIMA_MKS_4.pdf")
+	(tags "C Rect series Radial pin pitch 15.00mm length 19mm width 7mm Capacitor")
+	(property "Reference" "REF**"
+		(at 0 -4.75 0)
+		(layer "F.SilkS")
+		(uuid "28cda602-1e08-4746-a6ba-d6e61f780ffa")
+		(effects
+			(font
+				(size 1.1 1.1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "C_Rect_W7.0mm_P15.00mm"
+		(at 0 4.75 0)
+		(layer "F.Fab")
+		(uuid "00b84366-a4c4-47a1-8498-31b836531209")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "f66bec18-9450-49f1-a1e9-f0e0a8dd7b12")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "13e472ae-d6d6-4660-a3e9-72204a709ec1")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "KiLib_Generator" "capacitor/THT/other"
+		(at 0 0 0)
+		(layer "F.SilkS")
+		(hide yes)
+		(uuid "72ad193b-b9ed-4478-9056-f52c0cb60693")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr through_hole)
+	(duplicate_pad_numbers_are_jumpers no)
+	(fp_line
+		(start -9.62 -3.62)
+		(end 9.62 -3.62)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "b153092e-28d4-4f83-a2f6-fd8935761ed0")
+	)
+	(fp_line
+		(start -9.62 3.62)
+		(end -9.62 -3.62)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "66d820ee-23e3-4921-a76e-afdef3864916")
+	)
+	(fp_line
+		(start 9.62 -3.62)
+		(end 9.62 3.62)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "b83daa95-bdd8-4778-acad-636d74643f3c")
+	)
+	(fp_line
+		(start 9.62 3.62)
+		(end -9.62 3.62)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "f72ed5df-d8b4-410f-a979-b918bf60a910")
+	)
+	(fp_rect
+		(start -9.75 -3.75)
+		(end 9.75 3.75)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "ecb6852f-0267-45a6-af2f-1802b5932354")
+	)
+	(fp_rect
+		(start -9.5 -3.5)
+		(end 9.5 3.5)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "250595bb-c735-4032-9f54-14c1d9141caf")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "acc8ca06-c5ee-4dbe-995c-84972129f781")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" thru_hole circle
+		(at -7.5 0)
+		(size 2.4 2.4)
+		(drill 1.2)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "eb01a19f-e195-4f8f-947b-5bf88217e4da")
+	)
+	(pad "2" thru_hole circle
+		(at 7.5 0)
+		(size 2.4 2.4)
+		(drill 1.2)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "e800256d-4060-4028-ae03-a8545627645a")
+	)
+	(embedded_fonts no)
+	(model "${KICAD10_3DMODEL_DIR}/Capacitor_THT.3dshapes/C_Rect_L19.0mm_W7.0mm_P15.00mm_MKS4.step"
+		(offset
+			(xyz -7.5 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -0 -0 -0)
+		)
+	)
+)
