@@ -68,7 +68,8 @@ void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, DE_RS485_Pin|RE_RS485_N_Pin|D0_Pin|D1_Pin
-                          |D2_Pin|D3_Pin|D4_Pin|D5_Pin, GPIO_PIN_RESET);
+                          |D2_Pin|D3_Pin|D4_Pin|D5_Pin
+                          |HIGH_ALARM_Pin|TD_ALARM_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, LOW_ALARM_Pin|GOING_Pin|TOTAL_ALARM_Pin, GPIO_PIN_RESET);
@@ -152,11 +153,24 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
+  /*Configure GPIO pin : REMOTE_M_Pin */
+  GPIO_InitStruct.Pin = REMOTE_M_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(REMOTE_M_GPIO_Port, &GPIO_InitStruct);
+
   /*Configure GPIO pin : SENSOR_Pin */
   GPIO_InitStruct.Pin = SENSOR_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(SENSOR_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : HIGH_ALARM_Pin TD_ALARM_Pin */
+  GPIO_InitStruct.Pin = HIGH_ALARM_Pin|TD_ALARM_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pins : USART1_TX_Pin USART1_RX_Pin */
   GPIO_InitStruct.Pin = USART1_TX_Pin|USART1_RX_Pin;
@@ -165,6 +179,12 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   GPIO_InitStruct.Alternate = GPIO_AF7_USART1;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : BOOT0_Pin */
+  GPIO_InitStruct.Pin = BOOT0_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(BOOT0_GPIO_Port, &GPIO_InitStruct);
 
 }
 

@@ -2,7 +2,7 @@
  * @file  stm32g4xx_hal_conf.h
  * @brief STM32G4xx HAL 드라이버 설정 파일
  *
- * STM32G474MET6 메가소닉 메인보드.
+ * STM32G474RBT6 메가소닉 메인보드.
  * 사용하는 HAL 모듈만 활성화하여 Flash/RAM 절약.
  */
 #ifndef STM32G4XX_HAL_CONF_H

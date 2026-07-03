@@ -134,7 +134,7 @@ elseif(CUBEMX_STANDALONE_LAYOUT)
     if(EXISTS "${CUBEMX_DIR}/STM32G474XX_FLASH.ld")
         set(LINKER_SCRIPT "${CUBEMX_DIR}/STM32G474XX_FLASH.ld")
     else()
-        set(LINKER_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/ldscripts/STM32G474METx_FLASH.ld")
+        set(LINKER_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/ldscripts/STM32G474RBTx_FLASH.ld")
     endif()
 
     add_executable(${PROJECT_NAME}
@@ -225,7 +225,7 @@ elseif(NOT SKIP_FIRMWARE_TARGET)
     set(STARTUP_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/startup/startup_stm32g474xx.s")
 
     # 링커 스크립트
-    set(LINKER_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/ldscripts/STM32G474METx_FLASH.ld")
+    set(LINKER_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/ldscripts/STM32G474RBTx_FLASH.ld")
 
     # 실행 파일
     add_executable(${PROJECT_NAME}

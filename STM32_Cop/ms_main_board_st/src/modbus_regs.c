@@ -3,7 +3,9 @@
  * @brief Modbus 레지스터 맵 읽기/쓰기 핸들러
  */
 #include "modbus_regs.h"
+#include "adc_control.h"
 #include "megasonic_ctrl.h"
+#include "menu.h"
 #include "modbus_rtu.h"
 #include "params.h"
 #include "stm32g4xx_hal.h"
@@ -62,6 +64,29 @@ bool ModbusRegs_Read(uint16_t addr, uint16_t *value)
     case REG_ADDR_MODBUS_PARITY:
         *value = g_modbus_cfg.parity;
         break;
+    case REG_ADDR_ADC_CUR_RAW:
+        *value = ADC_Control_GetCurrentAdc();
+        break;
+    case REG_ADDR_ADC_CUR_01MV:
+        *value = ADC_Control_GetCurrent01mV();
+        break;
+    case REG_ADDR_ADC_CUR_MA: {
+        uint32_t current_ma = (ADC_Control_GetCurrentuA() + 500UL) / 1000UL;
+        *value = (current_ma > 0xFFFFUL) ? 0xFFFFU : (uint16_t)current_ma;
+        break;
+    }
+    case REG_ADDR_ADC_VOL_RAW:
+        *value = ADC_Control_GetVoltageAdc();
+        break;
+    case REG_ADDR_ADC_IV_POWER_01W:
+        *value = ADC_Control_GetIvPower01W();
+        break;
+    case REG_ADDR_ADC_FWD_RAW:
+        *value = ADC_Control_GetFwdAdc();
+        break;
+    case REG_ADDR_ADC_REF_RAW:
+        *value = ADC_Control_GetRefAdc();
+        break;
     default:
         return false;  /* 잘못된 주소 */
     }
@@ -70,10 +95,19 @@ bool ModbusRegs_Read(uint16_t addr, uint16_t *value)
 
 bool ModbusRegs_Write(uint16_t addr, uint16_t value)
 {
+    if ((g_us_state.running != 0U) && !((addr == REG_ADDR_ON_OFF) && (value == 0U))) {
+        return false;
+    }
+
     switch (addr) {
     case REG_ADDR_ON_OFF:
-        if (value == 1) MegasonicCtrl_Start();
-        else if (value == 0) MegasonicCtrl_Stop();
+        if (value == 1) {
+            if (g_us_state.mode != MODE_EXT) {
+                return false;
+            }
+            return (Menu_RequestOutputStart() != 0U);
+        }
+        else if (value == 0) Menu_RequestOutputStop();
         else return false;
         break;
     case REG_ADDR_FREQ_SET:

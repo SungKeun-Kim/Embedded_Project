@@ -165,15 +165,16 @@ extern "C" {
    릴레이 ON/OFF 조합으로 인덕턴스 값 변경 → 공진주파수 미세 조정
    ※ 사용자 요청 반영: LC_RELAY1~4를 PC6~PC9로 재배치
    ================================================================ */
-/* LC_RELAY1/2/3/4를 GPIOC로 통합 (물리 배치 일관성) */
+/* LC_RELAY1/2/3/4를 GPIOC로 통합 (물리 배치 일관성)
+   아트웍 배선 역순: L1(0.69µH)→PC9, L2(2.2µH)→PC8, L3(4.7µH)→PC7, L4(6.8µH)→PC6 */
 #define LC_RELAY1_PORT          GPIOC
-#define LC_RELAY1_PIN           GPIO_PIN_6      /* 인덕턴스 L1 스위칭 (PB8→PC6) */
+#define LC_RELAY1_PIN           GPIO_PIN_9      /* 인덕턴스 L1 스위칭 (0.69µH, 1µH||2.2µH, PC9, bit0) */
 #define LC_RELAY2_PORT          GPIOC
-#define LC_RELAY2_PIN           GPIO_PIN_7      /* 인덕턴스 L2 스위칭 (PB9→PC7) */
+#define LC_RELAY2_PIN           GPIO_PIN_8      /* 인덕턴스 L2 스위칭 (2.2µH, PC8, bit1) */
 #define LC_RELAY3_PORT          GPIOC
-#define LC_RELAY3_PIN           GPIO_PIN_8      /* 인덕턴스 L3 스위칭 (PF0→PC8) */
+#define LC_RELAY3_PIN           GPIO_PIN_7      /* 인덕턴스 L3 스위칭 (4.7µH, PC7, bit2) */
 #define LC_RELAY4_PORT          GPIOC
-#define LC_RELAY4_PIN           GPIO_PIN_9      /* 인덕턴스 L4 스위칭 (PF1→PC9) */
+#define LC_RELAY4_PIN           GPIO_PIN_6      /* 인덕턴스 L4 스위칭 (6.8µH, PC6, bit3) */
 
 /* ================================================================
    여유 핀 6개 (확장용)

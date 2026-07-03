@@ -56,7 +56,13 @@ ENTRY(Reset_Handler)
 MEMORY
 {
 RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = 128K
-FLASH (rx)      : ORIGIN = 0x8000000, LENGTH = 128K
+/* STM32G474RB(128KB, DBANK=1, 64-bit width) flash layout per RM0440 Rev9 Table 7:
+ *   Bank1: 0x08000000 ~ 0x0800FFFF (64KB, 32 pages × 2KB)
+ *   Bank2: 0x08040000 ~ 0x0804FFFF (NOT 0x08010000!)
+ *   0x08010000 ~ 0x0803FFFF 영역은 실제 flash가 아닌 alias 영역 -> erase 불가.
+ * 앱은 Bank1 의 앞 60KB(0x08000000~0x0800EFFF)에만 배치하고
+ * 마지막 4KB(2 페이지: 0x0800F000, 0x0800F800)는 사용자 설정 저장용으로 예약. */
+FLASH (rx)      : ORIGIN = 0x8000000, LENGTH = 60K
 }
 
 /* Highest address of the user mode stack */

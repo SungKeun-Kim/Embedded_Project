@@ -7,6 +7,7 @@
 #include "stm32g4xx_hal.h"
 
 static uint8_t g_lcd_rs_bit = 0u;
+static uint8_t g_lcd_bus_hold = 0u;
 
 static uint16_t LCD_HW_MapBusBitsToPins(uint8_t bus_bits)
 {
@@ -24,6 +25,7 @@ static uint16_t LCD_HW_MapBusBitsToPins(uint8_t bus_bits)
 
 static void LCD_HW_SetBus(uint8_t bus_bits)
 {
+    g_lcd_bus_hold = bus_bits;
     uint16_t set_pins = LCD_HW_MapBusBitsToPins(bus_bits);
     HAL_GPIO_WritePin(DISP_DATA_PORT, DISP_DATA_PINS, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(DISP_DATA_PORT, set_pins, GPIO_PIN_SET);
@@ -56,9 +58,10 @@ void LCD_HW_DelayUs(uint32_t us)
 
 void LCD_HW_PulseEnable(void)
 {
-    LCD_HW_SetBus((uint8_t)(g_lcd_rs_bit | LCD_BIT_EN));
+    /* EN 하강엣지 시 데이터가 유효해야 하므로 D4~D7/RS를 유지한 채 EN만 토글 */
+    LCD_HW_SetBus((uint8_t)(g_lcd_bus_hold | LCD_BIT_EN));
     LCD_HW_Latch();
-    LCD_HW_SetBus(g_lcd_rs_bit);
+    LCD_HW_SetBus((uint8_t)(g_lcd_bus_hold & (uint8_t)(~LCD_BIT_EN)));
     LCD_HW_Latch();
 }
 

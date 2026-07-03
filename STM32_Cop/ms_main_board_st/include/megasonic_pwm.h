@@ -2,7 +2,7 @@
  * @file  megasonic_pwm.h
  * @brief HRTIM Timer A 메가소닉 PWM 하드웨어 제어 (500kHz~2MHz)
  *
- * STM32G474MET6 HRTIM: 5.44 GHz 유효 클럭 (170 MHz × 32 DLL)
+ * STM32G474RBT6 HRTIM: 5.44 GHz 유효 클럭 (170 MHz × 32 DLL)
  * CHA1(PA8) + CHA2(PA9) 상보 출력, 184ps 분해능 데드타임.
  */
 #ifndef MEGASONIC_PWM_H
@@ -28,6 +28,22 @@ void MegasonicPWM_Init(void);
 void MegasonicPWM_SetFrequency(uint16_t freq_01khz);
 
 /**
+ * @brief 주파수에 맞는 권장 deadtime 산출
+ * @param freq_01khz 주파수 (×0.1 kHz 단위)
+ * @return deadtime(ns)
+ */
+uint16_t MegasonicPWM_DeadTimeForFrequency(uint16_t freq_01khz);
+
+/**
+ * @brief HRTIM 상보 PWM deadtime 설정
+ * @param deadtime_ns deadtime(ns)
+ */
+void MegasonicPWM_SetDeadTimeNs(uint16_t deadtime_ns);
+
+/** @brief 현재 적용된 deadtime(ns) 반환 */
+uint16_t MegasonicPWM_GetDeadTimeNs(void);
+
+/**
  * @brief 듀티비 설정
  * @param duty_01pct 듀티비 (×0.1% 단위, 예: 450 = 45.0%)
  */
@@ -42,9 +58,8 @@ void MegasonicPWM_Stop(void);
 /** @brief 현재 Period 값 반환 (HRTIM 틱 단위) */
 uint32_t MegasonicPWM_GetPeriod(void);
 
-/* 레거시 호환 — TIM1 핸들 (HRTIM으로 대체됨, 미사용) */
-extern HRTIM_HandleTypeDef hhrtim1;
-#define htim1_legacy_removed  /* TIM1 PWM 제거됨 — HRTIM 사용 */
+/** @brief 현재 Period 기준 실제 PWM 주파수 반환 (×0.1 kHz) */
+uint16_t MegasonicPWM_GetActualFreq01kHz(void);
 
 #ifdef __cplusplus
 }

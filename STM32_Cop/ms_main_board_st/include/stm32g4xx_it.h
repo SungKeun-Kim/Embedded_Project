@@ -1,6 +1,6 @@
 /**
  * @file  stm32g4xx_it.h
- * @brief 인터럽트 핸들러 선언 (STM32G474MET6)
+ * @brief 인터럽트 핸들러 선언 (STM32G474RBT6)
  */
 #ifndef STM32G4XX_IT_H
 #define STM32G4XX_IT_H

@@ -13,11 +13,16 @@ extern "C" {
 
 /* 버튼 ID */
 typedef enum {
-    BTN_ID_UP = 0,
+    BTN_ID_START_STOP = 0,
+    BTN_ID_MODE,
+    BTN_ID_UP,
     BTN_ID_DOWN,
-    BTN_ID_OK,
-    BTN_ID_BACK,
-    BTN_ID_COUNT
+    BTN_ID_SET,
+    BTN_ID_COUNT,
+
+    /* 기존 코드 호환 별칭 */
+    BTN_ID_OK = BTN_ID_SET,
+    BTN_ID_BACK = BTN_ID_MODE
 } ButtonId_t;
 
 /* 버튼 이벤트 */
@@ -43,6 +48,12 @@ void Button_Process(void);
  * @return 현재 이벤트 (BTN_EVT_NONE이면 이벤트 없음)
  */
 ButtonEvent_t Button_GetEvent(ButtonId_t id);
+
+/**
+ * @brief 현재 눌림 상태인 버튼이 하나라도 있는지 확인
+ * @return 1=눌림 있음, 0=모두 놓임
+ */
+uint8_t Button_IsAnyPressed(void);
 
 #ifdef __cplusplus
 }

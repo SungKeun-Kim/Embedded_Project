@@ -1,6 +1,6 @@
 /**
  * @file  stm32g4xx_it.c
- * @brief 인터럽트 핸들러 구현 (STM32G474MET6)
+ * @brief 인터럽트 핸들러 구현 (STM32G474RBT6)
  *
  * ISR 최소화 원칙: 플래그 설정 또는 콜백 호출만 수행.
  */

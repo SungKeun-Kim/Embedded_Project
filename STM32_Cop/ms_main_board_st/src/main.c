@@ -5,6 +5,7 @@
 #include "stm32g4xx_hal.h"
 #include "system_clock.h"
 #include "gpio_init.h"
+#include "buck_dac.h"
 #include "megasonic_pwm.h"
 #include "megasonic_ctrl.h"
 #include "lcd1602.h"
@@ -28,6 +29,7 @@ int main(void)
     GPIO_Init_All();
 
     /* 모듈 초기화 */
+    BuckDAC_Init();
     MegasonicPWM_Init();
     MegasonicCtrl_Init();
     ADC_Control_Init();

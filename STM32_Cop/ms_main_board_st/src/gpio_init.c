@@ -1,6 +1,6 @@
 /**
  * @file  gpio_init.c
- * @brief STM32G474MET6 전체 GPIO 초기화
+ * @brief STM32G474RBT6 전체 GPIO 초기화
  *
  * LQFP64 커스텀 메가소닉 보드 전체 핀 일괄 초기화.
  * G4는 GPIO_InitTypeDef.Alternate 필드로 AF를 명시적으로 설정해야 한다.
@@ -17,15 +17,17 @@ void GPIO_Init_All(void)
     GPIO_CLOCKS_ENABLE();
 
     /* ================================================================
-       HRTIM PWM 출력 — PA8(CHA1), PA9(CHA2) AF13
-       GaN FET 스위칭 → VERY_HIGH 속도 필수
+       HRTIM PWM 출력 — PA8(CHA1), PA9(CHA2)
+       부팅 직후에는 게이트드라이버 입력을 GPIO Low로 강제한다.
+       실제 AF13 전환은 MegasonicPWM_Start()에서 출력 직전에만 수행한다.
        ================================================================ */
     gpio.Pin       = MS_PWM_PIN | MS_PWMN_PIN;
-    gpio.Mode      = GPIO_MODE_AF_PP;
-    gpio.Pull      = GPIO_NOPULL;
-    gpio.Speed     = GPIO_SPEED_FREQ_VERY_HIGH;
-    gpio.Alternate = MS_PWM_AF;
+    gpio.Mode      = GPIO_MODE_OUTPUT_PP;
+    gpio.Pull      = GPIO_PULLDOWN;
+    gpio.Speed     = GPIO_SPEED_FREQ_LOW;
+    gpio.Alternate = 0;
     HAL_GPIO_Init(MS_PWM_PORT, &gpio);
+    HAL_GPIO_WritePin(MS_PWM_PORT, MS_PWM_PIN | MS_PWMN_PIN, GPIO_PIN_RESET);
 
     /* ================================================================
        LCD1602 + LED 래치 버스
@@ -85,16 +87,10 @@ void GPIO_Init_All(void)
     MODBUS_DE_RX();  /* 아이들 = 수신 모드 */
 
     /* ================================================================
-       BUCK DAC 출력 — PA4 (DAC1_OUT1)
-       DAC 드라이버에서 GPIO를 Analog 모드로 자동 설정하므로
-       여기서는 별도 초기화 불필요 (HAL_DAC_MspInit에서 처리)
+       BUCK DAC 출력 + ADC 계측 입력 (Analog — 풀 없음)
+       PA4(DAC1_OUT1), PA0(순방향), PA1(역방향), PA6(전류), PA7(전압)
        ================================================================ */
-
-    /* ================================================================
-       ADC 계측 입력 4채널 (Analog — 풀 없음)
-       PA0(순방향), PA1(역방향), PA6(전류), PA7(전압)
-       ================================================================ */
-    gpio.Pin  = ADC_FWD_PIN | ADC_REF_PIN | ADC_CUR_PIN | ADC_VOL_PIN;
+    gpio.Pin  = BUCK_DAC_PIN | ADC_FWD_PIN | ADC_REF_PIN | ADC_CUR_PIN | ADC_VOL_PIN;
     gpio.Mode = GPIO_MODE_ANALOG;
     gpio.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOA, &gpio);
@@ -125,9 +121,11 @@ void GPIO_Init_All(void)
 
     /* ================================================================
        LC 탱크 릴레이 4개
-       PC6(L1), PC7(L2), PC8(L3), PC9(L4) — ULN2003A #2
+       PC9(L1=0.69µH), PC8(L2=2.2µH), PC7(L3=4.7µH), PC6(L4=6.8µH) — ULN2003A #2
+       아트웍 배선 역순: LC_RELAY1→PC9(bit0), LC_RELAY2→PC8(bit1),
+                        LC_RELAY3→PC7(bit2), LC_RELAY4→PC6(bit3)
        ================================================================ */
-    /* GPIOC: LC_RELAY1/2/3/4 = PC6/PC7/PC8/PC9 */
+    /* GPIOC: LC_RELAY4/3/2/1 = PC6/PC7/PC8/PC9 */
     gpio.Pin = LC_RELAY1_PIN | LC_RELAY2_PIN | LC_RELAY3_PIN | LC_RELAY4_PIN;
     HAL_GPIO_Init(GPIOC, &gpio);
     HAL_GPIO_WritePin(GPIOC,

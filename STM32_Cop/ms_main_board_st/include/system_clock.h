@@ -1,6 +1,6 @@
 /**
  * @file  system_clock.h
- * @brief 시스템 클럭 설정 (HSE 8MHz → PLL → 170 MHz, STM32G474MET6)
+ * @brief 시스템 클럭 설정 (HSE 8MHz → PLL → 170 MHz, STM32G474RBT6)
  */
 #ifndef SYSTEM_CLOCK_H
 #define SYSTEM_CLOCK_H

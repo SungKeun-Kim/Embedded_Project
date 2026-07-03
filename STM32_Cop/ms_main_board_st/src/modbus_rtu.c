@@ -34,6 +34,20 @@ static void SendException(uint8_t func, uint8_t exc_code);
 static void HandleFC03(const uint8_t *frame, uint16_t len);
 static void HandleFC06(const uint8_t *frame, uint16_t len);
 static void HandleFC10(const uint8_t *frame, uint16_t len);
+static void ResetRxFrame(void);
+
+static uint8_t IsSupportedBaudrate(uint32_t baudrate)
+{
+    uint8_t i;
+
+    for (i = 0U; i < MODBUS_BAUD_INDEX_COUNT; i++) {
+        if (MODBUS_BAUD_TABLE[i] == baudrate) {
+            return 1U;
+        }
+    }
+
+    return 0U;
+}
 
 /* ================================================================
    공개 API
@@ -41,9 +55,18 @@ static void HandleFC10(const uint8_t *frame, uint16_t len);
 
 void Modbus_Init(void)
 {
-    g_modbus_cfg.address  = MODBUS_ADDR_DEFAULT;
-    g_modbus_cfg.baudrate = MODBUS_BAUD_DEFAULT;
-    g_modbus_cfg.parity   = MODBUS_PARITY_DEFAULT;
+    /* 사전 로드된 값(FLASH 복원 등)이 유효하면 유지, 아니면 기본값 사용 */
+    if ((g_modbus_cfg.address < MODBUS_ADDR_MIN) || (g_modbus_cfg.address > MODBUS_ADDR_MAX)) {
+        g_modbus_cfg.address = MODBUS_ADDR_DEFAULT;
+    }
+
+    if (IsSupportedBaudrate(g_modbus_cfg.baudrate) == 0U) {
+        g_modbus_cfg.baudrate = MODBUS_BAUD_DEFAULT;
+    }
+
+    if (g_modbus_cfg.parity > MODBUS_PARITY_ODD) {
+        g_modbus_cfg.parity = MODBUS_PARITY_DEFAULT;
+    }
 
     s_rx_len      = 0;
     s_frame_ready = 0;
@@ -62,15 +85,24 @@ void Modbus_Process(void)
     s_frame_ready = 0;
 
     uint16_t len = s_rx_len;
-    if (len < 4) return;    /* 최소: addr(1) + func(1) + CRC(2) */
+    if (len < 4) {
+        ResetRxFrame();
+        return;    /* 최소: addr(1) + func(1) + CRC(2) */
+    }
 
     /* 주소 확인 */
-    if (s_rx_buf[0] != g_modbus_cfg.address) return;
+    if (s_rx_buf[0] != g_modbus_cfg.address) {
+        ResetRxFrame();
+        return;
+    }
 
     /* CRC 검증 */
     uint16_t crc_recv = (uint16_t)s_rx_buf[len - 1] << 8 | s_rx_buf[len - 2];
     uint16_t crc_calc = Modbus_CRC16((const uint8_t *)s_rx_buf, len - 2);
-    if (crc_recv != crc_calc) return;
+    if (crc_recv != crc_calc) {
+        ResetRxFrame();
+        return;
+    }
 
     /* 펑션 코드 분기 */
     uint8_t func = s_rx_buf[1];
@@ -110,6 +142,7 @@ void Modbus_FrameTimeoutCallback(void)
 void Modbus_ReconfigUART(void)
 {
     HAL_UART_DeInit(&huart2);
+    ResetRxFrame();
     USART2_Init();
     __HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
     __HAL_UART_ENABLE_IT(&huart2, UART_IT_IDLE);
@@ -195,6 +228,12 @@ static void TIM4_Stop(void)
     __HAL_TIM_DISABLE_IT(&htim4, TIM_IT_UPDATE);
 }
 
+static void ResetRxFrame(void)
+{
+    s_rx_len = 0;
+    s_frame_ready = 0;
+}
+
 /* ================================================================
    응답 송신
    ================================================================ */
@@ -231,7 +270,7 @@ static void HandleFC03(const uint8_t *frame, uint16_t len)
     uint16_t start_addr = ((uint16_t)frame[2] << 8) | frame[3];
     uint16_t reg_count  = ((uint16_t)frame[4] << 8) | frame[5];
 
-    if (reg_count == 0 || reg_count > 125) {
+    if (reg_count == 0 || reg_count > ((MODBUS_TX_BUF_SIZE - 5U) / 2U)) {
         SendException(0x03, 0x03);
         return;
     }
@@ -290,7 +329,11 @@ static void HandleFC10(const uint8_t *frame, uint16_t len)
     uint16_t reg_count  = ((uint16_t)frame[4] << 8) | frame[5];
     uint8_t  byte_count = frame[6];
 
-    if (reg_count == 0 || reg_count > 123 || byte_count != reg_count * 2) {
+    if (reg_count == 0 || byte_count != reg_count * 2) {
+        SendException(0x10, 0x03);
+        return;
+    }
+    if ((uint16_t)(9U + byte_count) > len) {
         SendException(0x10, 0x03);
         return;
     }

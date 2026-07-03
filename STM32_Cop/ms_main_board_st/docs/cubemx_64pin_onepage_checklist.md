@@ -39,10 +39,10 @@
 
 ### LC 릴레이
 
-- [ ] PC6 = LC_RELAY1
-- [ ] PC7 = LC_RELAY2
-- [ ] PC8 = LC_RELAY3
-- [ ] PC9 = LC_RELAY4
+- [ ] PC6 = LC_RELAY4 (L4=6.8µH, bit3)
+- [ ] PC7 = LC_RELAY3 (L3=4.7µH, bit2)
+- [ ] PC8 = LC_RELAY2 (L2=2.2µH, bit1)
+- [ ] PC9 = LC_RELAY1 (L1=0.69µH, bit0)
 
 ### 통신 / 외부입력
 

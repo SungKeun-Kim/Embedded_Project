@@ -1,6 +1,6 @@
 /**
  * @file  system_clock.c
- * @brief 시스템 클럭 설정 — HSE(8 MHz) → PLL → 170 MHz (STM32G474MET6)
+ * @brief 시스템 클럭 설정 — HSE(8 MHz) → PLL → 170 MHz (STM32G474RBT6)
  *
  * HSE 8 MHz 크리스탈 (PF0=OSC_IN, PF1=OSC_OUT).
  * AHB=170 MHz, APB1=170 MHz, APB2=170 MHz.

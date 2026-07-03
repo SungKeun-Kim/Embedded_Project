@@ -17,53 +17,61 @@
 
 ## CubeMX 복붙용 핀 설정표
 
-| Pin  | User Label     | CubeMX 설정 | Pull    | Speed     | 비고                   |
-| ---- | -------------- | ----------- | ------- | --------- | ---------------------- |
-| PA0  | ADC_FWD        | ADC1_IN1    | No pull | -         | 순방향 전력 검출       |
-| PA1  | ADC_REF        | ADC1_IN2    | No pull | -         | 역방향 전력 검출       |
-| PA2  | MODBUS_TX      | USART2_TX   | No pull | High      | RS-485 TX              |
-| PA3  | MODBUS_RX      | USART2_RX   | Pull-up | High      | RS-485 RX              |
-| PA4  | BUCK_DAC       | DAC1_OUT1   | No pull | -         | BUCK FB 제어           |
-| PA6  | ADC_CUR        | ADC2_IN3    | No pull | -         | 출력 전류              |
-| PA7  | ADC_VOL        | ADC2_IN4    | No pull | -         | 출력 전압              |
-| PA8  | MS_PWM         | HRTIM1_CHA1 | No pull | Very High | AF13                   |
-| PA9  | MS_PWMN        | HRTIM1_CHA2 | No pull | Very High | AF13, 상보 출력        |
-| PA10 | RELAY_LOW      | GPIO_Output | No pull | Low       | Push-Pull              |
-| PA11 | RELAY_GO       | GPIO_Output | No pull | Low       | Push-Pull              |
-| PA12 | RELAY_OPERATE  | GPIO_Output | No pull | Low       | Push-Pull              |
-| PA13 | SWDIO          | SYS_SWDIO   | -       | -         | 디버그 전용            |
-| PA14 | SWCLK          | SYS_SWCLK   | -       | -         | 디버그 전용            |
-| PA15 | EXT_REMOTE     | GPIO_Input  | Pull-up | -         | 외부 REMOTE            |
-| PB0  | MODBUS_DE      | GPIO_Output | No pull | High      | RS-485 DE              |
-| PB1  | MODBUS_RE_N    | GPIO_Output | No pull | High      | RS-485 /RE             |
-| PB3  | RELAY_HIGH     | GPIO_Output | No pull | Low       | Push-Pull              |
-| PB4  | RELAY_TRANS    | GPIO_Output | No pull | Low       | Push-Pull              |
-| PB6  | DEBUG_TX       | USART1_TX   | No pull | High      | 디버그 UART            |
-| PB7  | DEBUG_RX       | USART1_RX   | No pull | High      | 디버그 UART            |
-| PB10 | DISP_D0        | GPIO_Output | No pull | Medium    | 공유 DATA 버스         |
-| PB11 | DISP_D1        | GPIO_Output | No pull | Medium    | 공유 DATA 버스         |
-| PB12 | DISP_D2        | GPIO_Output | No pull | Medium    | 공유 DATA 버스         |
-| PB13 | DISP_D3        | GPIO_Output | No pull | Medium    | 공유 DATA 버스         |
-| PB14 | DISP_D4        | GPIO_Output | No pull | Medium    | 공유 DATA 버스         |
-| PB15 | DISP_D5        | GPIO_Output | No pull | Medium    | 공유 DATA 버스         |
-| PC0  | BTN_START_STOP | GPIO_Input  | Pull-up | -         | Active Low             |
-| PC1  | BTN_MODE       | GPIO_Input  | Pull-up | -         | Active Low             |
-| PC2  | BTN_UP         | GPIO_Input  | Pull-up | -         | Active Low             |
-| PC3  | BTN_DOWN       | GPIO_Input  | Pull-up | -         | Active Low             |
-| PC4  | BTN_SET        | GPIO_Input  | Pull-up | -         | Active Low             |
-| PC5  | BUZZER         | GPIO_Output | No pull | Low       | Push-Pull              |
-| PC6  | LC_RELAY1      | GPIO_Output | No pull | Low       | LC bit0                |
-| PC7  | LC_RELAY2      | GPIO_Output | No pull | Low       | LC bit1                |
-| PC8  | LC_RELAY3      | GPIO_Output | No pull | Low       | LC bit2                |
-| PC9  | LC_RELAY4      | GPIO_Output | No pull | Low       | LC bit3                |
-| PC10 | EXT_BCD1       | GPIO_Input  | Pull-up | -         | 8POWER BCD1            |
-| PC11 | EXT_BCD2       | GPIO_Input  | Pull-up | -         | 8POWER BCD2            |
-| PC12 | EXT_BCD3       | GPIO_Input  | Pull-up | -         | 8POWER BCD3            |
-| PD2  | SENSOR_INPUT   | GPIO_Input  | Pull-up | -         | 외부 SENSOR            |
-| PC14 | CLK_LCD        | GPIO_Output | No pull | Medium    | 74HCT574 LCD 래치 클럭 |
-| PC15 | CLK_LED        | GPIO_Output | No pull | Medium    | 74HCT574 LED 래치 클럭 |
-| PF0  | HSE_IN         | RCC_OSC_IN  | -       | -         | 8MHz HSE               |
-| PF1  | HSE_OUT        | RCC_OSC_OUT | -       | -         | 8MHz HSE               |
+주의:
+
+- PA13(SWDIO), PA14(SWCLK), NRST는 SYS/Reset 계열 시스템 핀이라 CubeMX 생성 파일인 Core/Inc/main.h에 일반 GPIO 매크로로 나타나지 않을 수 있다.
+- 이 3개는 main.h보다 ioc의 SYS 설정(Serial Wire)과 회로도 연결을 기준으로 확인한다.
+- KiCad의 PG10_7 표기는 NRST와 동일 핀 alias다.
+
+| Pin  | User Label     | CubeMX 설정 | Pull    | Speed     | 비고                    |
+| ---- | -------------- | ----------- | ------- | --------- | ----------------------- |
+| PA0  | ADC_FWD        | ADC1_IN1    | No pull | -         | 순방향 전력 검출        |
+| PA1  | ADC_REF        | ADC1_IN2    | No pull | -         | 역방향 전력 검출        |
+| PA2  | MODBUS_TX      | USART2_TX   | No pull | High      | RS-485 TX               |
+| PA3  | MODBUS_RX      | USART2_RX   | Pull-up | High      | RS-485 RX               |
+| PA4  | BUCK_DAC       | DAC1_OUT1   | No pull | -         | BUCK FB 제어            |
+| PA6  | ADC_CUR        | ADC2_IN3    | No pull | -         | 출력 전류               |
+| PA7  | ADC_VOL        | ADC2_IN4    | No pull | -         | 출력 전압               |
+| PA8  | MS_PWM         | HRTIM1_CHA1 | No pull | Very High | AF13                    |
+| PA9  | MS_PWMN        | HRTIM1_CHA2 | No pull | Very High | AF13, 상보 출력         |
+| PA10 | RELAY_LOW      | GPIO_Output | No pull | Low       | Push-Pull               |
+| PA11 | RELAY_GO       | GPIO_Output | No pull | Low       | Push-Pull               |
+| PA12 | RELAY_OPERATE  | GPIO_Output | No pull | Low       | Push-Pull               |
+| PA13 | SWDIO          | SYS_SWDIO   | -       | -         | 디버그 전용             |
+| PA14 | SWCLK          | SYS_SWCLK   | -       | -         | 디버그 전용             |
+| NRST | RESET          | Reset Pin   | -       | -         | ST-LINK NRST, GPIO 아님 |
+| PA15 | EXT_REMOTE     | GPIO_Input  | Pull-up | -         | 외부 REMOTE             |
+| PB0  | MODBUS_DE      | GPIO_Output | No pull | High      | RS-485 DE               |
+| PB1  | MODBUS_RE_N    | GPIO_Output | No pull | High      | RS-485 /RE              |
+| PB3  | RELAY_HIGH     | GPIO_Output | No pull | Low       | Push-Pull               |
+| PB4  | RELAY_TRANS    | GPIO_Output | No pull | Low       | Push-Pull               |
+| PB6  | DEBUG_TX       | USART1_TX   | No pull | High      | 디버그 UART             |
+| PB7  | DEBUG_RX       | USART1_RX   | No pull | High      | 디버그 UART             |
+| PB8  | BOOT0          | GPIO_Input  | No pull | -         | J5 Pin2, BOOT 모드 선택 |
+| PB10 | DISP_D0        | GPIO_Output | No pull | Medium    | 공유 DATA 버스          |
+| PB11 | DISP_D1        | GPIO_Output | No pull | Medium    | 공유 DATA 버스          |
+| PB12 | DISP_D2        | GPIO_Output | No pull | Medium    | 공유 DATA 버스          |
+| PB13 | DISP_D3        | GPIO_Output | No pull | Medium    | 공유 DATA 버스          |
+| PB14 | DISP_D4        | GPIO_Output | No pull | Medium    | 공유 DATA 버스          |
+| PB15 | DISP_D5        | GPIO_Output | No pull | Medium    | 공유 DATA 버스          |
+| PC0  | BTN_START_STOP | GPIO_Input  | Pull-up | -         | Active Low              |
+| PC1  | BTN_MODE       | GPIO_Input  | Pull-up | -         | Active Low              |
+| PC2  | BTN_UP         | GPIO_Input  | Pull-up | -         | Active Low              |
+| PC3  | BTN_DOWN       | GPIO_Input  | Pull-up | -         | Active Low              |
+| PC4  | BTN_SET        | GPIO_Input  | Pull-up | -         | Active Low              |
+| PC5  | BUZZER         | GPIO_Output | No pull | Low       | Push-Pull               |
+| PC6  | LC_RELAY4      | GPIO_Output | No pull | Low       | LC bit3 (L4=6.8µH)      |
+| PC7  | LC_RELAY3      | GPIO_Output | No pull | Low       | LC bit2 (L3=4.7µH)      |
+| PC8  | LC_RELAY2      | GPIO_Output | No pull | Low       | LC bit1 (L2=2.2µH)      |
+| PC9  | LC_RELAY1      | GPIO_Output | No pull | Low       | LC bit0 (L1=0.69µH)     |
+| PC10 | EXT_BCD1       | GPIO_Input  | Pull-up | -         | 8POWER BCD1             |
+| PC11 | EXT_BCD2       | GPIO_Input  | Pull-up | -         | 8POWER BCD2             |
+| PC12 | EXT_BCD3       | GPIO_Input  | Pull-up | -         | 8POWER BCD3             |
+| PD2  | SENSOR_INPUT   | GPIO_Input  | Pull-up | -         | 외부 SENSOR             |
+| PC14 | CLK_LCD        | GPIO_Output | No pull | Medium    | 74HCT574 LCD 래치 클럭  |
+| PC15 | CLK_LED        | GPIO_Output | No pull | Medium    | 74HCT574 LED 래치 클럭  |
+| PF0  | HSE_IN         | RCC_OSC_IN  | -       | -         | 8MHz HSE                |
+| PF1  | HSE_OUT        | RCC_OSC_OUT | -       | -         | 8MHz HSE                |
 
 ---
 
@@ -74,11 +82,10 @@
 | PA5  | GPIO_Input (No pull) | 필요 시 ADC2_IN13로 사용   |
 | PB2  | GPIO_Input (No pull) | 확장 GPIO                  |
 | PB5  | GPIO_Input (No pull) | 확장 GPIO (BUZZER 이동 후) |
-| PB8  | GPIO_Input (No pull) | 확장 GPIO                  |
 | PB9  | GPIO_Input (No pull) | 확장 GPIO                  |
 | PC13 | GPIO_Input (No pull) | 확장 GPIO (SENSOR 이동 후) |
 
-총 여유 핀: 6
+총 여유 핀: 5
 
 ---
 
@@ -107,7 +114,9 @@ cmake --build build --target docs_html
 - [ ] BUZZER = PC5 (PB5 아님)
 - [ ] RELAY_LOW = PA10 (PC15 아님)
 - [ ] CLK_LCD/CLK_LED = PC14/PC15 (PB8/PB9 아님)
-- [ ] PB8/PB9/PB5/PC13은 Spare로 남아 있음
+- [ ] BOOT0 = PB8 (J5 Pin2)로 반영됨
+- [ ] ST-LINK 3선(SWDIO=PA13, SWCLK=PA14, NRST) 연결 반영됨
+- [ ] PB9/PB5/PC13은 Spare로 남아 있음
 - [ ] PF0/PF1은 HSE 전용으로 설정됨
 
 ---

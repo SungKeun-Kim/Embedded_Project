@@ -36,8 +36,11 @@ extern volatile MegasonicState_t g_us_state;
 /** @brief 메가소닉 제어 초기화 (기본값 로드) */
 void MegasonicCtrl_Init(void);
 
-/** @brief 출력 시작 (소프트 스타트 포함) */
+/** @brief 출력 시작 (Buck 전압 선충전 이후 PWM 시작) */
 void MegasonicCtrl_Start(void);
+
+/** @brief PWM을 켜지 않고 Buck 전압 명령만 적용 */
+void MegasonicCtrl_PrechargeBuck(uint16_t duty_01pct);
 
 /** @brief 출력 정지 (즉시) */
 void MegasonicCtrl_Stop(void);
@@ -57,11 +60,26 @@ void MegasonicCtrl_SetFrequency(uint16_t freq_01khz);
 /** @brief 듀티비 설정 (안전 상한 클램핑 포함) */
 void MegasonicCtrl_SetDuty(uint16_t duty_01pct);
 
+/** @brief RUN 중 HRTIM gate duty 설정 (Buck 전압 duty와 별도) */
+void MegasonicCtrl_SetRunGateDuty(uint16_t duty_01pct);
+
+/** @brief 현재 RUN gate duty 반환 */
+uint16_t MegasonicCtrl_GetRunGateDuty(void);
+
+/** @brief RUN gate duty를 기본값으로 복귀 */
+void MegasonicCtrl_ResetRunGateDuty(void);
+
+/** @brief 튜닝 중 게이트 듀티 램프를 끝내고 RUN 듀티를 즉시 적용 */
+void MegasonicCtrl_ForceRunGateDuty(void);
+
 /** @brief 동작 모드 변경 */
 void MegasonicCtrl_SetMode(OperatingMode_t mode);
 
 /** @brief 상태 플래그 반환 (Modbus 레지스터 0x0005용) */
 uint16_t MegasonicCtrl_GetStatusFlags(void);
+
+/** @brief 현재 HRTIM period 기준 실제 발진 주파수 반환 (×0.1 kHz) */
+uint16_t MegasonicCtrl_GetActualFrequency01kHz(void);
 
 /* ================================================================
    LC 릴레이 제어 (자동 공진 탐색용)
