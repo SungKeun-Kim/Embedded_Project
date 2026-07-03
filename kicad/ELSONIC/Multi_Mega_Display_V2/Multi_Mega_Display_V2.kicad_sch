@@ -3887,6 +3887,16 @@
 			(embedded_fonts no)
 		)
 	)
+	(text "D0:D1:NORMAL D1:D2:H/L SET D2:D3:8POWER D3:D4:REMOTE D4:D5:EXT D5:D6:TXRX"
+		(exclude_from_sim no)
+		(at 289.814 149.606 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "0b8d9cae-5feb-48b7-9ff4-194e61366bcc")
+	)
 	(junction
 		(at 204.47 200.66)
 		(diameter 0)

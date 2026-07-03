@@ -1,12 +1,13 @@
-# Copilot 지침 — STM32G474RC 초음파 메인보드
+# Copilot 지침 — STM32G474RB/RC 초음파 메인보드
 
 ## 프로젝트 개요
 
-**STM32G474RC** 기반 초음파 발진기 메인보드 펌웨어. **CMake + STM32Cube HAL** 프레임워크로 빌드.
-TIM1 고급 타이머를 이용한 초음파 PWM 생성, 내부 고속 비교기(COMP)를 활용한 위상차 위상 동기(PLL),
+**STM32G474RBT6 회로도 기준** 초음파 발진기 메인보드 펌웨어. **CMake + STM32Cube HAL** 프레임워크로 빌드.
+HRTIM을 이용한 초음파 PWM 생성, 내부 고속 비교기(COMP)를 활용한 위상차 위상 동기(PLL),
 LCD1602 디스플레이, 택트 스위치 메뉴 조작, 가변 저항 출력 레벨 제어, Modbus RTU(RS485) 통신을 지원한다.
 
-- 타겟: STM32G474RCT6 (Cortex-M4, 170 MHz, Flash 256 KB, SRAM 128 KB, FPU, HRTIM 및 고속 아날로그 내장)
+- 타겟: STM32G474RBT6 회로도 기준 (Cortex-M4, 170 MHz, FPU, HRTIM 및 고속 아날로그 내장)
+- 주의: 기존 코드/링커/일부 문서에는 `STM32G474RC/RCTx` 표기가 남아 있을 수 있으므로, CubeMX 재생성 시 실제 BOM과 Flash 용량에 맞게 동기화한다.
 - 보드: 커스텀 보드 (외부 HSE 크리스탈 또는 고정밀 내부 HSI 16MHz 사용)
 - 언어: C11 (STM32 HAL 드라이버 기반)
 - 빌드 시스템: CMake (gcc-arm-none-eabi 크로스 컴파일)
@@ -47,7 +48,7 @@ us_main_board_st/
 │   ├── gcc-arm-none-eabi.cmake    # ARM 크로스 컴파일 툴체인
 │   └── stm32cubemx/               # (CubeMX 생성 시 자동 배치)
 ├── ldscripts/
-│   └── STM32G474RCTx_FLASH.ld     # 링커 스크립트 (256K Flash, 128K SRAM)
+│   └── STM32G474RCTx_FLASH.ld     # 링커 스크립트 (실제 RBT6 사용 시 용량/파일명 동기화 필요)
 ├── startup/
 │   └── startup_stm32g474xx.s      # 벡터 테이블 + Reset_Handler (HRTIM 벡터 포함)
 ├── Drivers/                        # STM32CubeG4 HAL/CMSIS (수동 모드 시)
@@ -58,7 +59,7 @@ us_main_board_st/
 │   ├── stm32g4xx_it.h             # 인터럽트 핸들러 선언
 │   ├── system_clock.h             # 시스템 클럭 설정
 │   ├── gpio_init.h                # 전체 GPIO 초기화
-│   ├── ultrasonic_pwm.h           # TIM1 PWM HW 제어 (주파수/듀티/데드타임)
+│   ├── ultrasonic_pwm.h           # HRTIM/TIM PWM HW 제어 (주파수/듀티/데드타임)
 │   ├── ultrasonic_ctrl.h          # 초음파 상위 제어 (소프트스타트, 모드)
 │   ├── lcd1602.h                  # LCD 상위 API (문자열, 커서)
 │   ├── lcd1602_hw.h               # LCD 하위 GPIO 니블 전송
@@ -73,7 +74,7 @@ us_main_board_st/
 │   ├── main.c                     # 엔트리포인트, 메인 루프
 │   ├── system_clock.c             # HSI/HSE→PLL→170MHz
 │   ├── gpio_init.c                # 전체 핀 일괄 초기화
-│   ├── ultrasonic_pwm.c           # TIM1 Center-aligned PWM + 데드타임
+│   ├── ultrasonic_pwm.c           # HRTIM PA8/PA9 출력 + 데드타임 (기존 TIM1 코드 전환 필요)
 │   ├── ultrasonic_ctrl.c          # 소프트스타트, 펄스/스윕 모드 관리
 │   ├── lcd1602.c                  # HD44780 초기화, 문자열 출력
 │   ├── lcd1602_hw.c               # 4비트 니블 전송, DWT μs 지연
@@ -130,8 +131,8 @@ target_compile_definitions(... PRIVATE
   - **2) 트랜스듀서 출력단 PLL 위상 검출용 (고주파 CT 센서)**: 수십 kHz로 스위칭하는 최종 초음파 출력 라인에서 전압과 전류의 나노초 단위 위상차(Phase)를 읽어내는 목적. 고주파 대역폭 왜곡이 없는 CT(Current Transformer)를 사용하여 내부 컴퍼레이터에 직결해야만 자동 공진점 추적(PLL)이 실패하지 않습니다.
 - **RS485 트랜시버**: **MAX3485, SP3485** (기존 5V용 MAX485 대신 3.3V 구동 및 3.3V 로직 레벨을 지원하는 핀투핀 호환 IC 사용 권장. 레벨 시프터 생략 가능)
 - **FET 드라이버**:
-  - **단일 입력형 (예: IR2104, IR2111)**: STM32에서 PWM 신호(`TIM1_CH1` PA8) 1개만 입력받아 내부 로직으로 하이사이드/로우사이드를 쪼개고 **고정된 데드타임**을 삽입하여 구동하는 방식입니다. (STM32의 상보 출력 및 데드타임 제어 기능을 사용하지 않음)
-  - **독립 입력형 (예: IR2110, IR2113)**: STM32에서 2개의 PWM 신호(`TIM1_CH1`, `TIM1_CH1N`)를 따로 받아 STM32 내부에서 설정한 매우 정밀한 가변 데드타임을 그대로 FET에 전달합니다. 주파수 스윕이나 듀티의 한계 제어를 MCU가 완벽히 통제할 수 있어 산업용으로 가장 권장됩니다.
+  - **단일 입력형 (예: IR2104, IR2111)**: STM32에서 PWM 신호 1개만 입력받아 내부 로직으로 하이사이드/로우사이드를 쪼개고 **고정된 데드타임**을 삽입하여 구동하는 방식입니다. 단순하지만 MCU가 deadtime을 직접 조절하기 어렵습니다.
+  - **독립 입력형 (예: IR2110, IR2113)**: STM32에서 2개의 PWM 신호(`PA8/HRTIM1_CHA1`, `PA9/HRTIM1_CHA2`)를 따로 받아 STM32 내부에서 설정한 매우 정밀한 가변 데드타임을 그대로 FET에 전달합니다. 주파수 스윕이나 듀티의 한계 제어를 MCU가 완벽히 통제할 수 있어 현재 설계에서 가장 권장됩니다.
 - **제거된 외부 부품**: 외부 비교기(LM393/LM311 등), CD4046(VCO), HEF4520(카운터), AD5280(가변저항), SG3525(PWM 컨트롤러) - **모두 STM32G4 내부 하드웨어로 대체**
 
 ### 시스템 클럭 설정
@@ -140,225 +141,157 @@ target_compile_definitions(... PRIVATE
 - PLL: 내부 클럭을 뻥튀기 → SYSCLK = 170 MHz
 - AHB = 170 MHz, APB1 = 170 MHz, APB2 = 170 MHz (타이머 클럭 기본 170 MHz)
 
-### 핀 맵 (STM32G474RC — LQFP64, 아트웍 배선 최적화 배치)
+### 핀 맵 (STM32G474RBT6 — LQFP64, 2026-06-13 회로도 기준)
 
-#### 초음파 발진 (TIM1 고급 타이머 / 게이트 드라이버 연동)
+> 상세 표는 `docs/STM32G474RC_핀맵.md`를 기준 문서로 삼는다. 파일명은 기존 RC를 유지하지만, 현재 회로도 U3는 `STM32G474RBT6`이다. RB/RC는 같은 LQFP64 패키지에서 핀 기능은 호환되며, Flash 용량/링커 설정은 실제 BOM에 맞춰 별도 확인한다.
 
-| 핀   | 포트      | 기능                                                   |
-| ---- | --------- | ------------------------------------------------------ |
-| PA8  | TIM1_CH1  | 초음파 PWM 출력 (하이사이드 게이트 드라이버 입력)      |
-| PB13 | TIM1_CH1N | 초음파 PWM 상보 출력 (로우사이드 게이트 드라이버 입력) |
+#### 이번 회로도에서 새로 정리된 핵심 변경
+
+| 주제 | 신규/변경 내용 | 간단 설명 |
+| ---- | -------------- | --------- |
+| 초음파 발진 | `PA8/PA9 = HRTIM1_CHA1/CHA2` | 고주파/스윕 발진과 deadtime 제어를 HRTIM 기준으로 통일 |
+| 위상제어 조광기 | `PC9 = TIM3_CH4(AF2)` | 기존 `PB0/TIM3_CH3`에서 PC9로 이동. ATtiny85 3kHz PWM 지령 출력 |
+| LCD1602 | `PB10~PB15` | LCD 6개 신호를 한 포트 묶음으로 정리해 배선 단순화 |
+| RS485 | `PB0=DE`, `PB1=/RE` | USART2 TX/RX는 PA2/PA3 유지, 방향 제어만 PB0/PB1로 이동 |
+| 디버그 UART | `PB6/PB7 = USART1_TX/RX` | PA9가 HRTIM 출력으로 사용되므로 USART1을 PB6/PB7로 이동 |
+| SONIC_ON | `PB3` | 발진 Enable 또는 게이트 드라이버 Enable 제어용 출력 추가 |
+
+#### 초음파 발진 (HRTIM1 Timer A / 게이트 드라이버 연동)
+
+| 핀 | 물리핀# | 포트/AF | 회로도 Net | 기능 |
+| --- | ------- | ------- | ---------- | ---- |
+| PA8 | 42 | HRTIM1_CHA1(AF13) | CHA1 / INA | 게이트 드라이버 INA |
+| PA9 | 43 | HRTIM1_CHA2(AF13) | CHA2 / INB | 게이트 드라이버 INB |
+| PB3 | 56 | GPIO_Output | SONIC_ON | 발진 Enable / 드라이버 Enable |
+
+> PA9는 `UCPD1_DBCC1` 겸용 핀이므로 USB-C PD를 쓰지 않으면 초기화 초기에 `UCPD1_DBDIS=1` 설정을 넣는다. PA8/PA9는 `GPIO_AF13_HRTIM1`, `GPIO_SPEED_FREQ_VERY_HIGH`, `GPIO_NOPULL` 기준으로 설정한다.
 
 #### 위상제어 조광기 (ATtiny85 연동용 3kHz PWM 출력)
 
-| 핀  | 포트     | 기능                                                |
-| --- | -------- | --------------------------------------------------- |
-| PB0 | TIM3_CH3 | ATtiny85 위상제어 듀티 지령 전달용 3kHz PWM 출력 핀 |
+| 핀 | 물리핀# | 포트/AF | 기능 |
+| --- | ------- | ------- | ---- |
+| PC9 | 41 | TIM3_CH4(AF2) | ATtiny85 위상제어 듀티 지령 전달용 3kHz PWM 출력 |
+
+> **중요 변경**: 위상제어 조광기 출력은 기존 `PB0 / TIM3_CH3`가 아니라 **`PC9 / TIM3_CH4(AF2)`**를 사용한다. `PB0`은 현재 RS485 `DE_RS485`로 재배치되었다.
 
 #### LCD1602 (4비트 병렬 모드)
 
-| 핀   | 포트        | 기능                     |
-| ---- | ----------- | ------------------------ |
-| PB12 | GPIO_Output | LCD RS (Register Select) |
-| PB14 | GPIO_Output | LCD EN (Enable)          |
-| PB15 | GPIO_Output | LCD D4                   |
-| PC6  | GPIO_Output | LCD D5                   |
-| PC7  | GPIO_Output | LCD D6                   |
-| PC8  | GPIO_Output | LCD D7                   |
+| 핀 | 물리핀# | 포트 | 기능 |
+| --- | ------- | ---- | ---- |
+| PB10 | 30 | GPIO_Output | LCD RS |
+| PB11 | 33 | GPIO_Output | LCD E |
+| PB12 | 34 | GPIO_Output | LCD D4 |
+| PB13 | 35 | GPIO_Output | LCD D5 |
+| PB14 | 36 | GPIO_Output | LCD D6 |
+| PB15 | 37 | GPIO_Output | LCD D7 |
 
-> RW 핀은 GND에 고정 (쓰기 전용). 대비 조절은 V0 핀에 10 kΩ 가변저항 연결.
+> RW 핀은 GND에 고정한다. 이번 구성은 LCD가 PB10~PB15로 연속 배치되어 이전 `PB12/PB14/PB15/PC6~PC8` 혼합 구성보다 아트웍이 단순하다.
 
 #### 택트 스위치 (내부 풀업, Active LOW)
 
-| 핀  | 포트       | 기능                                         |
-| --- | ---------- | -------------------------------------------- |
-| PC0 | GPIO_Input | BTN_MENU (메뉴 진입 및 상위 메뉴 복귀)       |
-| PC1 | GPIO_Input | BTN_UP (메뉴 위로/값 증가)                   |
-| PC2 | GPIO_Input | BTN_DOWN (메뉴 아래로/값 감소)               |
-| PC3 | GPIO_Input | BTN_OK (선택/확인 및 초음파 Start/Stop 겸용) |
+| 핀 | 물리핀# | 포트 | 기능 |
+| --- | ------- | ---- | ---- |
+| PC0 | 8 | GPIO_Input | START_STOP |
+| PC1 | 9 | GPIO_Input | MODE |
+| PC2 | 10 | GPIO_Input | UP |
+| PC3 | 11 | GPIO_Input | DOWN |
 
-#### ADC 입력 및 비교기 (가변저항, 전류 센서, 위상 검출)
+#### ADC 입력 및 비교기 후보 (가변저항, 공진/레벨 검출)
 
-| 핀   | 포트      | 기능                                                                    |
-| ---- | --------- | ----------------------------------------------------------------------- |
-| PA0  | ADC1_IN1  | 보드 내장 가변저항 전압 (초음파 출력/위상 레벨)                         |
-| PB11 | ADC1_IN14 | 외부 판넬 가변저항 전압 (외부 출력/위상 레벨 지정)                      |
-| PA4  | ADC2_IN17 | AC 전원 입력단 시스템 소모 전류 측정용 센서 전압 (ACS722, TMCS1100 등)  |
-| PA1  | COMP1_INP | 전압(V) 위상 검출용 고속 비교기 양(+)입력 (전용 — ADC 비공유)           |
-| PA7  | COMP2_INP | 전류(I) 위상 검출용 고속 비교기 양(+)입력 (CT 센서, 전용 — GPIO 비공유) |
+| 핀 | 물리핀# | ADC/기능 | 회로도 Net | 용도 |
+| --- | ------- | -------- | ---------- | ---- |
+| PA0 | 12 | ADC1_IN1 | ADC1_IN1 | 공진/레벨 검출 입력 1 |
+| PA1 | 13 | ADC1_IN2 / COMP1_INP | ADC1_IN2 | 공진/레벨 검출 입력 2, 전압 zero-cross 후보 |
+| PA6 | 20 | ADC2_IN3 | ADC2_IN3 | 추가 아날로그 입력 |
+| PA7 | 21 | ADC2_IN4 / COMP2_INP | PWM_VR | PWM/출력 설정 VR 입력 |
 
-> **이중 전류 센싱(Dual Sensing) 팁**:
+> **위상 검출 주의**: 전압/전류 위상 검출을 `COMP1/COMP2 + DAC3 + TIM2 capture`로 구현하려면 `PA1=전압 COMP1_INP`, `PA7=전류 COMP2_INP` 조합이 가장 자연스럽다. 하지만 현재 회로도에서는 PA7이 `PWM_VR`로 배정되어 있으므로, 실제 전류 zero-cross 입력을 넣으려면 `PWM_VR` 이동 또는 전류 검출 핀 재배치가 필요하다.
 >
-> 1. **정전류 제어(크기) 측정용 (PA4)**: 50/60Hz 메인 AC 라인관로에 ACS722 칩을 달아 실효 전류(RMS) 크기를 3.3V 아날로그 DC 스케일로 필터링하여 읽습니다. (초음파 발진기의 총 소모 파워를 제어하기 위함)
-> 2. **PLL 공진(위상) 검출용 (PA1 COMP1_INP, PA7 COMP2_INP)**:
->    - **V(전압)**: 공진점 추적을 위해 초음파 트랜스듀서로 나가는 수백 V의 고전압은 저항 분압기(Resistor Divider) 브릿지 + 다이오드 클램핑(Protection) 회로를 거쳐 3.3V 파형 이내로 안전하게 강하한 뒤 STM32의 COMP 핀으로 직접 입력.
->    - **I(전류)**: 트랜스듀서 선로에 결합된 고주파 CT에서 추출한 순수 교류 파형에 적절한 부담 저항과 바이어스만 걸어 COMP 핀으로 바로 입력. ACS 센서는 이 고주파 대역에서 딜레이가 생겨 위상 비교용으로는 쓸 수 없습니다.
->      STM32G4 내부 컴퍼레이터가 이 두 사인(Sine) 고주파 파형의 제로크로싱을 나노초 단위로 캐치하여 위상차를 정밀 계산합니다.
+> MCU 아날로그 입력은 정상 동작 중 약 `0.3V~3.0V` 안쪽으로 제한한다. 진동자 양단 20~600V 신호는 고저항 분압, 1.65V bias, 직렬저항, 저용량 클램프를 거쳐야 한다.
 
 #### 내장 아날로그 블록 할당 (COMP 기준전압 · DAC · OPAMP)
 
-STM32G474의 내장 고속 아날로그 블록(COMP, DAC, OPAMP)의 실제 할당 현황. LQFP64 패키지 핀 제약을 반영한 **최적 구성**이다.
+| 블록 | 권장 연결 | 용도 | 상태 |
+| ---- | --------- | ---- | ---- |
+| COMP1_INP | PA1 | 전압(V) zero-cross 검출 후보 | 권장 |
+| COMP2_INP | PA7 | 전류(I) zero-cross 검출 후보 | PA7이 PWM_VR과 충돌하므로 재검토 필요 |
+| DAC3_CH1 | 내부 → COMP1_INM | COMP1 기준전압 약 1.65V | 사용 권장 |
+| DAC3_CH2 | 내부 → COMP2_INM | COMP2 기준전압 약 1.65V | 사용 권장 |
+| TIM2_IC1/IC2 | 내부 라우팅 | COMP edge 타임스탬프 캡처 | PLL 구현 시 사용 |
 
-**비교기(COMP) 완전 설정 — 반전 입력(INM) 포함:**
-
-| 블록  | 단자      | 연결 대상             | 용도                                  | 외부 핀            |
-| ----- | --------- | --------------------- | ------------------------------------- | ------------------ |
-| COMP1 | INP(+)    | **PA1** (외부)        | 전압(V) 위상 제로크로싱 검출          | PA1 전용           |
-| COMP1 | INM(−)    | **DAC3_CH1** (내부)   | 제로크로싱 기준전압 (~1.65V = VDDA/2) | 없음 (내부 연결)   |
-| COMP1 | 출력(OUT) | → **TIM2_IC1** (내부) | 전압 제로크로싱 타임스탬프 캡처       | 없음 (내부 라우팅) |
-| COMP2 | INP(+)    | **PA7** (외부)        | 전류(I) 위상 제로크로싱 검출          | PA7 전용           |
-| COMP2 | INM(−)    | **DAC3_CH2** (내부)   | 제로크로싱 기준전압 (~1.65V = VDDA/2) | 없음 (내부 연결)   |
-| COMP2 | 출력(OUT) | → **TIM2_IC2** (내부) | 전류 제로크로싱 타임스탬프 캡처       | 없음 (내부 라우팅) |
-
-> **COMP INM 기준전압 설정 원리**: CT 센서 및 분압기 출력은 1.65V(VDDA/2) DC 바이어스 위에 AC 파형이 실리는 구조다. DAC3로 정확히 1.65V를 출력하면 비교기가 AC 파형의 제로크로싱(바이어스 교차점)을 검출한다. 온도 드리프트나 바이어스 변동 시 DAC3 출력값을 소프트웨어로 실시간 보정하여 정밀도를 유지할 수 있다.
-
-> **위상차 측정 원리 (TIM2 듀얼 입력 캡처)**:
->
-> - COMP1 출력(전압 제로크로싱) → TIM2_IC1: 타임스탬프 t₁ 캡처
-> - COMP2 출력(전류 제로크로싱) → TIM2_IC2: 타임스탬프 t₂ 캡처
-> - 위상차(ns) = (t₂ − t₁) × (1 / 170MHz) = (t₂ − t₁) × 5.88ns
-> - 위상차(°) = 위상차(ns) / 주기(ns) × 360°
-> - TIM2는 32비트 타이머이므로 오버플로 없이 장주기 측정 가능
-> - 40kHz 기준: 1° ≈ 69.4ns ≈ **11.8 타이머 틱** → 약 0.085°/tick 정밀도
-
-**DAC 할당:**
-
-| DAC      | 채널    | 출력               | 용도                            | 상태        |
-| -------- | ------- | ------------------ | ------------------------------- | ----------- |
-| **DAC3** | CH1     | → COMP1_INM (내부) | COMP1 기준전압 출력             | ✅ **사용** |
-| **DAC3** | CH2     | → COMP2_INM (내부) | COMP2 기준전압 출력             | ✅ **사용** |
-| DAC4     | CH1/CH2 | 내부 전용          | 여유 — COMP5~7 확장 시          | 🔵 예비     |
-| DAC1     | CH1     | PA4                | ❌ ADC2_IN17 (전류센서) 핀 충돌 | 🔴 사용불가 |
-| DAC1     | CH2     | PA5                | ❌ RS485 DE 핀 충돌             | 🔴 사용불가 |
-| DAC2     | CH1     | PA6                | ❌ RS485 /RE 핀 충돌            | 🔴 사용불가 |
-
-> **💡 DAC3 = 내부 전용(Internal-only) DAC**: 외부 핀이 아예 없는 칩 내부 크로스바 전용 DAC로, COMP1~4의 반전 입력(INM)에 직결된다. 외부 기준전압 분압 회로(저항 래더) 없이 소프트웨어 한 줄로 mV 단위 정밀 기준전압을 공급할 수 있어 부품 수를 줄이면서도 런타임에 기준전압을 자유롭게 조절(바이어스 드리프트 보정)할 수 있다.
-
-**OPAMP 할당 (LQFP64 패키지 제약):**
-
-| OPAMP  | VINP 핀        | VOUT 핀 | 충돌 대상                   | 상태        |
-| ------ | -------------- | ------- | --------------------------- | ----------- |
-| OPAMP1 | PA1, PA3, PA7  | PA2     | COMP1, USART2_RX/TX         | 🔴 사용불가 |
-| OPAMP2 | PA7            | PA6     | COMP2, RS485 /RE            | 🔴 사용불가 |
-| OPAMP3 | PB0, PB13, PA1 | PB1     | TIM3_CH3, TIM1_CH1N, Remote | 🔴 사용불가 |
-| OPAMP4 | PB13, PB11     | PB12    | TIM1_CH1N, 외부VR, LCD RS   | 🔴 사용불가 |
-| OPAMP5 | PB14, PC3      | PA8     | LCD EN, BTN_OK, TIM1_CH1    | 🔴 사용불가 |
-| OPAMP6 | PB12           | PB11    | LCD RS, 외부VR ADC          | 🔴 사용불가 |
-
-> **⚠️ OPAMP LQFP64 한계**: 6개의 내장 OPAMP 모두 외부 핀(VINP/VINM/VOUT)이 TIM1·USART2·LCD·RS485 등 핵심 기능과 전면 충돌한다. 내부 PGA→ADC 전용 경로는 이론적으로 가능하나, 입력 핀 자체가 충돌하므로 본 설계에서는 OPAMP를 활용하지 않는다. CT 센서 및 분압기의 신호 컨디셔닝은 **외부 회로(Burden 저항 + 바이어스 + 클램핑)**로 해결한다. LQFP100 이상의 큰 패키지 사용 시 일부 OPAMP 활용 여지가 생긴다.
+> DAC3는 외부 핀이 없는 내부 전용 DAC다. COMP 기준전압을 소프트웨어로 보정할 수 있으므로 외부 기준전압 저항망을 줄일 수 있다.
 
 #### Modbus RTU (RS485, 선택 사양 보드 연동)
 
-| 핀   | 포트        | 기능                                                            |
-| ---- | ----------- | --------------------------------------------------------------- |
-| PA2  | USART2_TX   | RS485 TXD                                                       |
-| PA3  | USART2_RX   | RS485 RXD                                                       |
-| PA5  | GPIO_Output | RS485 DE (Driver Enable, HIGH=송신 활성화) — USART2 인접 배치   |
-| PA6  | GPIO_Output | RS485 /RE (Receiver Enable, LOW=수신 활성화) — USART2 인접 배치 |
-| PC11 | GPIO_Output | RS485 RTERM (종단 저항 활성화 제어)                             |
-| PC12 | GPIO_Input  | RS485 Board_Detect (보드 장착 인식, 메뉴 표시 연동용)           |
+| 핀 | 물리핀# | 포트/모드 | 회로도 Net | 기능 |
+| --- | ------- | --------- | ---------- | ---- |
+| PA2 | 14 | USART2_TX | USART2_TX | RS485 TXD |
+| PA3 | 17 | USART2_RX | USART2_RX | RS485 RXD |
+| PB0 | 24 | GPIO_Output | DE_RS485 | Driver Enable, HIGH=송신 |
+| PB1 | 25 | GPIO_Output | /RE_RS485 | Receiver Enable, LOW=수신 |
+| PC4 | 22 | GPIO_Output | RTERM | 종단저항 ON/OFF |
+| PC5 | 23 | GPIO_Input | 485BD_DETECT | 옵션보드 감지 |
 
-> 선택 사양 보드 장착 시 `Board_Detect` 핀 상태를 읽어 인식하며, 옵션 보드가 감지될 때만 LCD 메뉴 시스템에 Modbus 설정 메뉴 하위 트리가 표출됩니다.
+> 선택 사양 보드 장착 시 `485BD_DETECT` 핀 상태를 읽어 인식하며, 옵션 보드가 감지될 때만 LCD 메뉴 시스템에 Modbus 설정 메뉴 하위 트리가 표출된다.
 
-#### 외부 제어 인터페이스 (스위치 입력 및 릴레이/부저 출력)
+#### 외부 제어 인터페이스 (스위치 입력 및 상태 출력)
 
-| 핀   | 포트        | 기능                                                                     |
-| ---- | ----------- | ------------------------------------------------------------------------ |
-| PC4  | GPIO_Output | 기능 조작음(버튼 클릭) 및 에러(Fault) 경고 알람 겸용 부저 출력           |
-| PC5  | GPIO_Output | 사이클 종료 후 0.5초간 ON (End Signal) 릴레이 출력                       |
-| PA12 | GPIO_Output | 에러(Fault) 발생 상태 지시 릴레이 출력                                   |
-| PA15 | GPIO_Output | 정상 동작(Running) 상태 지시 릴레이 출력 (G4는 SWD 기본이므로 바로 사용) |
-| PB1  | GPIO_Input  | 외부 기기 리모트(Remote) ON/OFF 제어 입력                                |
-| PB2  | GPIO_Input  | Sweep(수동 스윕 분산) 기능 사용 유무 결정용 푸쉬락 스위치 입력           |
-| PB10 | GPIO_Input  | 내장 타이머 사용 유무 결정용 푸쉬락 스위치 입력                          |
+| 핀 | 물리핀# | I/O | 회로도 Net | 기능 |
+| --- | ------- | --- | ---------- | ---- |
+| PC6 | 38 | Input | REMOTE | 외부 리모트 입력 |
+| PC7 | 39 | Input | RUN_SW | RUN 스위치 |
+| PC8 | 40 | Input | SWEEP_SW | Sweep 스위치 |
+| PA10 | 44 | Output | GOING | 운전 상태 출력 |
+| PC13 | 2 | Output | END_BZ | 종료 알림 |
+| PC14 | 3 | Output | BZ_OUT | 부저 출력 |
 
 #### 디버그 / 기타
 
-| 핀   | 포트        | 기능                                                                                                                                  |
-| ---- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| PC10 | GPIO_Output | 보드 동작 상태 표시 LED (Run/Error 토글)                                                                                              |
-| PA9  | USART1_TX   | 디버그 메시지용 UART TX (선택사항, 115200bps)                                                                                         |
-| PA10 | USART1_RX   | 디버그 메시지 수신용 UART RX (선택사항)                                                                                               |
-| PA13 | SWDIO       | SWD (Serial Wire Debug) 데이터 입출력 (ST-Link V2 단말 2번 핀 대응, GPIO 사용 금지)                                                   |
-| PA14 | SWCLK       | SWD 클럭 입력 (ST-Link V2 단말 6번 핀 대응, GPIO 사용 금지)                                                                           |
-| PB3  | SWO         | 진단/Trace용 Serial Wire Output (선택사항, 필요 시 ST-Link V2 단말 SWO 핀에 연결. ST-Link 버전에 따라 지원 여부 다름, 보통 생략 가능) |
-| NRST | RESET       | MCU 리셋 트리거 (ST-Link V2 단말 15번 핀 대응, 안정적인 디버깅/펌웨어 다운로드를 위해 연결 강력 권장)                                 |
+| 핀 | 물리핀# | 포트/모드 | 기능 |
+| --- | ------- | --------- | ---- |
+| PA13 | 49 | SWDIO | ST-Link SWD, GPIO 사용 금지 |
+| PA14 | 50 | SWCLK | ST-Link SWD, GPIO 사용 금지 |
+| PB6 | 59 | USART1_TX(AF7) | USB-UART 디버그 TX |
+| PB7 | 60 | USART1_RX(AF7) | USB-UART 디버그 RX |
+| NRST | 7 | RESET | ST-Link 및 DTR 리셋 회로 연결 |
+| PB8 | 61 | BOOT0 / GPIO | 부트 설정 저항 정책 확정 필요 |
 
-> **ST-Link V2 다운로드 커넥터 필수 결선 팁**:
-> 전통적인 JTAG 20핀 규격과 달리 STM32의 SWD(Serial Wire Debug) 방식은 매우 적은 핀으로 업로드가 가능합니다.
-> 최소 동작 핀은 **VDD(3.3V 참조), GND, SWDIO, SWCLK** 이렇게 4선입니다.
-> 하지만 펌웨어가 슬립 모드에 빠지거나 핀 충돌 상태일 때 강제로 칩을 깨우고 제어권을 뺏어 안정적으로 롬 라이팅을 하기 위해서 하드웨어 설계 시 반드시 **NRST(리셋)** 핀까지 총 5선을 ST-Link 단자와 연결해 두는 것이 국룰이자 강력 권장 사항입니다.
+> **ST-Link V2 다운로드 커넥터 필수 결선 팁**: 최소 동작 핀은 VDD(3.3V 참조), GND, SWDIO, SWCLK이다. 안정적인 디버깅/다운로드를 위해 NRST까지 연결한다.
 
-#### 🔧 PCB 아트웍 배선 라우팅 가이드 (LQFP64 물리 핀 기준)
-
-핀 배치는 LQFP64의 4면별 기능 그룹핑을 고려하여, **배선 교차를 최소화**하도록 최적화되었다.
+#### PCB 아트웍 배선 라우팅 가이드 (LQFP64 물리 핀 기준)
 
 ```text
-              ┌──── Top (49~64) ──────────────────┐
-              │ PB3(SWO)  PB4~7(여유/I2C확장)     │
-              │ BOOT0  PB8(SCL) PB9(SDA)          │
-   Left       │                                    │  Right
-  (1~16)      │        STM32G474RCT6               │  (33~48)
-  버튼 4ea    │          LQFP64                     │  LCD D7
-  ADC(내장VR) │                                    │  PWM CH1
-  COMP1(V위상)│                                    │  USART1(디버그)
-  USART2 TX/RX│                                    │  SWD(ST-Link)
-  ADC(전류)   │                                    │  릴레이 2ea + LED
-              └──── Bottom (17~32) ────────────────┘
-                RS485 DE/RE   COMP2(I위상)   부저
-                ATtiny PWM  외부스위치 3ea  외부VR(ADC)
-                LCD RS~D6(6핀연속)   TIM1_CH1N
+좌측 핀: PC0~PC3 버튼, PC4~PC9 외부 제어/RS485/PWM, PC13~PC14 부저
+우측 핀: PA0~PA7 아날로그/USART2, PA8~PA10 HRTIM/GOING, PA13~PA14 SWD
+하측 핀: PB10~PB15 LCD 6핀 묶음
+상측 핀: PB3 SONIC_ON, PB6~PB7 USART1, PB8 BOOT0, PB9 예비/I2C 후보
 ```
 
-**부품 배치 권장:**
-
-| PCB 영역      | 배치 부품                         | MCU 핀 (물리 핀#)                           |
-| ------------- | --------------------------------- | ------------------------------------------- |
-| **좌측 상단** | 택트 스위치 4개 + 내장 가변저항   | PC0~PC3(8–11), PA0(12)                      |
-| **좌측 하단** | MAX3485 + RS485 커넥터            | PA2(14)TX, PA3(15)RX, PA5(17)DE, PA6(18)/RE |
-| **하측 좌**   | COMP 아날로그 회로 (CT, 분압기)   | PA1(13)COMP1, PA7(19)COMP2                  |
-| **하측 중앙** | 외부 스위치 커넥터, 외부 가변저항 | PB1~PB2(23–24), PB10~PB11(25–26)            |
-| **하측 우**   | LCD1602 FPC/핀헤더 커넥터         | PB12~PB15(27–30), PC6~PC7(31–32)            |
-| **우하 코너** | FET 게이트 드라이버 (IR2110 등)   | PB13(28)CH1N ↔ PA8(35)CH1                   |
-| **우측 중앙** | ST-Link SWD 커넥터                | PA13(40)SWDIO, PA14(43)SWCLK                |
-| **우측**      | 릴레이 출력 터미널, LED           | PA12(39)Fault, PA15(44)Running, PC10(45)LED |
-| **상측**      | BOOT0 점퍼, I2C EEPROM (확장)     | BOOT0(54), PB8(55)SCL, PB9(56)SDA           |
+| PCB 영역 | 배치 부품 | MCU 핀 |
+| -------- | --------- | ------ |
+| 조작부 | START/STOP, MODE, UP, DOWN | PC0~PC3 |
+| RS485 커넥터/트랜시버 | USART2, DE, /RE, RTERM, Board Detect | PA2, PA3, PB0, PB1, PC4, PC5 |
+| 아날로그 검출부 | 공진/레벨 검출, PWM_VR | PA0, PA1, PA6, PA7 |
+| 게이트 드라이버 근처 | HRTIM 출력, SONIC_ON | PA8, PA9, PB3 |
+| LCD 커넥터 | LCD1602 4bit | PB10~PB15 |
+| 디버그 커넥터 | SWD, USART1, NRST | PA13, PA14, PB6, PB7, NRST |
 
 **핀 변경 이력 (기존 대비):**
 
-| 변경 내용         | 이전 핀 | 변경 핀 | 사유                                           |
-| ----------------- | ------- | ------- | ---------------------------------------------- |
-| 외부 가변저항 ADC | PA1     | PB11    | PA1을 COMP1_INP 전용 확보 (ADC 스캔 간섭 해소) |
-| RS485 DE          | PC9     | PA5     | USART2(PA2/PA3) 인접 배치 → MAX3485 배선 단축  |
-| RS485 /RE         | PC10    | PA6     | USART2(PA2/PA3) 인접 배치 → MAX3485 배선 단축  |
-| Fault 릴레이      | PA6     | PA12    | PA6을 RS485 /RE로 재할당                       |
-| Running 릴레이    | PA7     | PA15    | PA7을 COMP2_INP 전용 확보 (**핀 충돌 해소**)   |
-| LED               | PA5     | PC10    | PA5를 RS485 DE로 재할당                        |
+| 변경 내용 | 이전 핀 | 현재 핀 | 사유 |
+| --------- | ------- | ------- | ---- |
+| 초음파 출력 | PA8+PB13 / TIM1 | PA8+PA9 / HRTIM1 | HRTIM pair deadtime 및 정밀 스윕 |
+| 위상제어 PWM | PB0 / TIM3_CH3 | PC9 / TIM3_CH4 | PB0을 RS485 DE로 사용 |
+| LCD | PB12, PB14, PB15, PC6~PC8 | PB10~PB15 | LCD 배선 단순화 |
+| RS485 DE/RE | PA5/PA6 | PB0/PB1 | 회로도 기준 변경 |
+| Debug UART | PA9/PA10 | PB6/PB7 | PA9를 HRTIM1_CHA2로 사용 |
+| SONIC_ON | 미정 | PB3 | 발진 Enable 제어 추가 |
 
-> **⚠️ PA7 핀 충돌 해소**: 기존에 PA7이 COMP2_INP(아날로그 위상 검출)과 Running 릴레이(디지털 GPIO 출력)에 동시 할당되어 있었다. 아날로그 모드와 디지털 출력 모드는 **동시에 사용 불가**하므로, PA7은 PLL 위상 검출에 필수인 COMP2_INP 전용으로 고정하고 Running 릴레이는 PA15로 이동하였다.
+> **PCB 아트웍 핵심 포인트 1**: PA8/PA9 HRTIM 출력은 게이트 드라이버 INA/INB까지 짧고 나란히 배선한다.
 >
-> **⚠️ PA1 핀 공유 해소**: 기존에 PA1이 ADC1_IN2(외부 가변저항 연속 스캔)와 COMP1_INP(전압 위상 검출)을 공유하고 있었다. ADC 스캔 변환이 COMP 비교기 입력 임계점 감지에 간섭을 일으킬 수 있으므로, PA1은 COMP1_INP 전용으로 고정하고 외부 가변저항은 PB11(ADC1_IN14)로 이동하였다.
-
-**여유(Spare) 핀:**
-
-| 핀   | 물리 핀# | 비고                             |
-| ---- | -------- | -------------------------------- |
-| PC9  | 34       | RS485 DE 이전 핀, GPIO 자유 사용 |
-| PA11 | 38       | TIM1_CH4(AF11) 또는 GPIO         |
-| PB4  | 50       | GPIO 또는 TIM16_CH1(AF1)         |
-| PB5  | 51       | GPIO 또는 SPI1_MOSI(AF5)         |
-| PB6  | 52       | I2C1_SCL(AF4) 확장 또는 GPIO     |
-| PB7  | 53       | I2C1_SDA(AF4) 확장 또는 GPIO     |
-| PD2  | 48       | TIM3_ETR(AF2) 또는 GPIO          |
-
-> **PCB 아트웍 핵심 포인트 1**: PB13(TIM1_CH1N, pin 28)이 LCD 핀 블록(PB12~PC7) 사이에 끼어 있으므로, PWM 트레이스는 **다른 레이어**로 빼거나 그라운드 가드 트레이스를 삽입하여 LCD 버스 신호와의 크로스토크를 방지할 것.
+> **PCB 아트웍 핵심 포인트 2**: PA0/PA1/PA6/PA7 아날로그 입력은 고전압 스위칭 루프와 분리하고, 정상 동작 중 MCU 입력이 0.3V~3.0V 범위를 벗어나지 않게 보호한다.
 >
-> **PCB 아트웍 핵심 포인트 2 — 아날로그-디지털 인접 핀 노이즈 차폐**: PA7(pin 19, COMP2_INP **고주파 아날로그**)이 PA5(pin 17, RS485 DE)·PA6(pin 18, RS485 /RE) **디지털 스위칭 핀**과 물리적으로 인접(1핀 간격)해 있다. RS485 통신 시 DE/RE 토글 노이즈가 COMP2 아날로그 입력에 커플링될 수 있으므로:
->
-> - PA6(pin 18) ↔ PA7(pin 19) 사이에 **GND 가드 트레이스** 또는 **GND 비아 펜스** 삽입
-> - COMP2 아날로그 배선은 RS485 디지털 배선과 **별도 레이어**로 분리
-> - PA7 트레이스 하부에 연속 GND 플레인 확보 (분할 금지)
-> - CT 센서에서 PA7까지의 아날로그 입력 경로는 최단 거리로 라우팅하고, 디지털 신호와 교차 금지
+> **PCB 아트웍 핵심 포인트 3**: PB10~PB15 LCD 버스는 스위칭 노드와 평행 장거리 배선을 피한다.
 
 ---
 
@@ -366,29 +299,30 @@ STM32G474의 내장 고속 아날로그 블록(COMP, DAC, OPAMP)의 실제 할�
 
 ### 1. 초음파 발진 (`ultrasonic_pwm` + `ultrasonic_ctrl`)
 
-TIM1 고급 타이머를 PWM 모드로 사용하여 산업용 초음파 주파수(20–168 kHz)를 생성한다.
-`ultrasonic_pwm`이 TIM1 하드웨어 레벨(주파수, 듀티, 데드타임)을 담당하고,
+HRTIM1 Timer A를 사용하여 산업용 초음파 주파수(20–168 kHz)를 생성한다.
+`ultrasonic_pwm`이 HRTIM 하드웨어 레벨(주파수, 듀티, 데드타임)을 담당하고,
 `ultrasonic_ctrl`이 상위 로직(소프트 스타트, 펄스/스윕 모드 관리, PLL 공진 추적)을 담당한다.
+
+> 현재 저장소의 일부 기존 코드는 TIM1 기반일 수 있다. 새 회로도 기준 출력은 `PA8/HRTIM1_CHA1`, `PA9/HRTIM1_CHA2`이므로 CubeMX/펌웨어 재생성 시 HRTIM으로 전환한다.
 
 **지원 주파수 대역:**
 
-- STM32G474RC (170MHz, HRTIM 내장) 기준: 28kHz, 40kHz, 68kHz, 132kHz, **최대 168kHz까지 완벽 지원**
-- 분해능: 168kHz 출력 시 PSC=0 기준, 타이머 카운트(ARR) 값은 약 505(센터-얼라인드, 170MHz÷(2×168kHz)), 듀티비를 0.2% 단위(1/505)로 조절 가능. 72MHz급 MCU(ARR≈214) 대비 약 2.4배의 정밀한 듀티비 분해능과 주파수 스윕 해상도를 보장.
+- STM32G474RB/RC (170MHz, HRTIM 내장) 기준: 20kHz~168kHz 발진, 중심주파수 기준 ±100Hz~±1000Hz 스윕 지원 목표
+- HRTIM은 TIM1보다 주파수/edge 조정 해상도가 높아, 작은 스윕 폭에서도 주파수 계단이 덜 거칠다.
 
 **핵심 설정:**
 
-- **PWM 모드**: Center-aligned mode 1 (대칭 PWM, EMI 저감)
-- **상보 출력**: TIM1_CH1 + TIM1_CH1N으로 하프 브리지 구동
-- **데드 타임**: BDTR(Break and Dead-Time Register)로 설정 — FET 관통 전류 방지 (200–500 ns 권장)
-- **주파수 설정**: ARR(Auto Reload Register) 값 변경
+- **PWM 출력**: `HRTIM1_CHA1(PA8)` + `HRTIM1_CHA2(PA9)` pair 출력
+- **데드 타임**: HRTIM deadtime insertion으로 설정 — FET 관통 전류 방지 (실측 기준으로 200–500 ns부터 검토)
+- **주파수 설정**: HRTIM Timer A period 값 변경
 
 ```
-주파수 = TIM1_CLK / ((PSC + 1) × (2 × ARR))   [Center-aligned]
-주파수 = TIM1_CLK / ((PSC + 1) × (ARR + 1))    [Edge-aligned]
+주파수 = HRTIM 타이머 클럭 / period
+실제 period 계산은 CubeMX/HAL HRTIM clock 설정과 prescaler를 기준으로 맞춘다.
 ```
 
-- **듀티비 설정**: CCR1 값 변경 (가변저항 ADC 값 또는 Modbus 명령에 매핑)
-- **MOE(Main Output Enable)**: TIM1은 반드시 MOE 비트를 SET 해야 PWM 출력이 활성화됨
+- **듀티비 설정**: Timer A compare 값 변경 (가변저항 ADC 값 또는 Modbus 명령에 매핑)
+- **출력 Enable**: HRTIM 출력 enable + `PB3/SONIC_ON` 게이트 드라이버 Enable을 함께 관리
 
 **안전 기능 및 자동 튜닝(Auto-Tuning):**
 
@@ -396,7 +330,7 @@ TIM1 고급 타이머를 PWM 모드로 사용하여 산업용 초음파 주파�
 | ------------- | ------------------------------------------------------------- |
 | 소프트 스타트 | 출력 개시 시 듀티비를 0%에서 목표값까지 점진적 증가 (500 ms)  |
 | 비상 정지     | Modbus 명령, 외부 제어 입력 또는 이상 감지 시 즉시 출력 차단  |
-| 출력 제어     | BTN_OK (Start/Stop) 토글로 초음파 출력 시작/종료 제어         |
+| 출력 제어     | START_STOP(PC0) 또는 메뉴 명령으로 초음파 출력 시작/종료 제어 |
 | 출력 제한     | 듀티비 상한 클램핑 (하드웨어 보호)                            |
 | 이상 감지     | 타이머 브레이크 입력(BRK) 활용 가능 (확장 시)                 |
 | **오토 튜닝** | **가변 부하(세제, 세척물, 온도) 대응 공진점 자동 추적 (PLL)** |
@@ -429,7 +363,7 @@ TIM1 고급 타이머를 PWM 모드로 사용하여 산업용 초음파 주파�
    - 전압의 제로 크로싱(Zero-Crossing) 시점을 기준으로 언제 스위치를 켤 것인가(Trigger Delay)를 조절하여, 전원 인가 단면적(RMS 전압)을 잘라냅니다.
    - 딜레이 타임 0(지연 없이 켬) = 출력 100%. 딜레이 타임 약 8.3ms(반주기 끝) = 출력 10%.
 2. **STM32 <-> ATtiny85 간의 정전류 듀티 제어 흐름**:
-   - STM32는 초당 여러 번 ACS712 등으로부터 실제 소비 전류값(A)을 필터링하여 읽습니다.
+   - STM32는 초당 여러 번 전류 센서 또는 정류된 CT envelope 값으로부터 실제 소비 전류값(A)을 필터링하여 읽습니다.
    - 실제 전류가 목표 전류(예: 4.0A)보다 **낮으면**, STM32는 ATtiny85로 보내는 3kHz PWM 신호의 듀티비를 올려줍니다 (트리거 타임을 제로크로싱 가깝게 당겨 RMS 전압/출력을 상승시킵니다).
    - 실제 전류가 목표 전류보다 **높으면**, 듀티비를 내립니다 (트리거 타임을 뒤로 미루어 전력을 즉각 깎아냅니다).
 3. **효과**: PID 제어기나 단순 증감 로직을 통해 구현되며, 사용자가 원하는 타겟 전류를 메뉴나 터치 패널로 입력해 두기만 하면, 물이 출렁거리거나 대형 세척물이 들어와도 실시간으로 출력을 보정하여 **요동치지 않는 매우 일정한 초음파 출력과 전류량**을 보장하는 최고급 기능이 완성됩니다.
@@ -475,32 +409,41 @@ FSM(Finite State Machine) 기반 계층 메뉴 구조.
 ```
 MENU_MAIN (메인 화면 — 주파수/듀티비/상태 표시)
 │
-├── [OK] → MENU_FREQ      — 주파수 설정 (20.0–50.0 kHz, 0.1 kHz 단위)
-├── [OK] → MENU_DUTY      — 듀티비 설정 (0–100%, 가변저항 우선 또는 수동)
-├── [OK] → MENU_MODE      — 동작 모드 선택
+├── [MODE] → MENU_FREQ    — 주파수 설정 (20.0–168.0 kHz, 0.1 kHz 단위)
+├── [MODE] → MENU_DUTY    — 듀티비 설정 (0–100%, 가변저항 우선 또는 수동)
+├── [MODE] → MENU_MODE    — 동작 모드 선택
 │                            ├── 연속 (Continuous)
 │                            ├── 펄스 (Pulse: ON/OFF 시간 설정)
 │                            └── 스윕 (Sweep: 시작/끝 주파수, 스윕 시간)
-├── [OK] → MENU_MODBUS    — Modbus 설정 (RS485 Board_Detect 시에만 활성화)
+├── [MODE] → MENU_MODBUS  — Modbus 설정 (RS485 Board_Detect 시에만 활성화)
 │                            ├── 슬레이브 주소 (1–247)
 │                            ├── 통신 속도 (9600/19200/38400/115200)
 │                            └── 패리티 (None/Even/Odd)
-└── [OK] → MENU_INFO      — 시스템 정보 (FW 버전, 동작 시간, 온도 등)
+└── [MODE] → MENU_INFO    — 시스템 정보 (FW 버전, 동작 시간, 온도 등)
 ```
 
 **네비게이션 규칙:**
 
-- MENU: 메뉴 진입 및 상위 메뉴로 복귀 (뒤로가기)
-- UP/DOWN: 메뉴 항목 이동 또는 값 증감
-- OK: 하위 메뉴 진입 또는 값 확정/저장, 메인 화면에서는 Start/Stop 동작 수행
-- OK 장기 누름: 값을 기본값으로 초기화
+- START_STOP(PC0): 메인 화면에서는 출력 시작/정지, 값 편집 중에는 확정/저장
+- MODE(PC1): 메뉴 진입, 항목 선택 또는 다음 화면 이동
+- MODE 장기 누름: 상위 메뉴로 복귀 (뒤로가기)
+- UP/DOWN(PC2/PC3): 메뉴 항목 이동 또는 값 증감
 
 ### 4. 택트 스위치 입력 (`button`)
 
 **디바운싱 알고리즘:**
 
 - 소프트웨어 디바운싱: 10 ms 주기 폴링, 20 ms 연속 안정 시 확정
-- SysTick 인터럽트 또는 전용 타이머(TIM3 등) 기반 주기 호출 권장
+- SysTick 인터럽트 또는 기본 타이머(TIM6/TIM7 등) 기반 주기 호출 권장. TIM3는 PC9 조광기 PWM용으로 예약한다.
+
+**현재 회로도 버튼 핀:**
+
+| 버튼 | MCU 핀 | 입력 방식 |
+| ---- | ------ | --------- |
+| START_STOP | PC0 | 내부 풀업, Active LOW |
+| MODE | PC1 | 내부 풀업, Active LOW |
+| UP | PC2 | 내부 풀업, Active LOW |
+| DOWN | PC3 | 내부 풀업, Active LOW |
 
 **이벤트 유형:**
 
@@ -522,7 +465,8 @@ uint8_t  Button_GetEvent(uint8_t id); // 이벤트 읽기 및 소비 (읽으면 
 
 **ADC 설정 (센서 및 다중 가변저항):**
 
-- ADC1 스캔 모드: IN1 (보드 내장 가변저항 PA0), IN14 (외부 판넬 가변저항 PB11). ADC2: IN17 (전류 ACS722/TMCS1100 PA4)
+- ADC 후보: `PA0/ADC1_IN1`, `PA1/ADC1_IN2`, `PA6/ADC2_IN3`, `PA7/ADC2_IN4`
+- 현재 회로도 Net: `ADC1_IN1`, `ADC1_IN2`, `ADC2_IN3`, `PWM_VR`
 - 해상도: 12비트 (0–4095), G4는 하드웨어 오버샘플링(최대 256배) 지원으로 최대 16비트 유효 해상도 가능
 - 샘플링 타임: 47.5 cycles 이상 권장 (고임피던스 소스는 92.5~247.5 cycles, G4 ADC는 최대 640.5 cycles 선택 가능)
 - 변환 방식: Scan 모드 + Continuous 변환 + DMA 전송 권장
@@ -530,15 +474,16 @@ uint8_t  Button_GetEvent(uint8_t id); // 이벤트 읽기 및 소비 (읽으면 
 
 **노이즈 필터링:**
 
-- 가변저항 (PA0 IN1, PB11 IN14): 이동 평균 필터(16 샘플), 데드존(양 끝 50 카운트), 히스테리시스(±2 카운트) 적용
-- 우선순위 결정: 메뉴나 딥스위치 등을 통해 내부 저항(PA0) 또는 외부 판넬 저항(PB11) 중 어느 값을 위상 제어 듀티로 사용할지 선택하는 로직 적용
-- 전류 센서 (PA4 IN17): 이동 평균 또는 IIR 필터 적용. 과전류 임계치 감지 시 출력 차단
+- `PWM_VR(PA7/ADC2_IN4)` 또는 메뉴 설정값: 이동 평균 필터(16 샘플), 데드존(양 끝 50 카운트), 히스테리시스(±2 카운트) 적용
+- 공진/레벨 검출용 `PA0/PA1/PA6`: RC 시정수와 소스 임피던스에 맞춰 sampling time을 길게 잡고, 여러 샘플 평균 후 판단
+- 과전류/과전압 보호용 ADC는 정상 동작 범위에서 0.3V~3.0V 안쪽에 머물도록 하드웨어 감쇠/클램프를 먼저 설계
 
 **위상제어용 3kHz PWM 출력 (ATtiny85 연동):**
 
-- 하드웨어: TIM3_CH3 (PB0) 일반 타이머 채널 사용
+- 하드웨어: **TIM3_CH4 (PC9)** 일반 타이머 채널 사용
 - 주파수: 3 kHz 고정 (ATtiny85가 읽어갈 지령 주파수)
-- 듀티비 연동: ADC 가변저항(PA0 또는 PB11)에서 읽힌 값(0~100%)을 TIM3의 CCR 레지스터에 즉시 반영하여 출력 1~100% 범위로 변조 전송
+- 듀티비 연동: `PWM_VR(PA7)` 또는 메뉴/Modbus 설정값(0~100%)을 TIM3 CH4의 CCR 레지스터에 반영하여 출력 1~100% 범위로 변조 전송
+- **핀 변경 주의**: 기존 문서/코드의 `PB0/TIM3_CH3` 기준 구현은 새 회로도에서 틀리다. `PB0`은 `DE_RS485`이며, 위상제어 조광기 PWM은 `PC9/TIM3_CH4`로 구현한다.
 
 **전류 센싱의 오해와 이중 검출법(Dual Sensing - 홀센서와 CT의 역할 분리):**
 
@@ -550,12 +495,12 @@ uint8_t  Button_GetEvent(uint8_t id); // 이벤트 읽기 및 소비 (읽으면 
   - **센서 1안 (홀센서)**: **ACS722, ACS723** 등 사용. 부품이 적어 회로가 간단하고 직류 스케일로 바로 읽히나 외부 노이즈에 변동이 있을 수 있습니다.
   - **센서 2안 (범용 저주파 CT + LM358 능동 정류) [권장]**:
     - 일반 50/60Hz용 소형 범용 CT(예: ZMPT, KCT 시리즈 등)를 인입 단에 관통시킵니다.
-    - CT 2차측에서 나오는 교류 파형(수십~수백mV)을 저렴한 **LM358 OP-AMP**를 활용한 **"능동 전파 정류 회로(Precision Full-Wave Rectifier)"** 에 통과시킨 뒤, 커패시터로 평활하여 0~3.3V DC 아날로그 전압으로 스케일링하여 ADC 핀(PA4)에 넣습니다.
+    - CT 2차측에서 나오는 교류 파형(수십~수백mV)을 저렴한 **LM358 OP-AMP**를 활용한 **"능동 전파 정류 회로(Precision Full-Wave Rectifier)"** 에 통과시킨 뒤, 커패시터로 평활하여 0~3.3V DC 아날로그 전압으로 스케일링하여 여유 ADC 핀에 넣습니다.
     - **[설계 팁] LM358 능동 정류 회로**: 일반 다이오드(0.6V)나 쇼트키 다이오드(0.3V)를 그냥 직렬로 쓰면 강하 전압(Vf) 미만의 낮은 신호(기초 대기 전력)는 읽히지 않고 데드존이 생깁니다. 이를 방지하기 위해 다이오드를 OP-AMP의 피드백 루프 안에 넣어 Vf 손실을 '0(Zero)'으로 만들어 버리는 회로입니다. 구글에 "Op-amp Precision Rectifier" 또는 "LM358 정전류 정류"로 검색하면 나오는 아주 표준적인 회로로, 저항 몇 개와 1N4148 다이오드 2개면 완벽한 리니어(직선) 비례 특성을 가진 RMS DC 전압을 뽑아낼 수 있습니다. 산업 현장에서 내구성과 노이즈 절연성을 동시에 챙기는 가장 가성비 좋은 하드웨어 설계입니다.
 
 - **2. 공진점(위상) 추적용 (CT 센서, COMP2_IN 활용)**
   - **위치**: 매칭 트랜스포머를 거쳐 실제 여러 개의 진동자(BLT) 덩어리로 나가는 20kHz ~ 168kHz의 고주파 출력 배선로.
-  - **목적**: 전압(V) 파형 대비 전류(I) 파형 커브가 먼저 들어오는지 나중에 들어오는지 위상(Phase) 딜레이 시간을 나노초(ns) 단위로 읽어서, 이 딜레이가 "0번(동위상)"이 되도록 TIM1 주파수를 조절(PLL)하기 위함. 파형의 크기(전압 강하/증폭률)는 전혀 중요하지 않으며 오직 파형의 곡선 모양과 제로 크로싱 타이밍만 중요합니다.
+  - **목적**: 전압(V) 파형 대비 전류(I) 파형 커브가 먼저 들어오는지 나중에 들어오는지 위상(Phase) 딜레이 시간을 나노초(ns) 단위로 읽어서, 이 딜레이가 "0번(동위상)"이 되도록 HRTIM 주파수를 조절(PLL)하기 위함. 파형의 크기(전압 강하/증폭률)는 전혀 중요하지 않으며 오직 파형의 곡선 모양과 제로 크로싱 타이밍만 중요합니다.
   - **센서**: **관통형 고주파 AC CT(Current Transformer)** 적용 필수. 고주파 대역폭 왜곡이 없으므로 타이밍 지연(위상 어긋남) 없이 신속하게 본래의 나노초 단위 파형을 컴퍼레이터 비교기(COMP)로 밀어 넣습니다.
 
 **엔지니어 조언 요약:**
@@ -567,7 +512,7 @@ uint8_t  Button_GetEvent(uint8_t id); // 이벤트 읽기 및 소비 (읽으면 
 **가변저항 매핑:**
 
 ```
-ADC_CH0 (0–4095) → 듀티비 (0–100%) 또는 사용자 지정 범위
+PWM_VR(PA7/ADC2_IN4) 또는 선택 ADC (0–4095) → 듀티비 (0–100%) 또는 사용자 지정 범위
 실제 적용범위: ADC_MIN(50) ~ ADC_MAX(4045) → 0% ~ 100%
 ```
 
@@ -577,7 +522,7 @@ ADC_CH0 (0–4095) → 듀티비 (0–100%) 또는 사용자 지정 범위
 `modbus_crc`가 CRC-16 테이블 룩업을 제공하며,
 `modbus_regs`가 레지스터 맵 읽기/쓰기 핸들러를 담당한다.
 
-**물리 계층:** RS485 반이중 통신 (MAX485 / SP3485 등)
+**물리 계층:** RS485 반이중 통신 (MAX3485 / SP3485 등 3.3V 로직 지원품 권장)
 
 **USART 설정:**
 
@@ -588,10 +533,13 @@ ADC_CH0 (0–4095) → 듀티비 (0–100%) 또는 사용자 지정 범위
 **RS485 방향 및 제어 핀 상태:**
 
 ```text
-옵션 보드 인식: 부팅 시 및 주기적으로 Board_Detect 핀 읽음 → 인식 시 메뉴 활성화
-종단 저항 (RTERM): 메뉴에서 활성화 시 HIGH 출력 (필요 시)
-대기 / 수신 시: DE = LOW, /RE = LOW → RXNE 인터럽트로 바이트 수신 대기
-데이터 송신 시: DE = HIGH, /RE = HIGH → 데이터 송신 → TC 플래그 대기 → 완료 후 DE=LOW, /RE=LOW 복귀
+USART2 TX/RX: PA2/PA3
+DE_RS485: PB0, /RE_RS485: PB1
+RTERM: PC4, 485BD_DETECT: PC5
+옵션 보드 인식: 부팅 시 및 주기적으로 485BD_DETECT 핀 읽음 → 인식 시 메뉴 활성화
+종단 저항 (RTERM): 메뉴에서 활성화 시 PC4 HIGH 출력 (필요 시)
+대기 / 수신 시: PB0(DE) = LOW, PB1(/RE) = LOW → RXNE 인터럽트로 바이트 수신 대기
+데이터 송신 시: PB0(DE) = HIGH, PB1(/RE) = HIGH → 데이터 송신 → TC 플래그 대기 → 완료 후 DE=LOW, /RE=LOW 복귀
 ```
 
 **프레임 감지:**
@@ -709,7 +657,7 @@ int main(void)
     HAL_Init();                    // HAL 라이브러리 초기화 (SysTick 1 ms)
     SystemClock_Config();          // HSI 또는 HSE → PLL → 170 MHz
     GPIO_Init_All();               // 전체 GPIO 초기화
-    UltrasonicPWM_Init();          // TIM1 PWM 설정
+    UltrasonicPWM_Init();          // HRTIM PA8/PA9 PWM 설정
     UltrasonicCtrl_Init();         // 초음파 제어 초기화
     ADC_Control_Init();            // ADC 다중 채널 및 DMA 초기화
     COMP_Init();                   // 내부 고속 비교기 (위상차 검출용) 초기화
@@ -735,7 +683,7 @@ int main(void)
 
 | 우선순위 (숫자 낮을수록 높음) | 인터럽트         | 용도                               |
 | ----------------------------- | ---------------- | ---------------------------------- |
-| 0 (최고)                      | TIM1 BRK         | 초음파 브레이크 비상 정지 (확장용) |
+| 0 (최고)                      | HRTIM Fault/BRK  | 초음파 출력 하드웨어 차단 (확장용) |
 | 1                             | USART2 RXNE/IDLE | Modbus 바이트 수신 및 프레임 감지  |
 | 2                             | TIM4             | Modbus 3.5T 타임아웃 (필요 시)     |
 | 3                             | SysTick          | 버튼 폴링, HAL 틱 (1 ms)           |
@@ -761,18 +709,19 @@ int main(void)
 
 ## 핵심 제약사항
 
-- STM32G474RC: Flash 256 KB, SRAM 128 KB — HRTIM(184ps 분해능), 고해상도 타이머 기능과 비교기로 무장됨.
-- **TIM1은 고급 타이머**(Advanced Timer)로 일반 타이머(TIM2~TIM4 등)와 설정이 다름:
-  - `MOE` 비트를 SET 해야 출력이 나옴 (`__HAL_TIM_MOE_ENABLE()` 또는 `HAL_TIM_PWM_Start()` + `HAL_TIMEx_PWMN_Start()`).
-  - BDTR 레지스터로 데드 타임 삽입 가능 (IR2110 등 분리형 드라이버 제어 시).
-  - 브레이크 입력(BRK)으로 하드웨어 비상 정지 가능.
+- STM32G474RB/RC 계열은 LQFP64 핀 기능이 호환되지만 Flash 용량은 실제 BOM에 맞춰 확인한다. 현재 회로도 U3는 `STM32G474RBT6` 기준이며, 기존 `STM32G474RCTx_FLASH.ld` 사용 시 링커 용량 동기화가 필요하다.
+- **초음파 출력은 HRTIM 기준**으로 구현한다:
+  - `PA8/HRTIM1_CHA1`, `PA9/HRTIM1_CHA2`를 `GPIO_AF13_HRTIM1`로 설정한다.
+  - HRTIM output enable, Timer A counter start, deadtime 설정, fault 입력 정책을 함께 확인한다.
+  - 기존 TIM1 상보출력 예제 코드를 그대로 복사하지 말고, HRTIM HAL/LL 설정으로 전환한다.
+- **위상제어 조광기 출력은 TIM3_CH4(PC9)** 이다. 예전 `PB0/TIM3_CH3` 기준 코드는 사용하지 않는다. `PB0`은 현재 `DE_RS485`다.
 - 타이머 클럭: G4 시리즈는 버스 아키텍처가 최적화되어, APB1/APB2 모두 170MHz로 동작하여 압도적 듀티 분해능 제공.
 - RS485 반이중 특성: 송신 완료(TC) 확인 후 DE → LOW 전환 필수.
 - LCD1602 HD44780: 명령 실행 타이밍 준수 필수 — `HAL_Delay()` 또는 마이크로초 지연 함수 사용.
 - ADC 레퍼런스: VDDA = 3.3 V; 가변저항은 GND–3.3 V 사이에 연결.
-- **OPAMP LQFP64 제한**: 내장 OPAMP1~6의 외부 핀(VINP/VINM/VOUT)이 LQFP64 패키지에서 TIM1·USART2·LCD·RS485 등과 전부 충돌하여 사실상 사용 불가. 신호 컨디셔닝은 외부 회로(Burden 저항, 바이어스, 클램핑)로 해결. LQFP100 이상 마이그레이션 시 OPAMP 활용 여지 있음.
-- **DAC3 필수**: COMP1/2의 반전 입력(INM) 기준전압은 DAC3(내부 전용 DAC)로 공급. 외부 핀 불필요. DAC1(PA4/PA5)·DAC2(PA6)는 모두 핀 충돌로 외부 출력 불가.
-- **SWD 핀 예약**: PA13(SWDIO), PA14(SWCLK)은 GPIO로 사용 금지. G4는 리셋 후 SWD가 기본 디버그 모드이므로, PA15·PB3·PB4는 F1과 달리 JTAG AF 재설정 없이 즉시 GPIO로 사용 가능. 단, PB3은 SWO로 예약 권장.
+- **OPAMP LQFP64 제한**: 내장 OPAMP 외부 핀은 현재 HRTIM, USART2, LCD, RS485, 아날로그 검출 핀과 충돌 가능성이 높다. 이번 보드는 전압 분압, CT burden, bias, 클램프 같은 외부 신호 컨디셔닝을 우선한다.
+- **DAC3 권장**: COMP1/2의 반전 입력(INM) 기준전압은 DAC3(내부 전용 DAC)로 공급한다. DAC1/DAC2 외부 출력은 현재 핀맵과 충돌 가능성이 있으므로 별도 핀 검토 없이 사용하지 않는다.
+- **SWD 핀 예약**: PA13(SWDIO), PA14(SWCLK)은 GPIO로 사용 금지. PB3은 이번 회로도에서 `SONIC_ON`으로 사용하므로 SWO 기능을 켜지 않는다.
 - **G4 USART 레지스터 차이**: F1의 `USART_SR`/`USART_DR` 단일 레지스터 구조와 달리, G4는 `USART->ISR`(상태), `USART->ICR`(플래그 클리어), `USART->TDR`/`USART->RDR`(송수신 분리) 구조. 레지스터 직접 접근 시 반드시 G4 레퍼런스 매뉴얼(RM0440) 참조.
 - **G4 GPIO 속도**: G4는 GPIO 출력 속도 설정이 Low/Medium/High/Very High 4단계. 고속 통신이나 PWM 출력 핀은 `GPIO_SPEED_FREQ_VERY_HIGH` 설정 권장.
 - Modbus CRC-16: 테이블 룩업 방식 사용 (속도 최적화).
@@ -787,9 +736,9 @@ IDE와 ST-Link(SWD)를 꽂아 펌웨어를 굽는 것은 개발/디버깅 시에
 
 STM32G474는 부팅 시 특정 조건이 맞으면 내장 부트로더가 활성화되어 `USART1`, `USART2` 등을 통해 플래싱 대기 상태가 됩니다.
 
-- **하드웨어 준비**: `BOOT0` 핀을 분배하여 버튼이나 점퍼 핀으로 외부로 빼놓습니다.
-- **다운로드 방법**: `BOOT0` 핀을 `HIGH(3.3V)`로 만든 상태에서 전원을 켭니다(또는 NRST 리셋). 칩이 사용자 코드가 아닌 공장 부트로더로 부팅합니다.
-- **PC 작업**: ST-Link 프로그래머 없이, 시중의 저렴한 USB-to-RS485 변환기나 USB-to-UART(TTL) 젠더를 보드의 RS485 단자(TX, RX, 그리고 DE/RE 활성화 핀)나 디버그 UART 핀에 꽂습니다.
+- **하드웨어 준비**: `PB8/BOOT0` 핀을 기본 풀다운으로 두고, 버튼이나 점퍼로 3.3V에 올릴 수 있게 외부로 빼놓습니다.
+- **다운로드 방법**: `PB8/BOOT0`를 `HIGH(3.3V)`로 만든 상태에서 전원을 켭니다(또는 NRST 리셋). 칩이 사용자 코드가 아닌 공장 부트로더로 부팅합니다.
+- **PC 작업**: ST-Link 프로그래머 없이, 시중의 저렴한 USB-to-RS485 변환기나 USB-to-UART(TTL) 젠더를 보드의 RS485 단자(`PA2/PA3`, `PB0/PB1` 방향 제어)나 디버그 UART 핀(`PB6/PB7`)에 꽂습니다.
 - PC에서 ST 공식 무료 배포 프로그램인 **"STM32CubeProgrammer"**를 켜서 펌웨어(.hex 또는 .bin) 파일 1개만 선택하고 업로드를 누르면 끝입니다.
 
 ### 추천 2. Custom (사용자) 부트로더 개발 (통신 업데이트 / OTA)
@@ -799,7 +748,7 @@ STM32G474는 부팅 시 특정 조건이 맞으면 내장 부트로더가 활성
 - 평소에는 메인 앱으로 동작하다가, "펌웨어 업데이트 모드 진입" 메뉴나 Modbus 특수 명령이 들어오면 메인 앱이 칩을 리셋시키고 부트로더 구역으로 점프합니다.
 - 부트로더가 현재 연결된 RS485를 통해 새로운 펌웨어 바이너리 데이터를 패킷으로 쪼개어 수신한 뒤 메인 앱 플래시 구역을 지우고 다시 씁니다. PC쪽에는 간단한 펌웨어 송신용 C# 프로그램(보통 YMODEM 프로토콜 등 사용) 하나만 띄워주면 현장 조작자가 마우스 클릭 한 번으로 통신선을 통해 간편하게 패치할 수 있습니다.
 
-> **💡 하드웨어 설계 요약**: 개발 완료 후 편안한 USB-UART 양산을 원하신다면, 보드 한쪽에 `BOOT0` 핀을 풀업(Pull-up)으로 당겨줄 수 있는 **푸쉬 버튼(또는 딥스위치, 점퍼 점접)** 하나를 꼭 설계에 끼워 넣어 달라고 하십시오. BOOT0 버튼을 누른 채로 전원을 켜면, ST-Link고 뭐고 다 필요 없이 시리얼 케이블 하나로 최신 펌웨어를 싹 밀어 넣을 수 있습니다.
+> **하드웨어 설계 요약**: 양산 시 UART 부트로더를 쓸 가능성이 있으면 `PB8/BOOT0`를 기본 풀다운으로 고정하고, 버튼/딥스위치/점퍼로 3.3V에 연결할 수 있게 둔다. BOOT0를 누른 채 전원을 켜면 ST-Link 없이도 시리얼 계열 인터페이스로 펌웨어 업데이트를 진행할 수 있다.
 
 ### 추천 3. ST-Link + STM32CubeProgrammer (개발~양산 겸용, 가장 간편)
 
@@ -816,8 +765,9 @@ ST-Link(SWD)는 STM32CubeProgrammer에서도 그대로 사용 가능합니다. I
 
 ## 흔한 실수
 
-- **TIM1 PWM이 출력 안 됨** → `HAL_TIM_PWM_Start()` 호출 후 MOE 비트 확인. 상보 출력은 `HAL_TIMEx_PWMN_Start()` 별도 호출 필요.
-- **RS485 수신 불가** → DE/RE 핀이 아이들 시 LOW(수신 모드)인지 확인. 송신 후 `USART->ISR`의 `TC` 플래그(Transmission Complete) 확인 후 DE → LOW 전환. (G4의 USART 레지스터는 F1의 `USART_SR`이 아닌 `USART->ISR`/`USART->ICR` 구조임에 주의)
+- **HRTIM PWM이 출력 안 됨** → PA8/PA9가 `GPIO_AF13_HRTIM1`인지, HRTIM Timer A counter와 output enable이 모두 켜졌는지, `PB3/SONIC_ON`이 활성 상태인지 확인. PA9는 USB-C PD 미사용 시 `UCPD1_DBDIS=1` 설정도 확인한다.
+- **위상제어 조광기 PWM이 출력 안 됨** → 새 회로도 기준은 `PC9/TIM3_CH4(AF2)`다. `PB0/TIM3_CH3`로 초기화하면 출력이 나오지 않고 RS485 DE 핀과 충돌한다.
+- **RS485 수신 불가** → `PB0(DE)`/`PB1(/RE)`가 아이들 시 LOW(수신 모드)인지 확인. 송신 후 `USART->ISR`의 `TC` 플래그(Transmission Complete) 확인 후 DE → LOW 전환. (G4의 USART 레지스터는 F1의 `USART_SR`이 아닌 `USART->ISR`/`USART->ICR` 구조임에 주의)
 - **LCD 아무것도 표시 안 됨** → V0 핀의 대비 조절 가변저항 확인. 초기화 시퀀스 타이밍(15 ms → 4.1 ms → 100 µs) 준수.
 - **Modbus CRC 불일치** → CRC 바이트 순서: CRC Low 먼저, CRC High 나중 (LSB-first). 다항식 0xA001.
 - **ADC 값 불안정** → 샘플링 타임 증가 (최소 47.5 cycles, 고임피던스는 92.5~247.5 cycles 권장), 이동 평균 필터 적용, VDDA 바이패스 커패시터 확인.
@@ -831,12 +781,12 @@ ST-Link(SWD)는 STM32CubeProgrammer에서도 그대로 사용 가능합니다. I
 
 ## 파라미터 저장 (확장)
 
-사용자 설정값은 STM32G474RC 내장 Flash 백업 또는 외부 EEPROM(I2C)에 저장 가능:
+사용자 설정값은 STM32G474RB/RC 내장 Flash 백업 또는 외부 EEPROM(I2C)에 저장 가능:
 
 - 내장 Flash: 페이지 단위 소거 (**2 KB/page**, G4 기준), 쓰기 단위는 **더블워드(64비트/8바이트)**, 쓰기 수명 10,000회 → 마모 평준화 고려
   - G4 Flash 쓰기 절차: 언락(`HAL_FLASH_Unlock()`) → 페이지 소거(`HAL_FLASHEx_Erase()`) → 더블워드 프로그램(`HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, ...)`) → 락(`HAL_FLASH_Lock()`)
   - F1과 달리 하프워드(16비트) 단위 쓰기 불가, 반드시 64비트 정렬 필요
-- 외부 EEPROM (AT24C02 등): I2C1 (PB8/PB9, G4 AF4) 사용, 바이트 단위 쓰기, 100만회 수명
+- 외부 EEPROM (AT24C02 등): I2C 핀은 현재 미확정. `PB8`은 `BOOT0` 정책과 충돌하므로, EEPROM이 필요하면 `PB9`와 다른 여유 I2C 후보 핀을 CubeMX에서 다시 검토한다.
 
 저장 대상: 주파수, 출력값, 동작 모드, Modbus 주소, 통신 속도, 패리티, 타이머 설정, 정전류 목표값.
 

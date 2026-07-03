@@ -1844,61 +1844,71 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "01_MyLib_ICs:TL431A"
+		(symbol "01_MyLib_ICs:TL431DBZ"
 			(pin_names
-				(offset 1.016)
+				(hide yes)
 			)
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
 			(in_pos_files yes)
 			(duplicate_pin_numbers_are_jumpers no)
-			(property "Reference" "VR"
-				(at -4.826 4.572 0)
+			(property "Reference" "U"
+				(at -2.54 2.54 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
-					(justify left bottom)
 				)
 			)
-			(property "Value" "TL431A"
-				(at -7.62 -5.842 0)
+			(property "Value" "TL431DBZ"
+				(at 0 -2.54 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
-					(justify left bottom)
 				)
 			)
-			(property "Footprint" ""
-				(at 0 0 0)
+			(property "Footprint" "01_MyFoot_ICs:SOT-23-3"
+				(at 0 -4.826 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(hide yes)
 				(effects
 					(font
 						(size 1.27 1.27)
+						(italic yes)
 					)
-					(justify bottom)
 				)
 			)
 			(property "Datasheet" ""
-				(at 0 0 0)
+				(at 1.778 -9.144 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(hide yes)
 				(effects
 					(font
 						(size 1.27 1.27)
+						(italic yes)
 					)
 				)
 			)
 			(property "Description" ""
+				(at 0 -7.112 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "diode device shunt regulator"
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -1909,7 +1919,7 @@
 					)
 				)
 			)
-			(property "MF" ""
+			(property "ki_fp_filters" "SOT?23*"
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -1918,168 +1928,36 @@
 					(font
 						(size 1.27 1.27)
 					)
-					(justify bottom)
 				)
 			)
-			(property "MAXIMUM_PACKAGE_HEIGHT" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify bottom)
-				)
-			)
-			(property "Package" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify bottom)
-				)
-			)
-			(property "Price" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify bottom)
-				)
-			)
-			(property "Check_prices" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify bottom)
-				)
-			)
-			(property "STANDARD" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify bottom)
-				)
-			)
-			(property "PARTREV" "R"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify bottom)
-				)
-			)
-			(property "SnapEDA_Link" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify bottom)
-				)
-			)
-			(property "MP" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify bottom)
-				)
-			)
-			(property "Description_1" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify bottom)
-				)
-			)
-			(property "Availability" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify bottom)
-				)
-			)
-			(property "MANUFACTURER" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify bottom)
-				)
-			)
-			(symbol "TL431A_0_0"
+			(symbol "TL431DBZ_0_1"
 				(polyline
 					(pts
-						(xy -2.54 0) (xy -0.635 0)
+						(xy -1.27 0) (xy 0 0) (xy 1.27 0)
 					)
 					(stroke
-						(width 0.1524)
+						(width 0)
 						(type default)
 					)
 					(fill
 						(type none)
 					)
 				)
-				(rectangle
-					(start -2.54 -2.54)
-					(end 2.54 2.54)
+				(polyline
+					(pts
+						(xy -0.762 -0.762) (xy -0.762 0.762) (xy 0.762 0) (xy -0.762 -0.762)
+					)
 					(stroke
-						(width 0.254)
+						(width 0)
 						(type default)
 					)
 					(fill
-						(type background)
+						(type outline)
 					)
 				)
 				(polyline
 					(pts
-						(xy -1.27 1.905) (xy -1.27 1.27)
+						(xy 0.254 -0.762) (xy 0.762 -0.762) (xy 0.762 0.762) (xy 0.762 0.762)
 					)
 					(stroke
 						(width 0.254)
@@ -2089,178 +1967,58 @@
 						(type none)
 					)
 				)
-				(polyline
-					(pts
-						(xy -1.27 1.27) (xy 0 1.27)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.27 -1.27) (xy 0 -1.27)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -0.635 0) (xy -1.27 -1.27)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 2.54) (xy 0 1.27)
-					)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 1.27) (xy -0.635 0)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 1.27) (xy 1.27 1.27)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 -1.27) (xy 1.27 -1.27)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 -2.54) (xy 0 -1.27)
-					)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.27 1.27) (xy 1.27 0.635)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.27 -1.27) (xy 0 1.27)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
+			)
+			(symbol "TL431DBZ_1_1"
 				(pin passive line
-					(at 0 -5.08 90)
+					(at 3.81 0 180)
 					(length 2.54)
-					(name ""
+					(name "K"
 						(effects
 							(font
-								(size 1.016 1.016)
-							)
-						)
-					)
-					(number "2"
-						(effects
-							(font
-								(size 1.016 1.016)
-							)
-						)
-					)
-				)
-			)
-			(symbol "TL431A_1_0"
-				(pin passive line
-					(at -5.08 0 0)
-					(length 2.54)
-					(name ""
-						(effects
-							(font
-								(size 1.016 1.016)
+								(size 1.27 1.27)
 							)
 						)
 					)
 					(number "1"
 						(effects
 							(font
-								(size 1.016 1.016)
+								(size 1.27 1.27)
 							)
 						)
 					)
 				)
 				(pin passive line
-					(at 0 5.08 270)
+					(at 0 3.81 270)
 					(length 2.54)
-					(name ""
+					(name "REF"
 						(effects
 							(font
-								(size 1.016 1.016)
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -3.81 0 0)
+					(length 2.54)
+					(name "A"
+						(effects
+							(font
+								(size 1.27 1.27)
 							)
 						)
 					)
 					(number "3"
 						(effects
 							(font
-								(size 1.016 1.016)
+								(size 1.27 1.27)
 							)
 						)
 					)
@@ -3321,7 +3079,7 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "03_MyLib_Active:LED_SMD"
+		(symbol "03_MyLib_Active:LED_SMD_KT_0805R"
 			(pin_names
 				(offset 1.016)
 			)
@@ -3341,7 +3099,7 @@
 					(justify left bottom)
 				)
 			)
-			(property "Value" "LED_SMD"
+			(property "Value" "LED_SMD_KT_0805R"
 				(at -3.556 -3.302 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -3530,7 +3288,7 @@
 					(justify bottom)
 				)
 			)
-			(symbol "LED_SMD_0_0"
+			(symbol "LED_SMD_KT_0805R_0_0"
 				(polyline
 					(pts
 						(xy -2.54 1.524) (xy -2.54 0)
@@ -3652,7 +3410,7 @@
 					)
 				)
 			)
-			(symbol "LED_SMD_1_0"
+			(symbol "LED_SMD_KT_0805R_1_0"
 				(polyline
 					(pts
 						(xy -2.54 0) (xy -5.08 0)
@@ -3678,9 +3436,9 @@
 					)
 				)
 				(pin passive line
-					(at 5.08 0 180)
+					(at -7.62 0 0)
 					(length 2.54)
-					(name "K"
+					(name "A"
 						(effects
 							(font
 								(size 1.016 1.016)
@@ -3696,9 +3454,9 @@
 					)
 				)
 				(pin passive line
-					(at -7.62 0 0)
+					(at 5.08 0 180)
 					(length 2.54)
-					(name "A"
+					(name "K"
 						(effects
 							(font
 								(size 1.016 1.016)
@@ -7673,711 +7431,6 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "H11AA1_1"
-			(pin_names
-				(offset 1.016)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(in_pos_files yes)
-			(duplicate_pin_numbers_are_jumpers no)
-			(property "Reference" "U"
-				(at -5.0869 8.139 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left bottom)
-				)
-			)
-			(property "Value" "H11AA1"
-				(at -5.0803 -10.1607 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left bottom)
-				)
-			)
-			(property "Footprint" "DIP762W50P254L730H410Q6"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify bottom)
-				)
-			)
-			(property "Datasheet" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Description" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "MF" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify bottom)
-				)
-			)
-			(property "Description_1" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify bottom)
-				)
-			)
-			(property "Package" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify bottom)
-				)
-			)
-			(property "Price" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify bottom)
-				)
-			)
-			(property "Check_prices" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify bottom)
-				)
-			)
-			(property "SnapEDA_Link" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify bottom)
-				)
-			)
-			(property "MP" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify bottom)
-				)
-			)
-			(property "Availability" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify bottom)
-				)
-			)
-			(property "MANUFACTURER" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify bottom)
-				)
-			)
-			(symbol "H11AA1_1_0_0"
-				(arc
-					(start 0 -0.762)
-					(mid -0.5742 -1.7767)
-					(end -1.27 -2.794)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -10.16 5.08) (xy -2.54 5.08)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start -10.16 -7.62)
-					(end 10.16 7.62)
-					(stroke
-						(width 0.4064)
-						(type default)
-					)
-					(fill
-						(type background)
-					)
-				)
-				(polyline
-					(pts
-						(xy -8.89 1.27) (xy -7.62 3.81)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -8.89 1.27) (xy -7.62 1.27)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -8.636 3.81) (xy -7.62 3.81)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -7.62 3.81) (xy -7.62 5.08)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -7.62 3.81) (xy -6.604 3.81)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -7.62 3.81) (xy -6.35 1.27)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -7.62 1.27) (xy -7.62 3.81)
-					)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -7.62 1.27) (xy -7.62 0)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -7.62 1.27) (xy -6.35 1.27)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -2.54 3.81) (xy -3.81 3.81)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -2.54 3.81) (xy -2.54 5.08)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -2.54 3.81) (xy -2.54 1.27)
-					)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -2.54 1.27) (xy -3.81 3.81)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -2.54 1.27) (xy -3.556 1.27)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -2.54 1.27) (xy -2.54 0)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -2.54 0) (xy -10.16 0)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.524 1.27) (xy -2.54 1.27)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.27 3.81) (xy -2.54 3.81)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.27 3.81) (xy -2.54 1.27)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -0.762 -3.81)
-					(mid -1.33 -3.459)
-					(end -1.27 -2.794)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -0.508 0)
-					(mid -0.0312 -0.2306)
-					(end 0 -0.762)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0.508 -3.81) (xy -0.762 -3.81)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.397 -3.937) (xy 0.508 -3.556) (xy 0.508 -4.318) (xy 1.397 -3.937)
-					)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(polyline
-					(pts
-						(xy 2.54 5.08) (xy 2.54 -2.54)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 2.54 -2.54) (xy 5.08 -2.54)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start 4.7078 -4.5806)
-					(end 5.461 -0.508)
-					(stroke
-						(width 0.1)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(polyline
-					(pts
-						(xy 5.08 -2.54) (xy 7.62 -5.08)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 7.493 -4.953) (xy 7.112 -4.064) (xy 6.604 -4.572) (xy 7.493 -4.953)
-					)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(polyline
-					(pts
-						(xy 7.62 0) (xy 5.08 -2.54)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 10.16 5.08) (xy 2.54 5.08)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 10.16 0) (xy 7.62 0)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 10.16 -5.08) (xy 7.62 -5.08)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(pin passive line
-					(at -15.24 5.08 0)
-					(length 5.08)
-					(name ""
-						(effects
-							(font
-								(size 1.016 1.016)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.016 1.016)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at -15.24 0 0)
-					(length 5.08)
-					(name ""
-						(effects
-							(font
-								(size 1.016 1.016)
-							)
-						)
-					)
-					(number "2"
-						(effects
-							(font
-								(size 1.016 1.016)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 15.24 -5.08 180)
-					(length 5.08)
-					(name ""
-						(effects
-							(font
-								(size 1.016 1.016)
-							)
-						)
-					)
-					(number "4"
-						(effects
-							(font
-								(size 1.016 1.016)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 15.24 0 180)
-					(length 5.08)
-					(name ""
-						(effects
-							(font
-								(size 1.016 1.016)
-							)
-						)
-					)
-					(number "5"
-						(effects
-							(font
-								(size 1.016 1.016)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 15.24 5.08 180)
-					(length 5.08)
-					(name ""
-						(effects
-							(font
-								(size 1.016 1.016)
-							)
-						)
-					)
-					(number "6"
-						(effects
-							(font
-								(size 1.016 1.016)
-							)
-						)
-					)
-				)
-			)
-			(symbol "H11AA1_1_1_1"
-				(pin passive line
-					(at -15.24 -5.08 0)
-					(length 5.08)
-					(name ""
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "3"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
 		(symbol "Mechanical:MountingHole_Pad"
 			(pin_numbers
 				(hide yes)
@@ -9711,7 +8764,7 @@
 		(uuid "0ca2d148-9539-4bd7-9a72-a2aff17cd42e")
 	)
 	(junction
-		(at 113.03 250.19)
+		(at 124.46 247.65)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "1258911a-7fa3-4391-aa25-6d57bc58c5bf")
@@ -10203,22 +9256,18 @@
 		(uuid "fdc0118e-ad2e-4b7a-a5a3-18c24c2354c3")
 	)
 	(junction
-		(at 119.38 250.19)
+		(at 130.81 247.65)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "fe2600c5-e4ab-4172-878b-86b7e395572e")
 	)
 	(no_connect
-		(at 36.83 250.19)
+		(at 58.42 252.73)
 		(uuid "51236471-d561-4093-add7-31b868ebe457")
 	)
 	(no_connect
-		(at 57.15 250.19)
+		(at 78.74 252.73)
 		(uuid "767db300-1b1d-4500-8ccd-fc0cfda7dbb1")
-	)
-	(no_connect
-		(at 105.41 245.11)
-		(uuid "7b5e53ac-0c79-4343-9d1a-71191a4e7ea4")
 	)
 	(no_connect
 		(at 307.34 54.61)
@@ -10236,13 +9285,9 @@
 		(at 153.67 62.23)
 		(uuid "baf3d497-5eea-4157-b5d7-e5a4098e8266")
 	)
-	(no_connect
-		(at 74.93 255.27)
-		(uuid "dcd90a58-c328-466d-a2a8-99a54a1bcb97")
-	)
 	(wire
 		(pts
-			(xy 68.58 255.27) (xy 68.58 250.19)
+			(xy 90.17 257.81) (xy 90.17 252.73)
 		)
 		(stroke
 			(width 0)
@@ -10262,7 +9307,7 @@
 	)
 	(wire
 		(pts
-			(xy 27.94 245.11) (xy 36.83 245.11)
+			(xy 49.53 247.65) (xy 58.42 247.65)
 		)
 		(stroke
 			(width 0)
@@ -10282,7 +9327,7 @@
 	)
 	(wire
 		(pts
-			(xy 113.03 250.19) (xy 113.03 245.11)
+			(xy 124.46 247.65) (xy 124.46 242.57)
 		)
 		(stroke
 			(width 0)
@@ -10452,7 +9497,7 @@
 	)
 	(wire
 		(pts
-			(xy 69.85 245.11) (xy 74.93 245.11)
+			(xy 91.44 247.65) (xy 96.52 247.65)
 		)
 		(stroke
 			(width 0)
@@ -10532,7 +9577,7 @@
 	)
 	(wire
 		(pts
-			(xy 113.03 255.27) (xy 105.41 255.27)
+			(xy 124.46 252.73) (xy 116.84 252.73)
 		)
 		(stroke
 			(width 0)
@@ -10632,7 +9677,7 @@
 	)
 	(wire
 		(pts
-			(xy 119.38 250.19) (xy 119.38 252.73)
+			(xy 130.81 247.65) (xy 130.81 250.19)
 		)
 		(stroke
 			(width 0)
@@ -10942,16 +9987,6 @@
 	)
 	(wire
 		(pts
-			(xy 201.93 142.24) (xy 240.03 142.24)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "2ee2cca1-24b9-41d3-8c45-f71f7dd1f225")
-	)
-	(wire
-		(pts
 			(xy 223.52 26.67) (xy 238.76 26.67)
 		)
 		(stroke
@@ -11092,7 +10127,7 @@
 	)
 	(wire
 		(pts
-			(xy 105.41 250.19) (xy 113.03 250.19)
+			(xy 116.84 247.65) (xy 124.46 247.65)
 		)
 		(stroke
 			(width 0)
@@ -11132,7 +10167,7 @@
 	)
 	(wire
 		(pts
-			(xy 27.94 255.27) (xy 36.83 255.27)
+			(xy 49.53 257.81) (xy 58.42 257.81)
 		)
 		(stroke
 			(width 0)
@@ -11162,7 +10197,7 @@
 	)
 	(wire
 		(pts
-			(xy 119.38 250.19) (xy 125.73 250.19)
+			(xy 130.81 247.65) (xy 137.16 247.65)
 		)
 		(stroke
 			(width 0)
@@ -11272,7 +10307,7 @@
 	)
 	(wire
 		(pts
-			(xy 113.03 259.08) (xy 113.03 255.27)
+			(xy 124.46 256.54) (xy 124.46 252.73)
 		)
 		(stroke
 			(width 0)
@@ -11719,6 +10754,16 @@
 			(type default)
 		)
 		(uuid "666335e1-21a0-4419-9f82-742b697faa80")
+	)
+	(wire
+		(pts
+			(xy 200.66 142.24) (xy 240.03 142.24)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6720342d-a5c7-4ddd-92d2-cf5ecee84e16")
 	)
 	(wire
 		(pts
@@ -12182,7 +11227,7 @@
 	)
 	(wire
 		(pts
-			(xy 119.38 260.35) (xy 119.38 265.43)
+			(xy 130.81 257.81) (xy 130.81 262.89)
 		)
 		(stroke
 			(width 0)
@@ -12342,7 +11387,7 @@
 	)
 	(wire
 		(pts
-			(xy 68.58 250.19) (xy 74.93 250.19)
+			(xy 90.17 252.73) (xy 96.52 252.73)
 		)
 		(stroke
 			(width 0)
@@ -12522,7 +11567,7 @@
 	)
 	(wire
 		(pts
-			(xy 57.15 245.11) (xy 62.23 245.11)
+			(xy 78.74 247.65) (xy 83.82 247.65)
 		)
 		(stroke
 			(width 0)
@@ -12802,7 +11847,7 @@
 	)
 	(wire
 		(pts
-			(xy 57.15 255.27) (xy 68.58 255.27)
+			(xy 78.74 257.81) (xy 90.17 257.81)
 		)
 		(stroke
 			(width 0)
@@ -13032,7 +12077,7 @@
 	)
 	(wire
 		(pts
-			(xy 196.85 133.35) (xy 196.85 137.16)
+			(xy 196.85 133.35) (xy 196.85 138.43)
 		)
 		(stroke
 			(width 0)
@@ -13162,7 +12207,7 @@
 	)
 	(wire
 		(pts
-			(xy 113.03 250.19) (xy 119.38 250.19)
+			(xy 124.46 247.65) (xy 130.81 247.65)
 		)
 		(stroke
 			(width 0)
@@ -13392,7 +12437,7 @@
 	)
 	(wire
 		(pts
-			(xy 196.85 147.32) (xy 196.85 156.21)
+			(xy 196.85 146.05) (xy 196.85 156.21)
 		)
 		(stroke
 			(width 0)
@@ -13422,7 +12467,7 @@
 	)
 	(wire
 		(pts
-			(xy 113.03 234.95) (xy 113.03 237.49)
+			(xy 124.46 232.41) (xy 124.46 234.95)
 		)
 		(stroke
 			(width 0)
@@ -13771,7 +12816,7 @@
 		(uuid "00585933-fb68-495e-b9bc-1196a403fedd")
 	)
 	(label "N01"
-		(at 27.94 245.11 0)
+		(at 49.53 247.65 0)
 		(effects
 			(font
 				(size 1.397 1.397)
@@ -13811,7 +12856,7 @@
 		(uuid "56d55332-f7a9-43cf-87a1-d81fdbdf2607")
 	)
 	(label "ZVC"
-		(at 125.73 250.19 0)
+		(at 137.16 247.65 0)
 		(effects
 			(font
 				(size 1.397 1.397)
@@ -13851,7 +12896,7 @@
 		(uuid "a0aff3c8-7ded-49a1-80d7-a9451fb5c5d3")
 	)
 	(label "AC12V"
-		(at 57.15 245.11 0)
+		(at 78.74 247.65 0)
 		(effects
 			(font
 				(size 1.397 1.397)
@@ -13871,7 +12916,7 @@
 		(uuid "ed6c38de-6c8d-41f2-b5ee-4ca4dc0558ac")
 	)
 	(label "L01"
-		(at 27.94 255.27 0)
+		(at 49.53 257.81 0)
 		(effects
 			(font
 				(size 1.397 1.397)
@@ -13995,7 +13040,7 @@
 	)
 	(symbol
 		(lib_id "04_MyLib_Passive:R")
-		(at 113.03 241.3 180)
+		(at 124.46 238.76 180)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -14005,7 +13050,7 @@
 		(dnp no)
 		(uuid "0123967f-8d06-42d1-9940-896b80db8600")
 		(property "Reference" "R6"
-			(at 109.22 241.554 0)
+			(at 120.65 239.014 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -14015,8 +13060,8 @@
 				(justify right)
 			)
 		)
-		(property "Value" "10K"
-			(at 115.062 241.3 0)
+		(property "Value" "4.7K"
+			(at 126.492 238.76 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -14027,7 +13072,7 @@
 			)
 		)
 		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
-			(at 112.014 241.046 90)
+			(at 123.444 238.506 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -14038,7 +13083,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 113.03 241.3 0)
+			(at 124.46 238.76 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -14049,7 +13094,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 113.03 241.3 0)
+			(at 124.46 238.76 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -14060,7 +13105,7 @@
 			)
 		)
 		(property "Purchase-URL" ""
-			(at 113.03 241.3 0)
+			(at 124.46 238.76 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -14070,8 +13115,8 @@
 				)
 			)
 		)
-		(property "LCSC" "C1489"
-			(at 113.03 241.3 0)
+		(property "LCSC" "C17936"
+			(at 124.46 238.76 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -14482,7 +13527,7 @@
 				)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C18008"
 			(at 240.03 127 0)
 			(hide yes)
 			(show_name no)
@@ -14520,7 +13565,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "090e2df6-08cb-4244-904a-5941b605ff6e")
-		(property "Reference" "#PWR021"
+		(property "Reference" "#PWR024"
 			(at 269.24 176.53 0)
 			(hide yes)
 			(show_name no)
@@ -14580,7 +13625,7 @@
 		(instances
 			(project "POWER_BD_SV5"
 				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
-					(reference "#PWR021")
+					(reference "#PWR024")
 					(unit 1)
 				)
 			)
@@ -14768,7 +13813,7 @@
 				)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C26035"
 			(at 271.78 195.58 0)
 			(hide yes)
 			(show_name no)
@@ -14806,7 +13851,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "0f4313ca-1f9a-4a49-bc0c-3eeff96d975e")
-		(property "Reference" "#PWR034"
+		(property "Reference" "#PWR015"
 			(at 184.15 208.28 0)
 			(hide yes)
 			(show_name no)
@@ -14866,7 +13911,7 @@
 		(instances
 			(project "POWER_BD_SV5"
 				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
-					(reference "#PWR034")
+					(reference "#PWR015")
 					(unit 1)
 				)
 			)
@@ -15155,7 +14200,7 @@
 				)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C1857"
 			(at 228.6 133.35 90)
 			(hide yes)
 			(show_name no)
@@ -15193,7 +14238,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "16bdccf2-5f4a-4946-99c4-c459f8ac1350")
-		(property "Reference" "#PWR026"
+		(property "Reference" "#PWR030"
 			(at 299.72 72.39 0)
 			(hide yes)
 			(show_name no)
@@ -15253,7 +14298,7 @@
 		(instances
 			(project "POWER_BD_SV5"
 				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
-					(reference "#PWR026")
+					(reference "#PWR030")
 					(unit 1)
 				)
 			)
@@ -15291,7 +14336,7 @@
 				)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:L_Radial_D7.5mm_P3.50mm"
+		(property "Footprint" "04_MyFoot_Passive:L_Sumida_CDMC6D28_7.25x6.5mm"
 			(at 247.65 88.9 0)
 			(hide yes)
 			(show_name no)
@@ -15335,7 +14380,7 @@
 				)
 			)
 		)
-		(property "LCSC" "C237927"
+		(property "LCSC" "C436542"
 			(at 247.65 88.9 90)
 			(hide yes)
 			(show_name no)
@@ -15731,7 +14776,7 @@
 				)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:L_Radial_D7.5mm_P3.50mm"
+		(property "Footprint" "04_MyFoot_Passive:L_Sumida_CDMC6D28_7.25x6.5mm"
 			(at 247.65 62.23 0)
 			(hide yes)
 			(show_name no)
@@ -15775,7 +14820,7 @@
 				)
 			)
 		)
-		(property "LCSC" "C237927"
+		(property "LCSC" "C436542"
 			(at 247.65 62.23 90)
 			(hide yes)
 			(show_name no)
@@ -16000,7 +15045,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "2de1b616-69b6-43ca-b062-9bd803c5138f")
-		(property "Reference" "#PWR028"
+		(property "Reference" "#PWR032"
 			(at 312.42 110.49 0)
 			(hide yes)
 			(show_name no)
@@ -16060,7 +15105,7 @@
 		(instances
 			(project "POWER_BD_SV5"
 				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
-					(reference "#PWR028")
+					(reference "#PWR032")
 					(unit 1)
 				)
 			)
@@ -16181,7 +15226,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "31755a4e-0881-4eef-9194-a24f66521f1c")
-		(property "Reference" "#PWR08"
+		(property "Reference" "#PWR07"
 			(at 148.59 168.91 0)
 			(hide yes)
 			(show_name no)
@@ -16241,7 +15286,7 @@
 		(instances
 			(project "POWER_BD_SV5"
 				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
-					(reference "#PWR08")
+					(reference "#PWR07")
 					(unit 1)
 				)
 			)
@@ -16258,7 +15303,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "31ddbaea-362c-4cf3-9f75-3b4c143baef5")
-		(property "Reference" "H3"
+		(property "Reference" "H4"
 			(at 272.796 135.128 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -16339,7 +15384,7 @@
 		(instances
 			(project "POWER_BD_SV5"
 				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
-					(reference "H3")
+					(reference "H4")
 					(unit 1)
 				)
 			)
@@ -16630,230 +15675,6 @@
 		)
 	)
 	(symbol
-		(lib_name "H11AA1_1")
-		(lib_id "01_MyLib_ICs:H11AA1")
-		(at 90.17 250.19 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "39e1a3f8-522c-4060-86be-e190fd3bef9b")
-		(property "Reference" "U2"
-			(at 90.17 237.49 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "H11AA1"
-			(at 90.17 240.03 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "01_MyFoot_ICs:DIP-6_W7.62mm"
-			(at 90.17 250.19 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "Datasheet" ""
-			(at 90.17 250.19 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" ""
-			(at 90.17 250.19 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "MF" ""
-			(at 90.17 250.19 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "Description_1" ""
-			(at 90.17 250.19 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "Package" ""
-			(at 90.17 250.19 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "Price" ""
-			(at 90.17 250.19 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "Check_prices" ""
-			(at 90.17 250.19 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "SnapEDA_Link" ""
-			(at 90.17 250.19 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "MP" ""
-			(at 90.17 250.19 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "Availability" ""
-			(at 90.17 250.19 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "MANUFACTURER" ""
-			(at 90.17 250.19 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "Purchase-URL" ""
-			(at 90.17 250.19 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "LCSC" ""
-			(at 90.17 250.19 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.397 1.397)
-				)
-			)
-		)
-		(pin "5"
-			(uuid "2939deb2-ff84-4713-b78a-0e7a3f783903")
-		)
-		(pin "4"
-			(uuid "5481b2b5-2fcb-40c6-b045-55fd7fd2225b")
-		)
-		(pin "3"
-			(uuid "508af7e0-fc23-4a2a-b6a8-4dac9ad57357")
-		)
-		(pin "1"
-			(uuid "0daacc82-a5e8-44fd-a652-372a90894f1c")
-		)
-		(pin "2"
-			(uuid "e6da76c1-2ef0-40ae-91dc-ec5f37b5ffac")
-		)
-		(pin "6"
-			(uuid "4bfe692d-d47d-4946-b59b-c32562f10ab2")
-		)
-		(instances
-			(project "POWER_BD_SV5"
-				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
-					(reference "U2")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "power:GND")
 		(at 184.15 220.98 0)
 		(unit 1)
@@ -16865,7 +15686,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "3bc64c05-2688-4f31-b221-edaf8353d35c")
-		(property "Reference" "#PWR035"
+		(property "Reference" "#PWR016"
 			(at 184.15 227.33 0)
 			(hide yes)
 			(show_name no)
@@ -16925,7 +15746,7 @@
 		(instances
 			(project "POWER_BD_SV5"
 				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
-					(reference "#PWR035")
+					(reference "#PWR016")
 					(unit 1)
 				)
 			)
@@ -16943,7 +15764,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "3cf7a535-7601-4829-8c4c-b877baf14e62")
-		(property "Reference" "#PWR015"
+		(property "Reference" "#PWR018"
 			(at 246.38 50.8 0)
 			(hide yes)
 			(show_name no)
@@ -17003,7 +15824,7 @@
 		(instances
 			(project "POWER_BD_SV5"
 				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
-					(reference "#PWR015")
+					(reference "#PWR018")
 					(unit 1)
 				)
 			)
@@ -17040,7 +15861,7 @@
 				)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:CP_Radial_D5.0mm_P2.00mm"
+		(property "Footprint" "04_MyFoot_Passive:CP_Elec_6.3x5.4"
 			(at 134.62 77.47 0)
 			(hide yes)
 			(show_name no)
@@ -17084,7 +15905,7 @@
 				)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C970678"
 			(at 134.62 77.47 90)
 			(hide yes)
 			(show_name no)
@@ -17214,7 +16035,7 @@
 	)
 	(symbol
 		(lib_id "04_MyLib_Passive:R")
-		(at 66.04 245.11 90)
+		(at 87.63 247.65 90)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -17224,7 +16045,7 @@
 		(dnp no)
 		(uuid "4094ae4d-bc91-4c3f-9ab1-db9e1b830ae7")
 		(property "Reference" "R2"
-			(at 64.516 242.316 90)
+			(at 86.106 244.856 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -17234,8 +16055,8 @@
 				(justify left)
 			)
 		)
-		(property "Value" "1.2K"
-			(at 69.088 242.316 90)
+		(property "Value" "2.2K/F"
+			(at 90.678 244.856 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -17246,7 +16067,7 @@
 			)
 		)
 		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
-			(at 66.294 244.094 90)
+			(at 87.884 246.634 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -17257,7 +16078,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 66.04 245.11 0)
+			(at 87.63 247.65 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -17268,7 +16089,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 66.04 245.11 0)
+			(at 87.63 247.65 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -17279,7 +16100,7 @@
 			)
 		)
 		(property "Purchase-URL" ""
-			(at 66.04 245.11 90)
+			(at 87.63 247.65 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -17289,8 +16110,8 @@
 				)
 			)
 		)
-		(property "LCSC" ""
-			(at 66.04 245.11 90)
+		(property "LCSC" "C17948"
+			(at 87.63 247.65 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -17391,7 +16212,7 @@
 				)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C1941"
 			(at 212.09 124.46 90)
 			(hide yes)
 			(show_name no)
@@ -17450,7 +16271,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_1W_P14.6mm"
+		(property "Footprint" "04_MyFoot_Passive:R_6332Metric"
 			(at 102.616 75.184 90)
 			(hide yes)
 			(show_name no)
@@ -18066,7 +16887,7 @@
 				)
 			)
 		)
-		(property "Footprint" "03_MyFoot_Active:Diode_P10.16mm"
+		(property "Footprint" "03_MyFoot_Active:D_SMA"
 			(at 119.38 59.69 0)
 			(hide yes)
 			(show_name no)
@@ -18132,7 +16953,7 @@
 				)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C81191"
 			(at 119.38 59.69 0)
 			(hide yes)
 			(show_name no)
@@ -18389,7 +17210,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "508ae031-e541-4a71-888d-75c4511f551a")
-		(property "Reference" "#PWR019"
+		(property "Reference" "#PWR022"
 			(at 262.89 60.96 0)
 			(hide yes)
 			(show_name no)
@@ -18449,7 +17270,7 @@
 		(instances
 			(project "POWER_BD_SV5"
 				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
-					(reference "#PWR019")
+					(reference "#PWR022")
 					(unit 1)
 				)
 			)
@@ -18799,258 +17620,6 @@
 		)
 	)
 	(symbol
-		(lib_id "01_MyLib_ICs:TL431A")
-		(at 196.85 142.24 0)
-		(mirror y)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(uuid "60a2c87e-9290-481c-8bf4-1403c8f1c380")
-		(property "Reference" "VR1"
-			(at 193.04 140.97 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "TL431A"
-			(at 193.04 143.51 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "01_MyFoot_ICs:TO92_P2.5mm"
-			(at 196.85 142.24 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "Datasheet" ""
-			(at 196.85 142.24 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" ""
-			(at 196.85 142.24 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "MF" ""
-			(at 196.85 142.24 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "MAXIMUM_PACKAGE_HEIGHT" ""
-			(at 196.85 142.24 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "Package" ""
-			(at 196.85 142.24 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "Price" ""
-			(at 196.85 142.24 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "Check_prices" ""
-			(at 196.85 142.24 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "STANDARD" ""
-			(at 196.85 142.24 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "PARTREV" "R"
-			(at 196.85 142.24 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "SnapEDA_Link" ""
-			(at 196.85 142.24 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "MP" ""
-			(at 196.85 142.24 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "Description_1" ""
-			(at 196.85 142.24 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "Availability" ""
-			(at 196.85 142.24 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "MANUFACTURER" ""
-			(at 196.85 142.24 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "Purchase-URL" ""
-			(at 196.85 142.24 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "LCSC" "C23892"
-			(at 196.85 142.24 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.397 1.397)
-				)
-			)
-		)
-		(pin "2"
-			(uuid "5e5b99fa-7f66-40af-8993-009852be357a")
-		)
-		(pin "3"
-			(uuid "d237280c-b403-4e91-ba3b-2f4c52e595c3")
-		)
-		(pin "1"
-			(uuid "2ffae29f-9236-47f7-8135-be72625f4111")
-		)
-		(instances
-			(project "POWER_BD_SV5"
-				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
-					(reference "VR1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "03_MyLib_Active:UF4004")
 		(at 134.62 64.77 0)
 		(unit 1)
@@ -19081,7 +17650,7 @@
 				)
 			)
 		)
-		(property "Footprint" "03_MyFoot_Active:Diode_P10.16mm"
+		(property "Footprint" "03_MyFoot_Active:D_SMA"
 			(at 134.62 64.77 0)
 			(hide yes)
 			(show_name no)
@@ -19147,7 +17716,7 @@
 				)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C81191"
 			(at 134.62 64.77 0)
 			(hide yes)
 			(show_name no)
@@ -19168,6 +17737,104 @@
 			(project "POWER_BD_SV5"
 				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
 					(reference "D3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "01_MyLib_ICs:TL431DBZ")
+		(at 196.85 142.24 270)
+		(mirror x)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "65618830-7a7b-4572-9eff-f63fc1ff2e8f")
+		(property "Reference" "VR1"
+			(at 194.31 140.97 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Value" "TL431DBZ"
+			(at 194.31 143.51 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" "01_MyFoot_ICs:SOT-23-3"
+			(at 192.024 142.24 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 187.706 140.462 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 189.738 142.24 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C23892"
+			(at 196.85 142.24 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.397 1.397)
+				)
+			)
+		)
+		(pin "3"
+			(uuid "a70a1201-a73f-4dd8-a92a-633beebf9c93")
+		)
+		(pin "1"
+			(uuid "7f1161f8-d361-4363-abb7-76b503a084b7")
+		)
+		(pin "2"
+			(uuid "eb090e11-576a-46d6-9501-4958aa5ecd62")
+		)
+		(instances
+			(project "POWER_BD_SV5"
+				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
+					(reference "VR1")
 					(unit 1)
 				)
 			)
@@ -19204,7 +17871,7 @@
 				)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:C_Disc_D4.7mm_P5.00mm"
+		(property "Footprint" "04_MyFoot_Passive:C_3216Metric"
 			(at 219.71 87.9348 0)
 			(hide yes)
 			(show_name no)
@@ -19379,244 +18046,6 @@
 		)
 	)
 	(symbol
-		(lib_id "03_MyLib_Active:LED_SMD")
-		(at 275.59 46.99 270)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "6842e5d8-b2ff-44a7-9ca7-41f5370a6af6")
-		(property "Reference" "LED2"
-			(at 280.67 44.45 90)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "LED_SMD"
-			(at 280.67 46.99 90)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "03_MyFoot_Active:LED_2012Metric"
-			(at 275.59 46.99 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "Datasheet" ""
-			(at 275.59 46.99 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" ""
-			(at 275.59 46.99 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "MF" ""
-			(at 275.59 46.99 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "MAXIMUM_PACKAGE_HEIGHT" ""
-			(at 275.59 46.99 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "Package" ""
-			(at 275.59 46.99 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "Price" ""
-			(at 275.59 46.99 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "Check_prices" ""
-			(at 275.59 46.99 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "STANDARD" ""
-			(at 275.59 46.99 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "PARTREV" ""
-			(at 275.59 46.99 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "SnapEDA_Link" ""
-			(at 275.59 46.99 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "MP" ""
-			(at 275.59 46.99 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "Description_1" ""
-			(at 275.59 46.99 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "Availability" ""
-			(at 275.59 46.99 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "MANUFACTURER" ""
-			(at 275.59 46.99 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "LCSC" ""
-			(at 275.59 46.99 90)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.397 1.397)
-				)
-			)
-		)
-		(pin "2"
-			(uuid "2aaea3d6-fa3e-4248-88ee-ecb299e6096b")
-		)
-		(pin "1"
-			(uuid "a1ecf441-22cc-4ba4-8e15-1027857bb83f")
-		)
-		(instances
-			(project "POWER_BD_SV5"
-				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
-					(reference "LED2")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "05_MyLib_Others:SR525A")
 		(at 69.85 130.81 90)
 		(unit 1)
@@ -19628,7 +18057,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "6f3fdbd8-034f-44e1-b7db-58d713b51780")
-		(property "Reference" "F2"
+		(property "Reference" "F1"
 			(at 72.39 120.65 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -19800,7 +18229,7 @@
 		(instances
 			(project "POWER_BD_SV5"
 				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
-					(reference "F2")
+					(reference "F1")
 					(unit 1)
 				)
 			)
@@ -19883,7 +18312,7 @@
 				)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C17936"
 			(at 147.32 214.63 90)
 			(hide yes)
 			(show_name no)
@@ -19942,7 +18371,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_1W_P14.6mm"
+		(property "Footprint" "04_MyFoot_Passive:R_6332Metric"
 			(at 311.404 185.674 90)
 			(hide yes)
 			(show_name no)
@@ -19986,7 +18415,7 @@
 				)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C38808"
 			(at 311.15 186.69 90)
 			(hide yes)
 			(show_name no)
@@ -20014,7 +18443,7 @@
 	)
 	(symbol
 		(lib_id "power:+5V")
-		(at 113.03 234.95 0)
+		(at 124.46 232.41 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -20025,7 +18454,7 @@
 		(fields_autoplaced yes)
 		(uuid "72c1a936-2923-4005-980f-38609a414754")
 		(property "Reference" "#PWR03"
-			(at 113.03 238.76 0)
+			(at 124.46 236.22 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -20036,7 +18465,7 @@
 			)
 		)
 		(property "Value" "+5V"
-			(at 113.03 229.87 0)
+			(at 124.46 227.33 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -20046,7 +18475,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 113.03 234.95 0)
+			(at 124.46 232.41 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -20057,7 +18486,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 113.03 234.95 0)
+			(at 124.46 232.41 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -20068,7 +18497,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"+5V\""
-			(at 113.03 234.95 0)
+			(at 124.46 232.41 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -20304,7 +18733,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "74b4f22b-27a5-49f1-bff1-74636df7da97")
-		(property "Reference" "#PWR030"
+		(property "Reference" "#PWR034"
 			(at 342.9 43.18 0)
 			(hide yes)
 			(show_name no)
@@ -20364,7 +18793,7 @@
 		(instances
 			(project "POWER_BD_SV5"
 				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
-					(reference "#PWR030")
+					(reference "#PWR034")
 					(unit 1)
 				)
 			)
@@ -20447,7 +18876,7 @@
 				)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C26038"
 			(at 275.59 33.02 0)
 			(hide yes)
 			(show_name no)
@@ -20485,7 +18914,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "7dc8754b-f70b-4045-a875-4887e9179780")
-		(property "Reference" "#PWR032"
+		(property "Reference" "#PWR028"
 			(at 284.48 149.86 0)
 			(hide yes)
 			(show_name no)
@@ -20545,7 +18974,7 @@
 		(instances
 			(project "POWER_BD_SV5"
 				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
-					(reference "#PWR032")
+					(reference "#PWR028")
 					(unit 1)
 				)
 			)
@@ -20553,7 +18982,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 113.03 259.08 0)
+		(at 124.46 256.54 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -20564,7 +18993,7 @@
 		(fields_autoplaced yes)
 		(uuid "7e48d3ce-78b3-4d18-9513-7e216b54460a")
 		(property "Reference" "#PWR04"
-			(at 113.03 265.43 0)
+			(at 124.46 262.89 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -20575,7 +19004,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 113.03 264.16 0)
+			(at 124.46 261.62 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -20585,7 +19014,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 113.03 259.08 0)
+			(at 124.46 256.54 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -20596,7 +19025,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 113.03 259.08 0)
+			(at 124.46 256.54 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -20607,7 +19036,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 113.03 259.08 0)
+			(at 124.46 256.54 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -20662,7 +19091,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_1W_P14.6mm"
+		(property "Footprint" "04_MyFoot_Passive:R_6332Metric"
 			(at 321.056 176.784 90)
 			(hide yes)
 			(show_name no)
@@ -20706,7 +19135,7 @@
 				)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C37457"
 			(at 320.04 176.53 0)
 			(hide yes)
 			(show_name no)
@@ -20853,7 +19282,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "87d5c9d4-45b6-423c-a1db-2fc16bbcdfe5")
-		(property "Reference" "#PWR033"
+		(property "Reference" "#PWR017"
 			(at 196.85 166.37 0)
 			(hide yes)
 			(show_name no)
@@ -20913,7 +19342,259 @@
 		(instances
 			(project "POWER_BD_SV5"
 				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
-					(reference "#PWR033")
+					(reference "#PWR017")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "01_MyLib_ICs:PC817X3NSZ1B")
+		(at 106.68 250.19 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "8862a048-28eb-49d0-a06a-9125eba09a92")
+		(property "Reference" "U2"
+			(at 106.68 240.03 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "EL354N"
+			(at 106.68 242.57 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "01_MyFoot_ICs:SOIC-4_EL354_P2.54mm"
+			(at 106.68 250.19 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "Datasheet" ""
+			(at 106.68 250.19 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 106.68 250.19 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MF" ""
+			(at 106.68 250.19 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "MAXIMUM_PACKAGE_HEIGHT" ""
+			(at 106.68 250.19 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "Package" ""
+			(at 106.68 250.19 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "Price" ""
+			(at 106.68 250.19 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "Check_prices" ""
+			(at 106.68 250.19 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "STANDARD" ""
+			(at 106.68 250.19 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "PARTREV" ""
+			(at 106.68 250.19 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "SnapEDA_Link" ""
+			(at 106.68 250.19 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "MP" ""
+			(at 106.68 250.19 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "Description_1" ""
+			(at 106.68 250.19 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "Availability" ""
+			(at 106.68 250.19 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "MANUFACTURER" ""
+			(at 106.68 250.19 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "Purchase-URL" ""
+			(at 106.68 250.19 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C188348"
+			(at 106.68 250.19 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.397 1.397)
+				)
+			)
+		)
+		(pin "2"
+			(uuid "424a1f7a-65b0-461d-a29e-7d8e22c7a774")
+		)
+		(pin "3"
+			(uuid "7a9bad35-8c2d-4bdf-9209-d09c7000b851")
+		)
+		(pin "1"
+			(uuid "2d3554cd-27fc-4e6f-9d11-690e3f40da23")
+		)
+		(pin "4"
+			(uuid "c3db5727-2c79-4984-a4fd-be0fb5feba40")
+		)
+		(instances
+			(project "POWER_BD_SV5"
+				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
+					(reference "U2")
 					(unit 1)
 				)
 			)
@@ -21138,7 +19819,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "8b2a0fab-b4d5-4fb9-a035-aa0a4521f864")
-		(property "Reference" "#PWR020"
+		(property "Reference" "#PWR023"
 			(at 272.796 84.582 0)
 			(show_name yes)
 			(do_not_autoplace no)
@@ -21197,7 +19878,7 @@
 		(instances
 			(project "POWER_BD_SV5"
 				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
-					(reference "#PWR020")
+					(reference "#PWR023")
 					(unit 1)
 				)
 			)
@@ -21339,7 +20020,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
+		(property "Footprint" "04_MyFoot_Passive:R_4532Metric"
 			(at 205.994 25.654 90)
 			(hide yes)
 			(show_name no)
@@ -21383,7 +20064,7 @@
 				)
 			)
 		)
-		(property "LCSC" "C25349"
+		(property "LCSC" "C2933875"
 			(at 205.74 26.67 90)
 			(hide yes)
 			(show_name no)
@@ -21421,7 +20102,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "8ed593ad-2ffe-45f8-939e-ec3a1f38f641")
-		(property "Reference" "#PWR022"
+		(property "Reference" "#PWR025"
 			(at 271.78 226.06 0)
 			(hide yes)
 			(show_name no)
@@ -21481,7 +20162,7 @@
 		(instances
 			(project "POWER_BD_SV5"
 				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
-					(reference "#PWR022")
+					(reference "#PWR025")
 					(unit 1)
 				)
 			)
@@ -21809,7 +20490,7 @@
 				)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:C_Disc_D4.7mm_P5.00mm"
+		(property "Footprint" "04_MyFoot_Passive:C_3216Metric"
 			(at 219.71 25.7048 0)
 			(hide yes)
 			(show_name no)
@@ -22326,7 +21007,7 @@
 				)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C1941"
 			(at 111.76 116.84 0)
 			(hide yes)
 			(show_name no)
@@ -22363,7 +21044,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "a558b02a-c63f-456c-a050-14c4e0f7d57a")
-		(property "Reference" "H2"
+		(property "Reference" "H3"
 			(at 272.796 123.698 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -22444,7 +21125,7 @@
 		(instances
 			(project "POWER_BD_SV5"
 				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
-					(reference "H2")
+					(reference "H3")
 					(unit 1)
 				)
 			)
@@ -22530,7 +21211,7 @@
 	)
 	(symbol
 		(lib_id "04_MyLib_Passive:C")
-		(at 119.38 256.54 180)
+		(at 130.81 254 180)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -22541,7 +21222,7 @@
 		(fields_autoplaced yes)
 		(uuid "a7ffa6ef-9162-4fdf-a43e-5fb6eb880ef3")
 		(property "Reference" "C8"
-			(at 123.19 255.27 0)
+			(at 134.62 252.73 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -22552,7 +21233,7 @@
 			)
 		)
 		(property "Value" "MLCC471"
-			(at 123.19 257.81 0)
+			(at 134.62 255.27 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -22563,7 +21244,7 @@
 			)
 		)
 		(property "Footprint" "04_MyFoot_Passive:C_3216Metric"
-			(at 118.4148 252.73 0)
+			(at 129.8448 250.19 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -22574,7 +21255,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 119.38 256.54 0)
+			(at 130.81 254 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -22585,7 +21266,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 119.38 256.54 0)
+			(at 130.81 254 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -22596,7 +21277,7 @@
 			)
 		)
 		(property "Purchase-URL" ""
-			(at 119.38 256.54 0)
+			(at 130.81 254 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -22606,8 +21287,8 @@
 				)
 			)
 		)
-		(property "LCSC" ""
-			(at 119.38 256.54 0)
+		(property "LCSC" "C1868"
+			(at 130.81 254 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -22665,7 +21346,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_Axial_1W_P14.6mm"
+		(property "Footprint" "04_MyFoot_Passive:R_6332Metric"
 			(at 91.186 75.184 90)
 			(hide yes)
 			(show_name no)
@@ -22973,7 +21654,7 @@
 				)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:L_Radial_D7.5mm_P3.50mm"
+		(property "Footprint" "04_MyFoot_Passive:L_Sumida_CDMC6D28_7.25x6.5mm"
 			(at 247.65 26.67 0)
 			(hide yes)
 			(show_name no)
@@ -23017,7 +21698,7 @@
 				)
 			)
 		)
-		(property "LCSC" "C237927"
+		(property "LCSC" "C436542"
 			(at 247.65 26.67 90)
 			(hide yes)
 			(show_name no)
@@ -23065,7 +21746,7 @@
 				)
 			)
 		)
-		(property "Value" "1N5251"
+		(property "Value" "BZT52C22"
 			(at 142.24 90.17 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -23075,7 +21756,7 @@
 				)
 			)
 		)
-		(property "Footprint" "03_MyFoot_Active:ZENER_0_5W_P7.62mm_Hori"
+		(property "Footprint" "03_MyFoot_Active:D_SOD-123"
 			(at 142.24 98.425 0)
 			(hide yes)
 			(show_name no)
@@ -23119,7 +21800,7 @@
 				)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C2108"
 			(at 142.24 93.98 0)
 			(hide yes)
 			(show_name no)
@@ -23268,7 +21949,7 @@
 				)
 			)
 		)
-		(property "Value" "MOC3021M"
+		(property "Value" "MOC3021SM"
 			(at 293.37 182.88 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -23278,7 +21959,7 @@
 				)
 			)
 		)
-		(property "Footprint" "01_MyFoot_ICs:DIP-6_W7.62mm"
+		(property "Footprint" "01_MyFoot_ICs:SOIC-6_P2.54mm"
 			(at 288.29 194.31 0)
 			(hide yes)
 			(show_name no)
@@ -23439,7 +22120,7 @@
 				)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C17901"
 			(at 137.16 207.01 0)
 			(hide yes)
 			(show_name no)
@@ -23478,7 +22159,7 @@
 		(fields_autoplaced yes)
 		(uuid "b1d5302f-93bf-4d9f-a1d2-0a2e7cd62715")
 		(property "Reference" "J3"
-			(at 363.22 43.1799 0)
+			(at 363.22 43.18 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -23489,7 +22170,7 @@
 			)
 		)
 		(property "Value" "SMW250-02P"
-			(at 363.22 45.7199 0)
+			(at 363.22 45.72 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -23667,7 +22348,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "b22daf5d-3996-451b-bf63-0b45beff6b83")
-		(property "Reference" "#PWR016"
+		(property "Reference" "#PWR019"
 			(at 256.54 83.82 0)
 			(hide yes)
 			(show_name no)
@@ -23727,7 +22408,7 @@
 		(instances
 			(project "POWER_BD_SV5"
 				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
-					(reference "#PWR016")
+					(reference "#PWR019")
 					(unit 1)
 				)
 			)
@@ -23810,7 +22491,7 @@
 				)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C76663"
 			(at 152.4 222.25 0)
 			(hide yes)
 			(show_name no)
@@ -24073,6 +22754,244 @@
 		)
 	)
 	(symbol
+		(lib_id "03_MyLib_Active:LED_SMD_KT_0805R")
+		(at 271.78 209.55 270)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "b929bbfd-0a4e-4350-8257-fb03e69d6532")
+		(property "Reference" "LED1"
+			(at 276.86 207.01 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "LED_SMD_KT_0805R"
+			(at 276.86 209.55 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "03_MyFoot_Active:LED_2012Metric"
+			(at 271.78 209.55 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "Datasheet" ""
+			(at 271.78 209.55 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 271.78 209.55 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MF" ""
+			(at 271.78 209.55 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "MAXIMUM_PACKAGE_HEIGHT" ""
+			(at 271.78 209.55 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "Package" ""
+			(at 271.78 209.55 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "Price" ""
+			(at 271.78 209.55 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "Check_prices" ""
+			(at 271.78 209.55 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "STANDARD" ""
+			(at 271.78 209.55 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "PARTREV" ""
+			(at 271.78 209.55 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "SnapEDA_Link" ""
+			(at 271.78 209.55 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "MP" ""
+			(at 271.78 209.55 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "Description_1" ""
+			(at 271.78 209.55 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "Availability" ""
+			(at 271.78 209.55 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "MANUFACTURER" ""
+			(at 271.78 209.55 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "LCSC" "C2295"
+			(at 271.78 209.55 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.397 1.397)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "6b54ced5-d386-440b-b700-1aebb2112f12")
+		)
+		(pin "2"
+			(uuid "699c8d50-b9b4-4fdb-aefd-a26e7c7fb391")
+		)
+		(instances
+			(project "POWER_BD_SV5"
+				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
+					(reference "LED1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:GND")
 		(at 152.4 228.6 0)
 		(unit 1)
@@ -24084,7 +23003,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "bd12a740-ebbe-4522-8baa-94b755c0becc")
-		(property "Reference" "#PWR07"
+		(property "Reference" "#PWR09"
 			(at 152.4 234.95 0)
 			(hide yes)
 			(show_name no)
@@ -24144,7 +23063,7 @@
 		(instances
 			(project "POWER_BD_SV5"
 				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
-					(reference "#PWR07")
+					(reference "#PWR09")
 					(unit 1)
 				)
 			)
@@ -24227,7 +23146,7 @@
 				)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C17957"
 			(at 278.13 186.69 90)
 			(hide yes)
 			(show_name no)
@@ -24330,7 +23249,7 @@
 				)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C17984"
 			(at 182.88 133.35 90)
 			(hide yes)
 			(show_name no)
@@ -24529,7 +23448,7 @@
 				)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C25834"
 			(at 212.09 133.35 90)
 			(hide yes)
 			(show_name no)
@@ -24567,7 +23486,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "c13cfb06-1b92-4e83-9eca-d21eac675d40")
-		(property "Reference" "#PWR029"
+		(property "Reference" "#PWR033"
 			(at 320.04 90.17 0)
 			(hide yes)
 			(show_name no)
@@ -24627,7 +23546,7 @@
 		(instances
 			(project "POWER_BD_SV5"
 				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
-					(reference "#PWR029")
+					(reference "#PWR033")
 					(unit 1)
 				)
 			)
@@ -24711,7 +23630,7 @@
 				)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C76663"
 			(at 162.56 222.25 0)
 			(hide yes)
 			(show_name no)
@@ -24749,7 +23668,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "cd100509-884a-410e-9683-27216a730cec")
-		(property "Reference" "#PWR018"
+		(property "Reference" "#PWR021"
 			(at 262.89 27.94 0)
 			(hide yes)
 			(show_name no)
@@ -24809,7 +23728,7 @@
 		(instances
 			(project "POWER_BD_SV5"
 				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
-					(reference "#PWR018")
+					(reference "#PWR021")
 					(unit 1)
 				)
 			)
@@ -25056,7 +23975,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:C_Disc_D6.0mm_P5.00mm"
+		(property "Footprint" "04_MyFoot_Passive:C_3216Metric"
 			(at 113.9952 50.8 0)
 			(hide yes)
 			(show_name no)
@@ -25100,7 +24019,7 @@
 				)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C9192"
 			(at 113.03 46.99 0)
 			(hide yes)
 			(show_name no)
@@ -25138,7 +24057,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "d6506bee-bc9c-4f21-b38c-91a72b1ef036")
-		(property "Reference" "#PWR09"
+		(property "Reference" "#PWR08"
 			(at 148.59 198.12 0)
 			(hide yes)
 			(show_name no)
@@ -25198,245 +24117,7 @@
 		(instances
 			(project "POWER_BD_SV5"
 				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
-					(reference "#PWR09")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "03_MyLib_Active:LED_SMD")
-		(at 271.78 209.55 270)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "d704a6bb-a783-4c81-9b4a-5404171c5c1e")
-		(property "Reference" "LED1"
-			(at 276.86 207.01 90)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "LED_SMD"
-			(at 276.86 209.55 90)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "03_MyFoot_Active:LED_2012Metric"
-			(at 271.78 209.55 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "Datasheet" ""
-			(at 271.78 209.55 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" ""
-			(at 271.78 209.55 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "MF" ""
-			(at 271.78 209.55 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "MAXIMUM_PACKAGE_HEIGHT" ""
-			(at 271.78 209.55 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "Package" ""
-			(at 271.78 209.55 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "Price" ""
-			(at 271.78 209.55 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "Check_prices" ""
-			(at 271.78 209.55 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "STANDARD" ""
-			(at 271.78 209.55 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "PARTREV" ""
-			(at 271.78 209.55 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "SnapEDA_Link" ""
-			(at 271.78 209.55 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "MP" ""
-			(at 271.78 209.55 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "Description_1" ""
-			(at 271.78 209.55 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "Availability" ""
-			(at 271.78 209.55 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "MANUFACTURER" ""
-			(at 271.78 209.55 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify bottom)
-			)
-		)
-		(property "LCSC" ""
-			(at 271.78 209.55 90)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.397 1.397)
-				)
-			)
-		)
-		(pin "2"
-			(uuid "ac9cd75a-565c-477c-8fe0-2079859d0264")
-		)
-		(pin "1"
-			(uuid "e48136e4-73fa-426b-83df-cbf495627463")
-		)
-		(instances
-			(project "POWER_BD_SV5"
-				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
-					(reference "LED1")
+					(reference "#PWR08")
 					(unit 1)
 				)
 			)
@@ -25454,7 +24135,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "d7081a5d-8d3d-4bbf-8abf-2060e3fe1349")
-		(property "Reference" "#PWR027"
+		(property "Reference" "#PWR031"
 			(at 303.53 44.45 0)
 			(hide yes)
 			(show_name no)
@@ -25514,7 +24195,7 @@
 		(instances
 			(project "POWER_BD_SV5"
 				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
-					(reference "#PWR027")
+					(reference "#PWR031")
 					(unit 1)
 				)
 			)
@@ -25684,7 +24365,7 @@
 				)
 			)
 		)
-		(property "LCSC" "C152412"
+		(property "LCSC" ""
 			(at 86.36 91.44 0)
 			(hide yes)
 			(show_name no)
@@ -25723,6 +24404,244 @@
 			(project "POWER_BD_SV5"
 				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
 					(reference "U1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "03_MyLib_Active:LED_SMD_KT_0805R")
+		(at 275.59 46.99 270)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "d92f3639-a090-4f2f-bb8b-607a98bcae0f")
+		(property "Reference" "LED2"
+			(at 280.67 44.45 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "LED_SMD_KT_0805R"
+			(at 280.67 46.99 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "03_MyFoot_Active:LED_2012Metric"
+			(at 275.59 46.99 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "Datasheet" ""
+			(at 275.59 46.99 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 275.59 46.99 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MF" ""
+			(at 275.59 46.99 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "MAXIMUM_PACKAGE_HEIGHT" ""
+			(at 275.59 46.99 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "Package" ""
+			(at 275.59 46.99 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "Price" ""
+			(at 275.59 46.99 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "Check_prices" ""
+			(at 275.59 46.99 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "STANDARD" ""
+			(at 275.59 46.99 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "PARTREV" ""
+			(at 275.59 46.99 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "SnapEDA_Link" ""
+			(at 275.59 46.99 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "MP" ""
+			(at 275.59 46.99 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "Description_1" ""
+			(at 275.59 46.99 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "Availability" ""
+			(at 275.59 46.99 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "MANUFACTURER" ""
+			(at 275.59 46.99 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+			)
+		)
+		(property "LCSC" "C2295"
+			(at 275.59 46.99 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.397 1.397)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "88341b2b-ed81-421f-a106-fbf632819d9a")
+		)
+		(pin "2"
+			(uuid "179936fd-5bf2-4a54-b42b-c8c4bb9bee0b")
+		)
+		(instances
+			(project "POWER_BD_SV5"
+				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
+					(reference "LED2")
 					(unit 1)
 				)
 			)
@@ -25805,7 +24724,7 @@
 				)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C17902"
 			(at 240.03 148.59 0)
 			(hide yes)
 			(show_name no)
@@ -25864,7 +24783,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:CP_Radial_D6.3mm_P2.50mm"
+		(property "Footprint" "04_MyFoot_Passive:CP_Elec_6.3x7.7"
 			(at 312.42 95.25 0)
 			(hide yes)
 			(show_name no)
@@ -25908,7 +24827,7 @@
 				)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C2992606"
 			(at 312.42 95.25 0)
 			(hide yes)
 			(show_name no)
@@ -25946,7 +24865,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "dd9a3a2f-aac9-4434-bca6-ba06ff248480")
-		(property "Reference" "#PWR023"
+		(property "Reference" "#PWR026"
 			(at 275.59 66.04 0)
 			(hide yes)
 			(show_name no)
@@ -26006,7 +24925,7 @@
 		(instances
 			(project "POWER_BD_SV5"
 				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
-					(reference "#PWR023")
+					(reference "#PWR026")
 					(unit 1)
 				)
 			)
@@ -26024,7 +24943,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "def4ae4e-ee34-493e-91f1-0aa252568994")
-		(property "Reference" "#PWR031"
+		(property "Reference" "#PWR035"
 			(at 342.9 54.61 0)
 			(hide yes)
 			(show_name no)
@@ -26084,7 +25003,7 @@
 		(instances
 			(project "POWER_BD_SV5"
 				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
-					(reference "#PWR031")
+					(reference "#PWR035")
 					(unit 1)
 				)
 			)
@@ -26200,7 +25119,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "e1023873-6a3e-458e-b31e-944d22fdf82a")
-		(property "Reference" "#PWR024"
+		(property "Reference" "#PWR027"
 			(at 283.21 201.93 0)
 			(hide yes)
 			(show_name no)
@@ -26260,7 +25179,7 @@
 		(instances
 			(project "POWER_BD_SV5"
 				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
-					(reference "#PWR024")
+					(reference "#PWR027")
 					(unit 1)
 				)
 			)
@@ -26278,7 +25197,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "e1d0a293-704c-4b19-891a-3b91e9170be6")
-		(property "Reference" "#PWR017"
+		(property "Reference" "#PWR020"
 			(at 256.54 111.76 0)
 			(hide yes)
 			(show_name no)
@@ -26338,7 +25257,7 @@
 		(instances
 			(project "POWER_BD_SV5"
 				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
-					(reference "#PWR017")
+					(reference "#PWR020")
 					(unit 1)
 				)
 			)
@@ -26478,7 +25397,7 @@
 				)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:C_Disc_D4.7mm_P5.00mm"
+		(property "Footprint" "04_MyFoot_Passive:C_3216Metric"
 			(at 219.71 61.2648 0)
 			(hide yes)
 			(show_name no)
@@ -26581,7 +25500,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
+		(property "Footprint" "04_MyFoot_Passive:R_4532Metric"
 			(at 205.994 87.884 90)
 			(hide yes)
 			(show_name no)
@@ -26625,7 +25544,7 @@
 				)
 			)
 		)
-		(property "LCSC" "C25349"
+		(property "LCSC" "C2933875"
 			(at 205.74 88.9 90)
 			(hide yes)
 			(show_name no)
@@ -26684,7 +25603,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
+		(property "Footprint" "04_MyFoot_Passive:R_4532Metric"
 			(at 205.994 61.214 90)
 			(hide yes)
 			(show_name no)
@@ -26728,7 +25647,7 @@
 				)
 			)
 		)
-		(property "LCSC" "C25349"
+		(property "LCSC" "C2933875"
 			(at 205.74 62.23 90)
 			(hide yes)
 			(show_name no)
@@ -26756,7 +25675,7 @@
 	)
 	(symbol
 		(lib_id "04_MyLib_Passive:EI2811BP")
-		(at 46.99 250.19 0)
+		(at 68.58 252.73 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -26767,7 +25686,7 @@
 		(fields_autoplaced yes)
 		(uuid "e73fd04e-ebff-4783-8460-644d831ea148")
 		(property "Reference" "T1"
-			(at 46.99 240.03 0)
+			(at 68.58 242.57 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -26777,7 +25696,7 @@
 			)
 		)
 		(property "Value" "EI2811BP"
-			(at 46.99 242.57 0)
+			(at 68.58 245.11 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -26787,7 +25706,7 @@
 			)
 		)
 		(property "Footprint" "04_MyFoot_Passive:EI2811BP"
-			(at 46.99 250.19 0)
+			(at 68.58 252.73 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -26798,7 +25717,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 46.99 250.19 0)
+			(at 68.58 252.73 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -26809,7 +25728,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 46.99 250.19 0)
+			(at 68.58 252.73 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -26820,7 +25739,7 @@
 			)
 		)
 		(property "Purchase-URL" ""
-			(at 46.99 250.19 0)
+			(at 68.58 252.73 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -26831,7 +25750,7 @@
 			)
 		)
 		(property "LCSC" ""
-			(at 46.99 250.19 0)
+			(at 68.58 252.73 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -26984,7 +25903,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "ece02e6c-4ced-4966-b5b5-f16eb9906c36")
-		(property "Reference" "#PWR025"
+		(property "Reference" "#PWR029"
 			(at 292.1 44.45 0)
 			(hide yes)
 			(show_name no)
@@ -27044,7 +25963,7 @@
 		(instances
 			(project "POWER_BD_SV5"
 				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
-					(reference "#PWR025")
+					(reference "#PWR029")
 					(unit 1)
 				)
 			)
@@ -27052,7 +25971,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 119.38 265.43 0)
+		(at 130.81 262.89 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -27063,7 +25982,7 @@
 		(fields_autoplaced yes)
 		(uuid "f11f8b5a-fa6f-4c71-b98d-aaa72ae41662")
 		(property "Reference" "#PWR05"
-			(at 119.38 271.78 0)
+			(at 130.81 269.24 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -27074,7 +25993,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 119.38 270.51 0)
+			(at 130.81 267.97 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -27084,7 +26003,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 119.38 265.43 0)
+			(at 130.81 262.89 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -27095,7 +26014,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 119.38 265.43 0)
+			(at 130.81 262.89 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -27106,7 +26025,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 119.38 265.43 0)
+			(at 130.81 262.89 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -27140,7 +26059,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "f1aae399-0db7-45b6-a255-b50532b60b30")
-		(property "Reference" "H4"
+		(property "Reference" "H2"
 			(at 275.59 149.86 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -27220,7 +26139,7 @@
 		(instances
 			(project "POWER_BD_SV5"
 				(path "/86f25554-e2a0-4a5a-9163-0733668d19ba"
-					(reference "H4")
+					(reference "H2")
 					(unit 1)
 				)
 			)
@@ -27258,7 +26177,7 @@
 				)
 			)
 		)
-		(property "Footprint" "01_MyFoot_ICs:TO220_P2.54mm"
+		(property "Footprint" "01_MyFoot_ICs:TO-252-2"
 			(at 295.91 83.185 0)
 			(hide yes)
 			(show_name no)
@@ -27409,7 +26328,7 @@
 				)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C25348"
 			(at 172.72 198.12 0)
 			(hide yes)
 			(show_name no)
@@ -27512,7 +26431,7 @@
 				)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C17944"
 			(at 240.03 116.84 0)
 			(hide yes)
 			(show_name no)
@@ -27560,7 +26479,7 @@
 				)
 			)
 		)
-		(property "Value" "PC817"
+		(property "Value" "TLP785(GB-TP6F)"
 			(at 161.29 105.41 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -27570,7 +26489,7 @@
 				)
 			)
 		)
-		(property "Footprint" "01_MyFoot_ICs:DIP-4_W7.62mm_Socket"
+		(property "Footprint" "01_MyFoot_ICs:SOP-4_7.5x4.1mm_P2.54mm"
 			(at 161.29 113.03 0)
 			(hide yes)
 			(show_name no)
@@ -27759,7 +26678,7 @@
 				)
 			)
 		)
-		(property "LCSC" "C41807"
+		(property "LCSC" "C45445"
 			(at 161.29 113.03 0)
 			(hide yes)
 			(show_name no)
@@ -27978,7 +26897,7 @@
 				)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C17891"
 			(at 196.85 124.46 0)
 			(hide yes)
 			(show_name no)

@@ -14032,7 +14032,7 @@
 		)
 		(uuid "369db7c7-5040-4e26-b349-9b5f4f3735e2")
 	)
-	(text "10(ID)16(OD)SN-02HT CT 1:20T"
+	(text "10(ID)16(OD)SN-02HT CT 1:20T(2:15)"
 		(exclude_from_sim no)
 		(at 501.904 30.226 0)
 		(effects
@@ -31620,7 +31620,7 @@
 				)
 			)
 		)
-		(property "Value" "W4F7502"
+		(property "Value" "W4F7502(120k)"
 			(at 428.244 143.51 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -44899,7 +44899,7 @@
 				)
 			)
 		)
-		(property "Footprint" "04_MyFoot_Passive:R_2012Metric"
+		(property "Footprint" "04_MyFoot_Passive:R_3216Metric"
 			(at 296.926 129.286 90)
 			(hide yes)
 			(show_name no)
@@ -52347,7 +52347,7 @@
 				)
 			)
 		)
-		(property "Value" "3.9uH"
+		(property "Value" "4.7uH"
 			(at 524.51 26.67 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -53570,7 +53570,7 @@
 				)
 			)
 		)
-		(property "Value" "W4F1002"
+		(property "Value" "W4F1002(5k)"
 			(at 451.866 157.734 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -54546,7 +54546,7 @@
 				)
 			)
 		)
-		(property "Value" "1.5uH"
+		(property "Value" "1.0uH"
 			(at 357.632 251.714 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -68263,7 +68263,7 @@
 				)
 			)
 		)
-		(property "Value" "2.7uH"
+		(property "Value" "2.2uH"
 			(at 356.87 297.18 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -73702,7 +73702,7 @@
 				)
 			)
 		)
-		(property "Value" "TOROID_OUTPUT_OD20_T6T12"
+		(property "Value" "TOROID_OUTPUT_OD20_T6T12(T7:T24)"
 			(at 453.39 82.55 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -76568,7 +76568,7 @@
 				)
 			)
 		)
-		(property "Value" "1uF100V"
+		(property "Value" "0.1uF100V"
 			(at 442.468 103.632 0)
 			(show_name no)
 			(do_not_autoplace no)

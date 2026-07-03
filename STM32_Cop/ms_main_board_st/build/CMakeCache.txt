@@ -217,6 +217,9 @@ OPENOCD:FILEPATH=OPENOCD-NOTFOUND
 //Path to a program.
 STFLASH:FILEPATH=STFLASH-NOTFOUND
 
+//Path to a program.
+STM32PROG:FILEPATH=C:/ST/STM32CubeCLT_1.19.0/STM32CubeProgrammer/bin/STM32_Programmer_CLI.exe
+
 //Value Computed by CMake
 ms_main_board_BINARY_DIR:STATIC=D:/01_AllData/06_Embedded_Proj/STM32_Cop/ms_main_board_st/build
 
