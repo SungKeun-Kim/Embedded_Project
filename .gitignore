@@ -55,6 +55,7 @@ Thumbs.db
 **/_autosave-*
 **/*.lck
 **/.history/
+KiCAD/ELSONIC/POWER_BD_SV6/.history_trim/
 
 # KiCad 다운로드 라이브러리 (Down_Lib) — 용량 크고 재생성 가능
 **/Down_Lib/
