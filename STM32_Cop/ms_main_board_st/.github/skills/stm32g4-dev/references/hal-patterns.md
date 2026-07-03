@@ -2,7 +2,7 @@
 
 ## 주변장치 초기화 순서 (반드시 준수)
 
-```
+```text
 1. HAL_Init()                    — SysTick, NVIC 그룹 설정
 2. SystemClock_Config()          — RCC PLL 설정 → 170MHz
 3. GPIO 클럭 활성화              — __HAL_RCC_GPIOx_CLK_ENABLE()

@@ -1,4 +1,4 @@
-﻿# Copilot 지침 — STM32G474ME 메가소닉 메인보드
+# Copilot 지침 — STM32G474ME 메가소닉 메인보드
 
 ## 프로젝트 개요
 
@@ -46,7 +46,7 @@ cmake --build build --target clean
 
 기능별로 세분화하여 모듈 단위 독립성을 확보한다.
 
-```
+```text
 ms_main_board_st/
 ├── .github/
 │   └── copilot-instructions.md        # 본 지침서
@@ -170,7 +170,7 @@ STM32G474RET6 신규 설계에서의 대체/유지/추가 방안을 정리한다
 J1-1, J1-2 커넥터로 외부 전압 신호 입력 → 반파 정류(UF4007) → RC 필터 → DC 전압 출력.
 (CT(CTL-6-P)는 별도 회로이며, J1-1/J1-2 커넥터와는 직접 연결되어 있지 않음)
 
-```
+```text
 기존 회로 (docs/SNxx1203_connetion.jpg 참조):
 
 외부 전압 신호 ──▶ J1-2 ──▶ D1-2(UF4007) ──▶ R4-2(220K) ──▶ 필터 ──▶ CH0 (저감도, 고출력용)
@@ -592,7 +592,7 @@ NORMAL 모드에서 MODE 버튼으로 진입하는 설정 하위 모드.
   - 채널 변경 확정/저장
   - **채널 변경 시 발진 1초 정지** 후 새 주파수로 재개
 
-```
+```text
 MODE 전이도:
                     ┌──────────────────────────────────────┐
                     │                                      │
@@ -616,7 +616,7 @@ HRTIM Timer A를 사용하여 500kHz~2MHz 메가소닉 주파수를 생성한다
 
 **HRTIM 유효 분해능:**
 
-```
+```text
 HRTIM 유효 클럭 = HRTIM_CLK × 32(DLL) = 170 MHz × 32 = 5.44 GHz
 1 틱 = 1 / 5.44 GHz ≈ 184 ps
 ```
@@ -642,7 +642,7 @@ HRTIM 유효 클럭 = HRTIM_CLK × 32(DLL) = 170 MHz × 32 = 5.44 GHz
   - Si MOSFET 사용 시: 50~100 ns 권장
 - **주파수 설정**: Period 레지스터 값 변경
 
-```
+```text
 주파수 = HRTIM_EFF_CLK / Period = 5,440,000,000 / Period [Hz]
 Period = 5,440,000,000 / 목표주파수 [틱]
 ```
@@ -1066,7 +1066,7 @@ for (ch = 0; ch <= 6; ch++) {                    // 주파수 7채널
 
 **LC 릴레이 고정 + 조합 인덕턴스표**:
 
-```
+```text
 고정 인덕턴스: L_BASE = 1.94µH (3.3||4.7)
 l_combo 비트 = [bit3:L4=6.8µH(PC6)][bit2:L3=4.7µH(PC7)][bit1:L2=2.2µH(PC8)][bit0:L1=0.69µH(PC9)]
 
@@ -1095,7 +1095,7 @@ L_total = L_BASE + (bit0?0.69:0) + (bit1?2.2:0) + (bit2?4.7:0) + (bit3?6.8:0)
 
 **VSWR 계산**:
 
-```
+```text
 VSWR = (|Vfwd| + |Vrev|) / (|Vfwd| - |Vrev|)
 
 ADC값 기준: vswr_x100 = (fwd_adc + rev_adc) × 100 / (fwd_adc - rev_adc)

@@ -7,7 +7,7 @@
 
 ## 데이터 흐름 다이어그램
 
-```
+```text
 ┌──────────── SysTick ISR (1ms) ─────────────┐
 │  HAL_IncTick()                              │
 │  매 10ms: Button_Process() → 이벤트 큐 적재 │
@@ -71,7 +71,7 @@
 
 ### hrtim_pwm ↔ megasonic_ctrl 계약
 
-```
+```text
 호출 방향: megasonic_ctrl → hrtim_pwm (단방향)
 역방향 호출 금지: hrtim_pwm은 megasonic_ctrl을 #include하지 않는다
 
@@ -93,7 +93,7 @@ megasonic_ctrl이 호출하는 함수:
 
 ### menu ↔ megasonic_ctrl 계약
 
-```
+```text
 호출 방향: menu → megasonic_ctrl (단방향)
 LCD_Update → 상태 변수 읽기 전용 (쓰기 금지)
 
@@ -114,7 +114,7 @@ LCD_Update / LED_Update가 읽는 데이터:
 
 ### modbus_regs ↔ megasonic_ctrl 계약
 
-```
+```text
 호출 방향: modbus_regs → megasonic_ctrl (단방향)
 접근 제한: 모드별 쓰기 허용/거부 판정 포함
 
@@ -132,7 +132,7 @@ ModbusRegs_Read() 내부에서:
 
 ### alarm ↔ megasonic_ctrl 계약
 
-```
+```text
 호출 방향: alarm → megasonic_ctrl (비상 정지 단방향)
 alarm이 호출하는 함수:
   MegasonicCtrl_EmergencyStop()  — Err1/2/5/7/8 발동 시 즉시 출력 차단

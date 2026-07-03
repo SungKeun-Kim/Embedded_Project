@@ -1,4 +1,4 @@
-﻿# 실전 워크플로우 가이드 (Practical Workflow) — 메가소닉 발진기
+# 실전 워크플로우 가이드 (Practical Workflow) — 메가소닉 발진기
 
 > AI 에이전트와 협업하여 펌웨어를 개발하는 **단계별 실전 절차서**.
 > 한 번에 전부 시키지 말고, Phase별로 빌드 성공 + 하드웨어 검증을 확인하며 진행한다.
@@ -7,7 +7,7 @@
 
 ## Phase 의존성 다이어그램
 
-```
+```text
 Phase 0 (config.h 골격)
     │
     ▼
@@ -43,7 +43,7 @@ Phase 2          Phase 3
 
 ### ① 컨텍스트 관리
 
-```
+```text
 에이전트가 정확한 코드를 생성하려면, 아래 파일을 매 요청에 포함해야 한다.
 
 [필수 — 매 요청마다]
@@ -71,7 +71,7 @@ Phase 2          Phase 3
 
 ### ③ 프롬프트 작성 패턴
 
-```
+```text
 [최적 프롬프트 구조]
 
 1. 참조 문서 지시    → "copilot-instructions.md와 docs/SAFETY.md를 읽어라."
@@ -84,7 +84,7 @@ Phase 2          Phase 3
 
 ### ④ Git 체크포인트
 
-```
+```text
 각 Phase 완료 후 반드시 커밋:
 
 git add -A
@@ -132,7 +132,7 @@ git commit -m "Phase N: [완료 내용 요약]"
 > **config.h는 모든 모듈이 참조하는 중앙 핀/상수 정의 파일이다.**
 > 이 파일이 없으면 에이전트가 매직 넘버를 사용하거나, 모듈 간 핀 정의가 불일치한다.
 
-```
+```text
 📋 프롬프트:
 
 copilot-instructions.md의 핀맵 섹션과 docs/STM32G474MET6_LQFP64_핀맵.md를 읽어라.
@@ -170,7 +170,7 @@ cmake --build build
 
 ## Step 1: 기반 동작 (Phase 1) — @hw-driver
 
-```
+```text
 📋 프롬프트:
 
 copilot-instructions.md, docs/SAFETY.md를 읽어라.
@@ -202,7 +202,7 @@ include/config.h를 참조하여 구현해줘.
 
 > **Step 3과 병렬 가능**하지만, LCD가 먼저 동작하면 HRTIM 디버깅이 수월하므로 먼저 진행 권장.
 
-```
+```text
 📋 프롬프트 (4회 분할):
 
 [1회차] lcd1602_hw.h/c + lcd1602.h/c
@@ -240,7 +240,7 @@ FREQ SET: 통신 명령(Modbus) 또는 내부 서비스 루틴으로 진입
 
 ## Step 3: HRTIM 메가소닉 PWM (Phase 3) — @hw-driver + @megasonic
 
-```
+```text
 📋 프롬프트 (3회 분할):
 
 [1회차 — @hw-driver] hrtim_pwm.h/c
@@ -290,7 +290,7 @@ system_clock → gpio → hrtim_pwm → megasonic_ctrl 초기화 순서.
 > **Phase 3 빌드 + 하드웨어 검증 완료 후 진행.**
 > ADC(Phase 4)와 병렬 개발 가능하지만, 실 트랜스듀서 테스트는 ADC 완료 후 가능.
 
-```
+```text
 📋 프롬프트:
 
 copilot-instructions.md (섹션 9 자동 공진 탐색), docs/SAFETY.md,
@@ -357,7 +357,7 @@ megasonic_ctrl.c에 아래 기능을 추가 구현해줘 (@megasonic 에이전�
 
 ## Step 4: ADC 전력 계측 (Phase 4) — @hw-driver
 
-```
+```text
 📋 프롬프트:
 
 copilot-instructions.md, docs/ARCHITECTURE.md를 읽어라.
@@ -386,7 +386,7 @@ adc_control.h/c 구현:
 
 ## Step 5: 알람 + 외부 제어 (Phase 5~6) — @megasonic
 
-```
+```text
 📋 프롬프트 (2회 분할):
 
 [1회차] ext_control.h/c
@@ -422,7 +422,7 @@ adc_control.h(4단계 완료)와 ext_control.h의 API를 참조.
 
 ## Step 6: Modbus RTU (Phase 7) — @protocol
 
-```
+```text
 📋 프롬프트 (3회 분할):
 
 [1회차] modbus_crc.h/c
@@ -462,7 +462,7 @@ docs/ARCHITECTURE.md의 modbus_regs↔megasonic_ctrl 계약 준수.
 
 ## Step 7: 통합 연동 (Phase 7)
 
-```
+```text
 📋 프롬프트:
 
 copilot-instructions.md, docs/ARCHITECTURE.md를 읽어라.
@@ -500,7 +500,7 @@ MegasonicCtrl_Init → Alarm_Init → ExtCtrl_Init → Modbus_Init → 메인 �
 
 ## Step 8: 양산 준비 (Phase 8)
 
-```
+```text
 📋 프롬프트:
 
 copilot-instructions.md, docs/SAFETY.md를 읽어라.
