@@ -15,6 +15,7 @@ volatile MegasonicState_t g_us_state;
 /* 소프트 스타트 내부 카운터 */
 static uint32_t s_soft_start_tick;
 static uint16_t s_soft_start_start_duty;
+static uint32_t s_buck_slew_tick;
 static uint32_t s_gate_ramp_tick;    /* START 직후 게이트 듀티 램프 */
 static bool     s_gate_ramping;
 static uint16_t s_run_gate_duty_01pct;
@@ -22,6 +23,11 @@ static uint32_t s_mode_tick;        /* 펄스/스윕 모드용 타이머 */
 static bool     s_pulse_on_phase;   /* 펄스 모드: 현재 ON 구간? */
 static uint8_t  s_lc_combo;         /* LC 릴레이 조합 (bit0~3) */
 static ResonanceScanResult_t s_last_scan;
+
+static const uint16_t s_scan_freqs_01khz[FREQ_EDIT_CH_COUNT] = {
+    FREQ_CH0_DEFAULT, FREQ_CH1_DEFAULT, FREQ_CH2_DEFAULT, FREQ_CH3_DEFAULT, FREQ_CH4_DEFAULT,
+    FREQ_CH5_DEFAULT, FREQ_CH6_DEFAULT, FREQ_CH7_DEFAULT, FREQ_CH8_DEFAULT, FREQ_CH9_DEFAULT,
+};
 
 static uint16_t ClampU16Local(uint16_t v, uint16_t min, uint16_t max)
 {
@@ -115,6 +121,7 @@ void MegasonicCtrl_Init(void)
     g_us_state.sweep_time_ms    = 1000;
 
     s_run_gate_duty_01pct = HRTIM_RUN_DUTY_01PCT;
+    s_buck_slew_tick = 0U;
     s_gate_ramp_tick = 0U;
     s_soft_start_start_duty = 0U;
     s_gate_ramping = false;
@@ -140,6 +147,7 @@ void MegasonicCtrl_Start(void)
     s_soft_start_start_duty  = g_us_state.current_duty;
     g_us_state.soft_starting = (s_soft_start_start_duty != g_us_state.target_duty);
     s_soft_start_tick = HAL_GetTick();
+    s_buck_slew_tick  = s_soft_start_tick;
     s_gate_ramp_tick  = s_soft_start_tick;
     s_gate_ramping    = (HRTIM_GATE_RAMP_MS != 0U) ? true : false;
     s_mode_tick       = HAL_GetTick();
@@ -160,6 +168,7 @@ void MegasonicCtrl_PrechargeBuck(uint16_t duty_01pct)
 
     g_us_state.target_duty = duty_01pct;
     g_us_state.current_duty = duty_01pct;
+    s_buck_slew_tick = HAL_GetTick();
     if (!g_us_state.running) {
         BuckDAC_SetDuty(duty_01pct);
     }
@@ -172,6 +181,7 @@ void MegasonicCtrl_Stop(void)
     s_soft_start_start_duty  = 0U;
     s_gate_ramping           = false;
     g_us_state.current_duty  = 0;
+    s_buck_slew_tick         = HAL_GetTick();
     BuckDAC_SetDuty(0U);
     MegasonicPWM_SetDuty(0);
     MegasonicPWM_Stop();
@@ -186,6 +196,7 @@ void MegasonicCtrl_EmergencyStop(void)
     s_soft_start_start_duty  = 0U;
     s_gate_ramping           = false;
     g_us_state.current_duty  = 0;
+    s_buck_slew_tick         = HAL_GetTick();
 }
 
 void MegasonicCtrl_Update(void)
@@ -229,8 +240,28 @@ void MegasonicCtrl_Update(void)
     case MODE_EXT:
         /* 목표 듀티/주파수 즉시 적용 */
         if (g_us_state.current_duty != g_us_state.target_duty) {
-            g_us_state.current_duty = g_us_state.target_duty;
-            BuckDAC_SetDuty(g_us_state.current_duty);
+            if ((RUN_BUCK_SLEW_INTERVAL_MS == 0U)
+                || ((now - s_buck_slew_tick) >= RUN_BUCK_SLEW_INTERVAL_MS)) {
+                uint16_t step = RUN_BUCK_SLEW_STEP_01PCT;
+                uint16_t delta;
+
+                if (step == 0U) {
+                    step = DUTY_CLAMP_MAX;
+                }
+                s_buck_slew_tick = now;
+                if (g_us_state.current_duty < g_us_state.target_duty) {
+                    delta = (uint16_t)(g_us_state.target_duty - g_us_state.current_duty);
+                    g_us_state.current_duty = (delta > step)
+                                            ? (uint16_t)(g_us_state.current_duty + step)
+                                            : g_us_state.target_duty;
+                } else {
+                    delta = (uint16_t)(g_us_state.current_duty - g_us_state.target_duty);
+                    g_us_state.current_duty = (delta > step)
+                                            ? (uint16_t)(g_us_state.current_duty - step)
+                                            : g_us_state.target_duty;
+                }
+                BuckDAC_SetDuty(g_us_state.current_duty);
+            }
         }
         if (!s_gate_ramping) {
             MegasonicPWM_SetDuty(s_run_gate_duty_01pct);
@@ -248,8 +279,10 @@ void MegasonicCtrl_SetFrequency(uint16_t freq_01khz)
     if (freq_01khz > FREQ_MAX) freq_01khz = FREQ_MAX;
     g_us_state.target_freq = freq_01khz;
     MegasonicPWM_SetDeadTimeNs(MegasonicPWM_DeadTimeForFrequency(freq_01khz));
+    s_run_gate_duty_01pct = MegasonicPWM_ClampDutyForFrequency(freq_01khz, s_run_gate_duty_01pct);
     if (g_us_state.running && !g_us_state.soft_starting) {
         MegasonicPWM_SetFrequency(freq_01khz);
+        MegasonicPWM_SetDuty(s_run_gate_duty_01pct);
     }
 }
 
@@ -264,6 +297,7 @@ void MegasonicCtrl_SetRunGateDuty(uint16_t duty_01pct)
     duty_01pct = ClampU16Local(duty_01pct,
                                RUN_GATE_DUTY_TUNE_MIN_01PCT,
                                RUN_GATE_DUTY_TUNE_MAX_01PCT);
+    duty_01pct = MegasonicPWM_ClampDutyForFrequency(g_us_state.target_freq, duty_01pct);
     s_run_gate_duty_01pct = duty_01pct;
 
     if ((g_us_state.running != false) && (s_gate_ramping == false)) {
@@ -278,9 +312,11 @@ uint16_t MegasonicCtrl_GetRunGateDuty(void)
 
 void MegasonicCtrl_ResetRunGateDuty(void)
 {
-    s_run_gate_duty_01pct = ClampU16Local(HRTIM_RUN_DUTY_01PCT,
+    s_run_gate_duty_01pct = MegasonicPWM_RecommendedDutyForFrequency(g_us_state.target_freq);
+    s_run_gate_duty_01pct = ClampU16Local(s_run_gate_duty_01pct,
                                           RUN_GATE_DUTY_TUNE_MIN_01PCT,
                                           RUN_GATE_DUTY_TUNE_MAX_01PCT);
+    s_run_gate_duty_01pct = MegasonicPWM_ClampDutyForFrequency(g_us_state.target_freq, s_run_gate_duty_01pct);
     if ((g_us_state.running != false) && (s_gate_ramping == false)) {
         MegasonicPWM_SetDuty(s_run_gate_duty_01pct);
     }
@@ -362,7 +398,7 @@ ResonanceScanResult_t MegasonicCtrl_ScanResonance(void)
     best.valid = false;
 
     for (uint8_t ch = 0U; ch < FREQ_EDIT_CH_COUNT; ch++) {
-        uint16_t freq = (uint16_t)(FREQ_EDIT_CH1_01KHZ + (uint16_t)ch * FREQ_EDIT_CH_STEP_01KHZ);
+        uint16_t freq = s_scan_freqs_01khz[ch];
 
         MegasonicCtrl_SetFrequency(freq);
         HAL_Delay(RESCAN_FREQ_SETTLE_MS);
@@ -416,7 +452,9 @@ bool MegasonicCtrl_ApplyScanResult(const ResonanceScanResult_t *result)
 
     if ((result == NULL) || (result->valid == false)) return false;
 
-    freq = (uint16_t)(FREQ_EDIT_CH1_01KHZ + (uint16_t)result->ch * FREQ_EDIT_CH_STEP_01KHZ);
+    if (result->ch >= FREQ_EDIT_CH_COUNT) return false;
+
+    freq = s_scan_freqs_01khz[result->ch];
     if (freq < FREQ_MIN) freq = FREQ_MIN;
     if (freq > FREQ_MAX) freq = FREQ_MAX;
 

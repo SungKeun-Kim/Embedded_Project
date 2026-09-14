@@ -42,9 +42,9 @@ uint16_t BuckDAC_CodeForDuty(uint16_t duty_01pct)
         duty_01pct = DUTY_CLAMP_MAX;
     }
 
-    /* LM5005 FB control is inverted on this board:
-     * R27=95k/R33=4.99k/R35=8.87k 기준
-     * duty 0.0% = DAC 3.3V = 약 2.3V, duty 90.0% = DAC 0V = 약 37.7V. */
+    /* LM5005 FB control is inverted on this board.
+     * 0% duty drives the DAC high for minimum VBUS, and DUTY_CLAMP_MAX
+     * drives the DAC low for maximum VBUS. */
     code = (uint32_t)BUCK_DAC_MAX_CODE
            - (((uint32_t)duty_01pct * (uint32_t)BUCK_DAC_MAX_CODE
                + ((uint32_t)DUTY_CLAMP_MAX / 2U))

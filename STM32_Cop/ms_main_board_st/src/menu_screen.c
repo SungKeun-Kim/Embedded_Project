@@ -79,6 +79,34 @@ static void RenderSettingMenu(void);
 static void RenderSettingFreq(void);
 static void RenderSettingPower(void);
 static void RenderSettingRs485(void);
+
+static uint16_t MapPowerToDisplayVoltage01V(uint16_t low_01w,
+                                            uint16_t high_01w,
+                                            uint16_t power_01w)
+{
+    uint32_t span_01w;
+    uint32_t offset_01w;
+
+    if (high_01w <= low_01w) {
+        return RUN_POWER_MAP_VOLT_MIN_01V;
+    }
+
+    if (power_01w <= low_01w) {
+        return RUN_POWER_MAP_VOLT_MIN_01V;
+    }
+    if (power_01w >= high_01w) {
+        return RUN_POWER_MAP_VOLT_MAX_01V;
+    }
+
+    span_01w = (uint32_t)(high_01w - low_01w);
+    offset_01w = (uint32_t)(power_01w - low_01w);
+
+    return (uint16_t)(RUN_POWER_MAP_VOLT_MIN_01V
+                      + ((offset_01w * (uint32_t)(RUN_POWER_MAP_VOLT_MAX_01V
+                                                  - RUN_POWER_MAP_VOLT_MIN_01V)
+                          + (span_01w / 2U))
+                         / span_01w));
+}
 static void UpdateStatusLeds(uint32_t now, MenuState_t state);
 static void EnsureRunSpinnerChars(void);
 
@@ -432,8 +460,10 @@ static void RenderSelect(void)
     char freq_text[12];
     uint16_t disp_power_01w;
     uint16_t measured_power_01w;
-    uint16_t set_power_01w;
     uint16_t vol_adc;
+    uint32_t current_ma32;
+    uint16_t current_ma;
+    uint16_t target_voltage_01v;
     uint16_t disp_freq_khz;
     uint16_t target_freq_01khz;
     uint16_t freq_khz_u16;
@@ -469,10 +499,18 @@ static void RenderSelect(void)
         return;
     }
 
+    if (Menu_IsBuckOverVoltNoticeActive() != 0U) {
+        CenterLine(s_line0, "BUCK OVER VOLT");
+        FormatLine(s_line1, "LIMIT V38.0");
+        return;
+    }
+
     if (g_us_state.running) {
         measured_power_01w = Menu_GetOutputEstPower01W();
-        UpdateRunMeterDisplay(measured_power_01w, 0U, 0U);
-        disp_power_01w = s_run_meter_power_01w;
+        current_ma32 = (ADC_Control_GetCurrentuA() + 500UL) / 1000UL;
+        current_ma = (current_ma32 > 9999UL) ? 9999U : (uint16_t)current_ma32;
+        UpdateRunMeterDisplay(measured_power_01w, 0U, current_ma);
+        disp_power_01w = measured_power_01w;
         target_freq_01khz = MegasonicCtrl_GetActualFrequency01kHz();
         disp_freq_khz = (uint16_t)((target_freq_01khz + 5U) / 10U);
         run_phase = (uint8_t)((HAL_GetTick() / RUN_SPINNER_MS) % RUN_SPINNER_FRAME_COUNT);
@@ -480,7 +518,7 @@ static void RenderSelect(void)
         run_text = "RUN";
     } else {
         ResetRunMeterDisplay();
-        disp_power_01w = 0U;
+        disp_power_01w = Menu_GetOutputSetPower01W();
         disp_freq_khz = 0U;
         run_spinner_char = ' ';
         run_text = "STOP";
@@ -507,18 +545,17 @@ static void RenderSelect(void)
                            (unsigned)(target_freq_01khz % 10U),
                            (unsigned)freq_ch);
             } else {
-                set_power_01w = Menu_GetOutputSetPower01W();
                 vol_adc = ADC_Control_GetVoltage01V();
-                FormatLine(s_line1, "W%u.%u %02u.%uV CH%02u",
-                       (unsigned)(set_power_01w / 100U),
-                       (unsigned)((set_power_01w / 10U) % 10U),
+                FormatLine(s_line1, "I%04umA V%02u.%u",
+                       (unsigned)s_run_meter_cur_ma,
                        (unsigned)(vol_adc / 100U),
-                       (unsigned)((vol_adc / 10U) % 10U),
-                       (unsigned)freq_ch);
+                       (unsigned)((vol_adc / 10U) % 10U));
             }
         } else {
-            FormatLine(s_line1, "%-6s %s C%02u",
-                       ModeName(Menu_GetSelectedMode()),
+            target_voltage_01v = Menu_GetRunTargetVoltage01V();
+            FormatLine(s_line1, "V%02u.%u %s C%02u",
+                       (unsigned)(target_voltage_01v / 100U),
+                       (unsigned)((target_voltage_01v / 10U) % 10U),
                        run_text,
                        (unsigned)freq_ch);
         }
@@ -732,7 +769,13 @@ static void RenderSettingPower(void)
 
     case POWER_EDIT_FIELD_DEFAULT:
         FormatPower01W(ptxt, sizeof(ptxt), def);
-        FormatLine(s_line1, "DEF:%s", ptxt);
+        {
+            uint16_t def_voltage_01v = MapPowerToDisplayVoltage01V(low, high, def);
+            FormatLine(s_line1, "D:%s V%02u.%u",
+                       ptxt,
+                       (unsigned)(def_voltage_01v / 100U),
+                       (unsigned)((def_voltage_01v / 10U) % 10U));
+        }
         break;
 
     default:

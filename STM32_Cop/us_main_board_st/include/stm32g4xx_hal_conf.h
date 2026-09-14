@@ -17,6 +17,7 @@ extern "C" {
 #define HAL_MODULE_ENABLED
 #define HAL_ADC_MODULE_ENABLED
 #define HAL_COMP_MODULE_ENABLED
+#define HAL_DAC_MODULE_ENABLED
 #define HAL_CORTEX_MODULE_ENABLED
 #define HAL_DMA_MODULE_ENABLED
 #define HAL_EXTI_MODULE_ENABLED
@@ -112,6 +113,9 @@ extern "C" {
 #endif
 #ifdef HAL_COMP_MODULE_ENABLED
   #include "stm32g4xx_hal_comp.h"
+#endif
+#ifdef HAL_DAC_MODULE_ENABLED
+  #include "stm32g4xx_hal_dac.h"
 #endif
 #ifdef HAL_EXTI_MODULE_ENABLED
   #include "stm32g4xx_hal_exti.h"

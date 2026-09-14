@@ -29,7 +29,7 @@ typedef enum {
 typedef enum {
     BTN_EVT_NONE = 0,
     BTN_EVT_PRESS,          /* 단일 클릭 (눌림 → 놓임) */
-    BTN_EVT_LONG_PRESS,     /* 1초 이상 누름 */
+    BTN_EVT_LONG_PRESS,     /* 1.5초 이상 누름 */
     BTN_EVT_REPEAT          /* 장기 누름 시 반복 이벤트 */
 } ButtonEvent_t;
 

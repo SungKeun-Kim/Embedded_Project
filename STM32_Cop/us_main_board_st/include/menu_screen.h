@@ -22,6 +22,12 @@ void MenuScreen_Refresh(void);
  */
 void MenuScreen_ForceRefresh(void);
 
+/** @brief 전원 인가 직후 2초간 표시할 모델/업체 화면 */
+void MenuScreen_ShowSplash(void);
+
+/** @brief MODE+DOWN 전원 투입 시 즉시 표시할 Supervisor 안내 화면 */
+void MenuScreen_ShowSupervisorSplash(void);
+
 #ifdef __cplusplus
 }
 #endif

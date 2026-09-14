@@ -47,6 +47,22 @@ void Modbus_FrameTimeoutCallback(void);
 /** @brief Modbus 통신 파라미터 재설정 (baud/parity 변경 시) */
 void Modbus_ReconfigUART(void);
 
+/** @brief 최근 정상 Modbus 요청이 있어 LCD에 통신 중으로 표시할지 반환 */
+bool Modbus_IsCommunicationActive(void);
+
+/** @brief 현재 Baud rate의 Table 인덱스 반환 */
+uint8_t Modbus_GetBaudIndex(void);
+
+/**
+ * @brief 보드 메뉴에서 선택한 통신 설정을 저장하고 즉시 적용
+ * @param address Supervisor Slave ID (1~16)
+ * @param baud_index MODBUS_BAUD_TABLE 인덱스
+ * @param parity 1=Even만 허용(8-E-1 고정)
+ * @return true: 저장 및 적용 성공, false: 잘못된 값 또는 Flash 오류
+ */
+bool Modbus_ApplyLocalConfig(uint8_t address, uint8_t baud_index,
+                            uint8_t parity);
+
 #ifdef __cplusplus
 }
 #endif

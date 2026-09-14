@@ -16,6 +16,8 @@
 #include "selftest.h"
 #include "config.h"
 #include "params.h"
+#include "resonance_tuning.h"
+#include "buzzer.h"
 
 /* 자기검증 주기: 200ms (5Hz) */
 #define SELFTEST_INTERVAL_MS  200U
@@ -25,20 +27,35 @@ int main(void)
     /* HAL 라이브러리 초기화 (SysTick 1 ms) */
     HAL_Init();
 
-    /* 시스템 클럭: HSI 16 MHz → PLL → 170 MHz */
+    /* 시스템 클럭: HSE 8 MHz → PLL → 170 MHz */
     SystemClock_Config();
 
     /* 전체 GPIO 초기화 */
     GPIO_Init_All();
 
     /* 모듈 초기화 */
+    Buzzer_Init();
     UltrasonicPWM_Init();
     UltrasonicCtrl_Init();
     ADC_Control_Init();
+    ResonanceTuning_Init();
     LCD_Init();
     Button_Init();
-    Menu_Init();
+    const bool supervisor_boot =
+        Button_IsPhysicallyPressed(BTN_ID_MODE) &&
+        Button_IsPhysicallyPressed(BTN_ID_DOWN);
+    if (supervisor_boot) {
+        MenuScreen_ShowSupervisorSplash();
+    } else {
+        MenuScreen_ShowSplash();
+        HAL_Delay(LCD_SPLASH_TIME_MS);
+        Button_Init();  /* 부팅 화면 중 발생한 버튼 이벤트 제거 */
+    }
     Modbus_Init();
+    Menu_Init(supervisor_boot);
+
+    /* 모든 초기화가 정상 완료되었음을 알리는 전원 ON 확인음 */
+    Buzzer_Play(BUZZER_STARTUP_BEEP_MS);
 
     uint32_t selftest_tick = 0;  /* 자기검증 마지막 실행 시각 */
 
@@ -46,11 +63,16 @@ int main(void)
     while (1) {
         /* 버튼 입력은 SysTick ISR에서 처리 (Button_Process) */
 
-        /* ADC 가변저항 읽기 */
+        /* PB1 PWM_VR 및 PA6 CT ADC 읽기 */
         ADC_Control_Process();
+        ResonanceTuning_Process();
+        UltrasonicCtrl_SetDuty(ADC_Control_GetPwmVrDutyLimit());
 
         /* 메뉴 상태 갱신 (버튼 이벤트 소비) */
         Menu_Update();
+
+        /* PA5 수동형 부저의 비차단 재생/정지 처리 */
+        Buzzer_Process();
 
         /* LCD 화면 갱신 (변경 시에만) */
         MenuScreen_Refresh();

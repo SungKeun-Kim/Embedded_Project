@@ -129,6 +129,7 @@ uint8_t Menu_GetSelectedPowerChannel(void);
 /** @brief 선택 중 출력 설정/추정 전력 반환 (×0.01W) */
 uint16_t Menu_GetOutputSetPower01W(void);
 uint16_t Menu_GetOutputEstPower01W(void);
+uint16_t Menu_GetRunTargetVoltage01V(void);
 
 /** @brief RUN 중 주파수 미세조정 모드 활성 여부 */
 uint8_t Menu_IsRunFreqAdjustActive(void);
@@ -152,6 +153,7 @@ uint8_t Menu_IsEditSaved(void);
 /** @brief 알람 상태 반환 */
 uint8_t Menu_HasError(void);
 ErrorCode_t Menu_GetErrorCode(void);
+uint8_t Menu_IsBuckOverVoltNoticeActive(void);
 uint16_t Menu_GetOvercurrentLatchmA(void);
 uint16_t Menu_GetOvercurrentLatchVoltage01V(void);
 

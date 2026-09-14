@@ -22,7 +22,7 @@ tools: [read, edit, search]
 - 듀티비 상한 클램핑 필수 (params.h 기준)
 - PLL 위상차 0° = 공진점. 위상차 계산: (t₂−t₁) × 5.88ns @ 170MHz
 - 스윕 기준점은 PLL이 찾은 공진 주파수 중심 ±대역폭
-- 정전류 제어: ADC(PA4) 전류값 vs 목표값 → TIM3_CH3(PB0) PWM 듀티 조절
+- 출력 지령: PB1/ADC1_IN12 PWM_VR 로컬 상한과 PA6/ADC2_IN3 CT 값을 구분하고 TIM3_CH2(PA7) PWM 듀티 조절
 - 비상 정지 조건 감지 시 즉시 TIM1 출력 차단 (MOE 클리어)
 - `ultrasonic_pwm.c`(HW)와 `ultrasonic_ctrl.c`(로직) 분리 유지
 

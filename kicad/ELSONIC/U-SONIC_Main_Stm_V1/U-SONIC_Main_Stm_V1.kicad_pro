@@ -39,9 +39,9 @@
         "other_text_thickness": 0.15,
         "other_text_upright": false,
         "pads": {
-          "drill": 0.8,
-          "height": 1.27,
-          "width": 2.54
+          "drill": 0.9,
+          "height": 3.0,
+          "width": 3.0
         },
         "silk_line_width": 0.1,
         "silk_text_italic": false,
@@ -50,7 +50,7 @@
         "silk_text_thickness": 0.1,
         "silk_text_upright": false,
         "zones": {
-          "min_clearance": 0.6
+          "min_clearance": 0.5
         }
       },
       "diff_pair_dimensions": [
@@ -199,10 +199,13 @@
         0.35,
         0.4,
         0.5,
+        0.6,
         0.8,
         1.0,
         1.2,
-        1.5
+        1.5,
+        3.0,
+        3.5
       ],
       "tuning_pattern_settings": {
         "diff_pair_defaults": {
@@ -236,12 +239,12 @@
           "drill": 0.0
         },
         {
-          "diameter": 0.4,
-          "drill": 0.35
+          "diameter": 0.5,
+          "drill": 0.3
         },
         {
           "diameter": 0.6,
-          "drill": 0.35
+          "drill": 0.3
         },
         {
           "diameter": 0.8,
@@ -254,14 +257,6 @@
         {
           "diameter": 1.0,
           "drill": 0.6
-        },
-        {
-          "diameter": 1.2,
-          "drill": 0.8
-        },
-        {
-          "diameter": 1.2,
-          "drill": 0.8
         },
         {
           "diameter": 1.2,
@@ -563,7 +558,7 @@
       "gencad": "",
       "idf": "",
       "netlist": "",
-      "plot": "Multi_Mega_Main_V2_GBR/",
+      "plot": "U-SONIC_Main_Stm_V1_GBR/",
       "pos_files": "",
       "specctra_dsn": "",
       "step": "",
@@ -576,9 +571,9 @@
     "annotate_start_num": 0,
     "annotation": {
       "method": 0,
-      "sort_order": 0
+      "sort_order": 1
     },
-    "bom_export_filename": "Multi_Mega_Display_V2.csv",
+    "bom_export_filename": "U-SONIC_Main_Stm_V1.csv",
     "bom_fmt_presets": [],
     "bom_fmt_settings": {
       "field_delimiter": ",",
@@ -784,6 +779,24 @@
           "label": "LCSC",
           "name": "LCSC",
           "show": true
+        },
+        {
+          "group_by": false,
+          "label": "PARTREV",
+          "name": "PARTREV",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "Purchase-URL",
+          "name": "Purchase-URL",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "MAXIMUM_PACKAGE_HEIGHT",
+          "name": "MAXIMUM_PACKAGE_HEIGHT",
+          "show": false
         }
       ],
       "filter_string": "",

@@ -257,6 +257,7 @@ uint16_t ADC_Control_GetIvPower01W(void)
 {
     uint32_t voltage_01v = ADC_Control_GetVoltage01V();
     uint32_t current_ua = ADC_Control_GetCurrentuA();
+    uint32_t load_current_ua;
     uint16_t current_01mv = ADC_Control_GetCurrent01mV();
     uint32_t power_01w;
 
@@ -269,7 +270,17 @@ uint16_t ADC_Control_GetIvPower01W(void)
         return 0U;
     }
 
-    power_01w = (uint32_t)(((uint64_t)voltage_01v * (uint64_t)current_ua + 500000ULL) / 1000000ULL);
+    if (current_ua <= s_power_zero_current_ua) {
+        load_current_ua = 0UL;
+    } else {
+        load_current_ua = current_ua - s_power_zero_current_ua;
+    }
+
+    if (load_current_ua < ADC_IV_POWER_CURRENT_DEADBAND_UA) {
+        return 0U;
+    }
+
+    power_01w = (uint32_t)(((uint64_t)voltage_01v * (uint64_t)load_current_ua + 500000ULL) / 1000000ULL);
     if (power_01w > 999U) {
         power_01w = 999U;
     }

@@ -20,10 +20,10 @@ void LCD_HW_WriteByte(uint8_t data, uint8_t is_data);
 /** @brief Enable 펄스 생성 */
 void LCD_HW_PulseEnable(void);
 
-/** @brief 마이크로초 지연 (DWT 기반) */
+/** @brief 마이크로초 지연 (클럭 독립 bounded NOP 기반) */
 void LCD_HW_DelayUs(uint32_t us);
 
-/** @brief DWT 사이클 카운터 초기화 */
+/** @brief 지연 모듈 초기화 (호환용) */
 void LCD_HW_InitDelay(void);
 
 #ifdef __cplusplus

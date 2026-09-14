@@ -6,6 +6,7 @@
 #include "button.h"
 #include "menu_screen.h"
 #include "megasonic_ctrl.h"
+#include "megasonic_pwm.h"
 #include "modbus_rtu.h"
 #include "settings_store.h"
 #include "adc_control.h"
@@ -43,15 +44,15 @@ static const uint8_t s_freq_presets_l_step[FREQ_EDIT_CH_COUNT] = {
     1U,  /* CH7 1600kHz */
     1U,  /* CH8 1800kHz */
     2U,  /* CH9 2000kHz -> 0001 */
-    1U,  /* CH10 2200kHz */
+    1U,  /* CH10 2300kHz */
 };
 
 #define MENU_BEEP_ALARM_MS 400U
 #define MENU_BEEP_LONG_MS 120U
 #define MENU_BEEP_CLICK_MS 30U
-#define POWER_EDIT_FAST_STEP 10U /* W 설정은 0.10W 단위로 증감 */
-#define RUN_POWER_STEP_01W 10U  /* RUN 중 UP/DOWN은 0.10W 단위로 즉시 조정 */
-#define SET_EXIT_HOLD_EXTRA_MS 500U /* LONG(1.5s) 이후 추가 0.5s 유지 = 총 2.0s */
+#define POWER_EDIT_FAST_STEP RUN_MANUAL_POWER_STEP_01W /* W 설정은 0.05W 단위로 증감 */
+#define RUN_POWER_STEP_01W RUN_MANUAL_POWER_STEP_01W  /* RUN 중 UP/DOWN은 0.05W 단위로 즉시 조정 */
+#define SET_EXIT_HOLD_EXTRA_MS 1500U /* LONG(1.5s) 이후 추가 1.5s 유지 = 총 3.0s */
 #define MENU_FLASH_SAVE_DELAY_MS 200U /* 버튼 뗀 뒤 0.2s 후 백그라운드 FLASH 저장 */
 #define MENU_LOW_ALARM_ENABLED 0U /* LM5005/DAC 피드백 검증 중 LOW 알람 임시 보류 */
 #define MENU_HIGH_ALARM_ENABLED 0U /* 전압 루프 검증 중 H값 HIGH 알람 정지 보류 */
@@ -114,7 +115,7 @@ static uint32_t s_alarm_beep_off_tick;
 static uint8_t s_click_beep_on;
 static uint32_t s_click_beep_off_tick;
 
-/* 오토튜닝 약 2.5초 누름 보정: LONG(1.5초) + REPEAT(1초) */
+/* 오토튜닝 약 3.0초 누름 보정: LONG(1.5초) + REPEAT(1.5초) */
 static uint8_t s_autotune_armed;
 static uint32_t s_autotune_long_tick;
 
@@ -136,6 +137,7 @@ static uint32_t s_set_exit_long_tick;
 static uint8_t s_store_dirty;
 static uint32_t s_store_due_tick;
 static uint8_t s_store_fail_count;
+static uint32_t s_buck_overvolt_notice_until_tick;
 static OperatingMode_t s_saved_mode_shadow;
 static uint8_t s_saved_freq_ch_shadow;
 static uint8_t s_saved_power_ch_shadow;
@@ -164,6 +166,8 @@ static uint8_t s_run_power_miss_count;
 static uint16_t s_run_retune_safe_freq;
 static uint16_t s_run_retune_safe_duty;
 static uint16_t s_run_retune_safe_voltage;
+static uint16_t s_run_manual_voltage_01v;
+static uint8_t s_run_overcurrent_confirm_count;
 static uint8_t s_run_retune_guard_hit;
 static uint8_t s_run_power_hold_active;
 
@@ -175,6 +179,10 @@ static uint8_t IsGuidedTuneChannel(uint8_t ch);
 static uint8_t StoredPowerFreqLooksStaleNominal(uint8_t freq_ch, uint16_t freq_01khz);
 static uint8_t RunDutyOnlyGoodEnough(uint16_t power_01w, uint16_t target_power_01w);
 static void SetOutputPowerEstimateImmediate(uint16_t power_01w);
+static uint16_t SelectedPowerLow01W(void);
+static uint16_t SelectedPowerHigh01W(void);
+static uint16_t MapVoltageToSelectedPower01W(uint16_t voltage_01v);
+static uint16_t MapPowerToSelectedVoltage01V(uint16_t power_01w);
 
 static uint16_t ClampU16(uint16_t v, uint16_t min, uint16_t max)
 {
@@ -190,9 +198,94 @@ static uint16_t PowerProfileDefaultForChannel(uint8_t ch)
     return ClampU16(def, POWER_PROFILE_DEF_MIN, POWER_PROFILE_HIGH_DEFAULT);
 }
 
+static uint16_t SelectedPowerLow01W(void)
+{
+    if (s_selected_power_ch >= POWER_8STEP_COUNT) {
+        return POWER_PROFILE_LOW_DEFAULT;
+    }
+
+    return s_power_profiles[s_selected_power_ch].low_01w;
+}
+
+static uint16_t SelectedPowerHigh01W(void)
+{
+    if (s_selected_power_ch >= POWER_8STEP_COUNT) {
+        return POWER_PROFILE_HIGH_DEFAULT;
+    }
+
+    return s_power_profiles[s_selected_power_ch].high_01w;
+}
+
+static uint16_t MapVoltageToSelectedPower01W(uint16_t voltage_01v)
+{
+    uint16_t low_01w = SelectedPowerLow01W();
+    uint16_t high_01w = SelectedPowerHigh01W();
+    uint32_t span_01v;
+    uint32_t offset_01v;
+
+    if (high_01w <= low_01w) {
+        return low_01w;
+    }
+
+    if (voltage_01v <= RUN_POWER_MAP_VOLT_MIN_01V) {
+        return low_01w;
+    }
+    if (voltage_01v >= RUN_POWER_MAP_VOLT_MAX_01V) {
+        return high_01w;
+    }
+
+    span_01v = (uint32_t)(RUN_POWER_MAP_VOLT_MAX_01V - RUN_POWER_MAP_VOLT_MIN_01V);
+    offset_01v = (uint32_t)(voltage_01v - RUN_POWER_MAP_VOLT_MIN_01V);
+
+    return (uint16_t)(low_01w
+                      + ((offset_01v * (uint32_t)(high_01w - low_01w) + (span_01v / 2U))
+                         / span_01v));
+}
+
+static uint16_t MapPowerToSelectedVoltage01V(uint16_t power_01w)
+{
+    uint16_t low_01w = SelectedPowerLow01W();
+    uint16_t high_01w = SelectedPowerHigh01W();
+    uint32_t span_01w;
+    uint32_t offset_01w;
+
+    if (high_01w <= low_01w) {
+        return RUN_POWER_MAP_VOLT_MIN_01V;
+    }
+
+    if (power_01w <= low_01w) {
+        return RUN_POWER_MAP_VOLT_MIN_01V;
+    }
+    if (power_01w >= high_01w) {
+        return RUN_POWER_MAP_VOLT_MAX_01V;
+    }
+
+    span_01w = (uint32_t)(high_01w - low_01w);
+    offset_01w = (uint32_t)(power_01w - low_01w);
+
+    return (uint16_t)(RUN_POWER_MAP_VOLT_MIN_01V
+                      + ((offset_01w * (uint32_t)(RUN_POWER_MAP_VOLT_MAX_01V
+                                                  - RUN_POWER_MAP_VOLT_MIN_01V)
+                          + (span_01w / 2U))
+                         / span_01w));
+}
+
 static uint8_t Is2MHzTuneChannel(uint8_t freq_ch)
 {
     return (freq_ch == 8U) ? 1U : 0U; /* CH09 = 2000kHz */
+}
+
+static uint16_t LimitRunVoltage01V(uint16_t voltage_01v)
+{
+    if (voltage_01v < RUN_BASE_VOLTAGE_MIN_01V) {
+        return RUN_BASE_VOLTAGE_MIN_01V;
+    }
+
+    if (voltage_01v > RUN_MANUAL_VOLTAGE_MAX_01V) {
+        return RUN_MANUAL_VOLTAGE_MAX_01V;
+    }
+
+    return voltage_01v;
 }
 
 static uint16_t RunGateDutyMinForFreqCh(uint8_t freq_ch)
@@ -204,9 +297,23 @@ static uint16_t RunGateDutyMinForFreqCh(uint8_t freq_ch)
 
 static uint16_t RunGateDutyMaxForFreqCh(uint8_t freq_ch)
 {
-    return (Is2MHzTuneChannel(freq_ch) != 0U)
-         ? RUN_GATE_DUTY_TUNE_2MHZ_MAX_01PCT
-         : RUN_GATE_DUTY_TUNE_MAX_01PCT;
+    uint16_t freq_01khz;
+    uint16_t limit = (Is2MHzTuneChannel(freq_ch) != 0U)
+                   ? RUN_GATE_DUTY_TUNE_2MHZ_MAX_01PCT
+                   : RUN_GATE_DUTY_TUNE_MAX_01PCT;
+    uint16_t hrtim_limit;
+
+    if (freq_ch >= FREQ_EDIT_CH_COUNT) {
+        freq_01khz = FREQ_DEFAULT;
+    } else {
+        freq_01khz = s_freq_profiles[freq_ch].freq_01khz;
+        if (freq_01khz == 0U) {
+            freq_01khz = s_freq_presets_01khz[freq_ch];
+        }
+    }
+
+    hrtim_limit = MegasonicPWM_MaxDutyForFrequency(freq_01khz);
+    return (limit < hrtim_limit) ? limit : hrtim_limit;
 }
 
 static uint16_t QuantizeRunGateDuty01Pct(uint16_t duty_01pct)
@@ -263,7 +370,7 @@ static void SetRunRetuneSafePoint(uint16_t freq_01khz,
 {
     s_run_retune_safe_freq = ClampFreq01kHz(freq_01khz);
     s_run_retune_safe_duty = ClampRunGateDutyForSelectedFreq(gate_duty_01pct);
-    s_run_retune_safe_voltage = ClampBaseVoltage01V(voltage_01v);
+    s_run_retune_safe_voltage = LimitRunVoltage01V(voltage_01v);
 }
 
 static void RestoreRunRetuneSafePoint(void)
@@ -399,7 +506,11 @@ static uint8_t PowerProfileTuneValidFor(uint8_t power_ch, uint8_t freq_ch)
 
 static uint8_t PowerProfileTuneValid(uint8_t power_ch)
 {
-    return PowerProfileTuneValidFor(power_ch, s_selected_freq_ch);
+    if ((AUTO_TUNE_ENABLED != 0U) || (RUN_RETUNE_ENABLED != 0U)) {
+        return PowerProfileTuneValidFor(power_ch, s_selected_freq_ch);
+    }
+    (void)power_ch;
+    return 0U;
 }
 
 static void ClearPowerTunePoints(uint8_t power_ch)
@@ -493,7 +604,8 @@ static uint32_t MenuFreqPeriodForStaleCheck(uint16_t freq_01khz)
         return 0UL;
     }
 
-    return (uint32_t)((uint64_t)HRTIM_CLOCK_HZ / (uint64_t)freq_hz);
+    return (uint32_t)((HRTIM_EFF_CLOCK_HZ + ((uint64_t)freq_hz / 2ULL))
+                      / (uint64_t)freq_hz);
 }
 
 static uint8_t StoredPowerFreqLooksStaleNominal(uint8_t freq_ch, uint16_t freq_01khz)
@@ -515,6 +627,23 @@ static uint16_t ClampBaseVoltage01V(uint16_t voltage_01v)
     return ClampU16(voltage_01v,
                     RUN_BASE_VOLTAGE_MIN_01V,
                     RUN_BASE_VOLTAGE_MAX_01V);
+}
+
+static uint8_t BuckStartVoltageReady(uint16_t voltage_01v, uint16_t target_voltage_01v)
+{
+    if (voltage_01v > (uint16_t)(target_voltage_01v + TUNE_VOLTAGE_TOL_01V)) {
+        return 0U;
+    }
+
+    if (voltage_01v < RUN_START_MIN_VOLT_01V) {
+        return 0U;
+    }
+
+    if ((uint16_t)(voltage_01v + RUN_START_UNDERVOLT_TOL_01V) < target_voltage_01v) {
+        return 0U;
+    }
+
+    return 1U;
 }
 
 static void GetGuidedTuneLimit(uint8_t ch, uint16_t *lo, uint16_t *hi)
@@ -620,6 +749,7 @@ static void SetOutputPowerEstimateImmediate(uint16_t power_01w)
 static uint16_t RunTargetVoltage01V(void);
 static uint8_t IsGuidedTuneChannel(uint8_t ch);
 static void HoldOutputPowerDisplay(void);
+static void TriggerBuckOverVoltNotice(void);
 static void SetError(ErrorCode_t err);
 static void SetCurrentProtectionError(void);
 static uint8_t AutoTuneFaultActive(void);
@@ -639,6 +769,7 @@ static void ScheduleRunRetune(void);
 static void ResetRunControlState(void)
 {
     s_run_power_control_tick = 0U;
+    s_run_overcurrent_confirm_count = 0U;
     ResetRunFrequencyTracking();
 }
 
@@ -1264,8 +1395,8 @@ static uint8_t PrepareBuckVoltageTargetBeforeStart(uint16_t target_voltage_01v)
     if (target_voltage_01v < RUN_START_MIN_VOLT_01V) {
         target_voltage_01v = RUN_START_MIN_VOLT_01V;
     }
-    if (target_voltage_01v > RUN_POWER_CONTROL_MAX_VOLT_01V) {
-        target_voltage_01v = RUN_POWER_CONTROL_MAX_VOLT_01V;
+    if (target_voltage_01v > BUCK_OUTPUT_MAX_01V) {
+        target_voltage_01v = BUCK_OUTPUT_MAX_01V;
     }
 
     duty = BuckDAC_DutyForVoltage01V(target_voltage_01v);
@@ -1284,7 +1415,7 @@ static uint8_t PrepareBuckVoltageTargetBeforeStart(uint16_t target_voltage_01v)
             return 0U;
         }
 
-        if (AbsDiffU16(voltage_01v, target_voltage_01v) <= TUNE_VOLTAGE_TOL_01V) {
+        if (BuckStartVoltageReady(voltage_01v, target_voltage_01v) != 0U) {
             return 1U;
         }
 
@@ -1314,7 +1445,7 @@ static uint8_t PrepareBuckVoltageTargetBeforeStart(uint16_t target_voltage_01v)
         return 0U;
     }
 
-    if (AbsDiffU16(voltage_01v, target_voltage_01v) > TUNE_VOLTAGE_TOL_01V) {
+    if (BuckStartVoltageReady(voltage_01v, target_voltage_01v) == 0U) {
         MegasonicCtrl_Stop();
         SetError(ERR_START_VOLT);
         return 0U;
@@ -1333,7 +1464,10 @@ static void StartOutputCommon(void)
 {
     ResetRunControlState();
     s_run_freq_manual_hold = 0U;
+    s_run_manual_voltage_01v = 0U;
     ApplyPowerChannel(s_selected_power_ch);
+    s_run_manual_voltage_01v = LimitRunVoltage01V(MapPowerToSelectedVoltage01V(s_output_set_01w));
+    MegasonicCtrl_PrechargeBuck(BuckDAC_DutyForVoltage01V(s_run_manual_voltage_01v));
 
     if (PrepareBuckVoltageBeforeStart() != 0U) {
         uint16_t start_power_01w;
@@ -1376,9 +1510,14 @@ static void StartOutputCommon(void)
             return;
         }
 
-        s_run_retune_pending = 1U;
-        s_run_retune_due_tick = HAL_GetTick();
-        s_run_power_maintain_tick = 0U;
+        if (RUN_RETUNE_ENABLED != 0U) {
+            s_run_retune_pending = 1U;
+            s_run_retune_due_tick = HAL_GetTick();
+            s_run_power_maintain_tick = 0U;
+        } else {
+            s_run_retune_pending = 0U;
+            s_run_retune_active = 0U;
+        }
     }
 }
 
@@ -1454,6 +1593,7 @@ void Menu_RequestOutputStop(void)
     ADC_Control_ClearPowerZeroCurrent();
     s_run_freq_adjust_active = 0U;
     s_run_freq_manual_hold = 0U;
+    s_run_manual_voltage_01v = 0U;
     s_remote_run_latched = 0U;
     ResetRunControlState();
     ApplyPowerChannel(s_selected_power_ch);
@@ -1634,6 +1774,7 @@ static void LoadStoredDataIfValid(void)
     SettingsStoreData_t data;
     uint8_t i;
     uint8_t j;
+    uint8_t freq_ch10_default_migrated = 0U;
 
     if (SettingsStore_Load(&data) == 0U) {
         return;
@@ -1651,27 +1792,26 @@ static void LoadStoredDataIfValid(void)
                                             (uint16_t)(POWER_8STEP_COUNT - 1U));
 
     for (i = 0U; i < FREQ_EDIT_CH_COUNT; i++) {
-        s_freq_profiles[i].freq_01khz = ClampU16(data.freq_profiles[i].freq_01khz,
-                                                 FREQ_EDIT_MIN,
-                                                 FREQ_EDIT_MAX);
-        s_freq_profiles[i].base_voltage_01v = ClampBaseVoltage01V(data.freq_profiles[i].base_voltage_01v);
+        uint16_t raw_base_voltage = data.freq_profiles[i].base_voltage_01v;
+
+        if ((i == (FREQ_EDIT_CH_COUNT - 1U))
+            && (data.freq_profiles[i].freq_01khz == FREQ_CH9_LEGACY_DEFAULT)) {
+            s_freq_profiles[i].freq_01khz = FREQ_CH9_DEFAULT;
+            freq_ch10_default_migrated = 1U;
+            s_power1_default_migrated = 1U;
+        } else {
+            s_freq_profiles[i].freq_01khz = ClampU16(data.freq_profiles[i].freq_01khz,
+                                                     FREQ_EDIT_MIN,
+                                                     FREQ_EDIT_MAX);
+        }
+        s_freq_profiles[i].base_voltage_01v = ClampBaseVoltage01V(raw_base_voltage);
+        if ((raw_base_voltage == 0U) || (raw_base_voltage == RUN_BASE_VOLTAGE_LEGACY_DEFAULT_01V)) {
+            s_freq_profiles[i].base_voltage_01v = RUN_BASE_VOLTAGE_DEFAULT_01V;
+            s_power1_default_migrated = 1U;
+        }
         s_freq_profiles[i].l_step = (uint8_t)ClampU16(data.freq_profiles[i].l_step,
                                                       1U,
                                                       16U);
-
-        if (IsGuidedTuneChannel(i) != 0U) {
-            uint16_t limit_lo;
-            uint16_t limit_hi;
-            uint16_t nominal_freq = s_freq_presets_01khz[i];
-
-            GetGuidedTuneLimit(i, &limit_lo, &limit_hi);
-            if ((s_freq_profiles[i].freq_01khz < limit_lo)
-                || (s_freq_profiles[i].freq_01khz > limit_hi)
-                || (s_freq_profiles[i].freq_01khz > nominal_freq)) {
-                s_freq_profiles[i].freq_01khz = nominal_freq;
-                s_power1_default_migrated = 1U;
-            }
-        }
 
         /* 이전 튜닝값이 Flash에 남아 있으면 새 기본 테이블이 반영되지 않는다.
          * CH04는 1MHz 계열 기본 LC로 1111(l_step=16)을 사용한다. */
@@ -1714,19 +1854,6 @@ static void LoadStoredDataIfValid(void)
         if (looks_old_default != 0U) {
             low = POWER_PROFILE_LOW_DEFAULT;
             high = POWER_PROFILE_HIGH_DEFAULT;
-            def = default_def;
-            s_power1_default_migrated = 1U;
-        }
-
-        if (low != POWER_PROFILE_LOW_DEFAULT) {
-            low = POWER_PROFILE_LOW_DEFAULT;
-            s_power1_default_migrated = 1U;
-        }
-        if (high < POWER_PROFILE_HIGH_DEFAULT) {
-            high = POWER_PROFILE_HIGH_DEFAULT;
-            s_power1_default_migrated = 1U;
-        }
-        if (def != default_def) {
             def = default_def;
             s_power1_default_migrated = 1U;
         }
@@ -1787,6 +1914,11 @@ static void LoadStoredDataIfValid(void)
                 StorePowerTunePoint(i, tuned_freq_ch, tuned_freq, tuned_gate);
             }
         }
+    }
+
+    if (freq_ch10_default_migrated != 0U) {
+        /* 2200 kHz 기준으로 저장된 CH10 튜닝값은 2300 kHz에서 재사용하지 않는다. */
+        ClearPowerTunePointsForFreqChannel((uint8_t)(FREQ_EDIT_CH_COUNT - 1U));
     }
 
     s_rs485_addr = (uint8_t)ClampU16(data.modbus_addr, MODBUS_ADDR_MIN, MODBUS_ADDR_MAX);
@@ -1887,6 +2019,7 @@ static void ApplyFreqEditPreview(void)
 static void ApplyPowerChannel(uint8_t ch)
 {
     const PowerChannelProfile_t *p;
+    uint16_t target_voltage_01v;
     uint8_t tune_valid;
 
     if (ch >= POWER_8STEP_COUNT) return;
@@ -1897,7 +2030,10 @@ static void ApplyPowerChannel(uint8_t ch)
     s_output_set_01w = p->def_01w;
     s_run_power_hold_active = 0U;
     s_run_freq_manual_hold = 0U;
-    MegasonicCtrl_SetDuty(BuckDAC_DutyForVoltage01V(RunTargetVoltage01V()));
+    target_voltage_01v = (s_run_manual_voltage_01v != 0U)
+                       ? RunTargetVoltage01V()
+                       : LimitRunVoltage01V(MapPowerToSelectedVoltage01V(s_output_set_01w));
+    MegasonicCtrl_SetDuty(BuckDAC_DutyForVoltage01V(target_voltage_01v));
     if (tune_valid != 0U) {
         MegasonicCtrl_SetFrequency(PowerTuneFreqForChannel(ch, s_selected_freq_ch));
         MegasonicCtrl_SetRunGateDuty(PowerTuneDutyForChannel(ch, s_selected_freq_ch));
@@ -1918,30 +2054,42 @@ static void ApplyPowerChannel(uint8_t ch)
     }
 }
 
-static uint8_t AdjustRunOutput(int8_t delta)
+static uint8_t AdjustRunVoltage(int8_t delta)
 {
-    const PowerChannelProfile_t *p = &s_power_profiles[s_selected_power_ch];
-    uint16_t prev = s_output_set_01w;
+    uint16_t prev_voltage;
+    uint16_t prev_power;
+    uint16_t next_power;
+    uint16_t next_voltage;
     int32_t next;
 
-    if (delta == 0) {
+    if ((delta == 0) || (g_us_state.running == 0U)) {
         return 0U;
     }
 
-    next = (int32_t)s_output_set_01w + ((int32_t)delta * (int32_t)RUN_POWER_STEP_01W);
-    s_output_set_01w = ClampU16((uint16_t)((next < 0) ? 0 : next),
-                                p->low_01w,
-                                POWER_PROFILE_HIGH_MAX);
-    if (s_output_set_01w == prev) {
+    prev_voltage = RunTargetVoltage01V();
+    prev_power = MapVoltageToSelectedPower01W(prev_voltage);
+    next = (int32_t)prev_power + (int32_t)delta;
+    next_power = ClampU16((uint16_t)((next < 0) ? 0 : next),
+                          SelectedPowerLow01W(),
+                          SelectedPowerHigh01W());
+    next_voltage = LimitRunVoltage01V(MapPowerToSelectedVoltage01V(next_power));
+
+    if ((next_power == prev_power) || (next_voltage == prev_voltage)) {
+        if ((delta > 0) && (prev_voltage >= RUN_MANUAL_VOLTAGE_MAX_01V)) {
+            TriggerBuckOverVoltNotice();
+            return 1U;
+        }
         return 0U;
     }
 
+    s_run_manual_voltage_01v = next_voltage;
     s_run_power_hold_active = 0U;
-    s_run_freq_manual_hold = 0U;
-    MegasonicCtrl_SetDuty(BuckDAC_DutyForVoltage01V(RunTargetVoltage01V()));
-    HoldOutputPowerDisplay();
+    MegasonicCtrl_SetDuty(BuckDAC_DutyForVoltage01V(next_voltage));
+    SetRunRetuneSafePoint(g_us_state.target_freq,
+                          MegasonicCtrl_GetRunGateDuty(),
+                          next_voltage);
     s_run_power_control_tick = 0U;
-    ScheduleRunRetune();
+    HoldOutputPowerDisplay();
     MenuScreen_ForceRefresh();
     return 1U;
 }
@@ -1991,6 +2139,12 @@ static void ClearError(void)
     s_high_alarm_pending = 0U;
     s_overcurrent_latch_ma = 0U;
     s_overcurrent_latch_voltage_01v = 0U;
+}
+
+static void TriggerBuckOverVoltNotice(void)
+{
+    s_buck_overvolt_notice_until_tick = HAL_GetTick() + RUN_BUCK_LIMIT_NOTICE_MS;
+    MenuScreen_ForceRefresh();
 }
 
 static void LoadFreqEditBuffer(uint8_t ch)
@@ -2045,7 +2199,6 @@ static void CommitPowerEditBuffer(void)
 
     s_power_edit_low = ClampU16(s_power_edit_low, POWER_PROFILE_LOW_MIN, POWER_PROFILE_LOW_MAX);
     s_power_edit_high = ClampU16(s_power_edit_high, POWER_PROFILE_HIGH_MIN, POWER_PROFILE_HIGH_MAX);
-    s_power_edit_high = POWER_PROFILE_HIGH_MAX;
 
     if (s_power_edit_low >= s_power_edit_high) {
         s_power_edit_high = (uint16_t)(s_power_edit_low + 1U);
@@ -2126,6 +2279,14 @@ static void RunAutoTuneAndSave(void)
     uint16_t coarse_hi;
     uint16_t fine_lo;
     uint16_t fine_hi;
+
+    if (AUTO_TUNE_ENABLED == 0U) {
+        s_autotune_armed = 0U;
+        s_autotune_running = 0U;
+        s_autotune_status = TUNE_STATUS_IDLE;
+        s_autotune_progress = 0U;
+        return;
+    }
     uint16_t score;
     uint16_t guided_preferred_freq;
     uint8_t guided_tune;
@@ -2769,16 +2930,16 @@ static uint16_t RunTargetVoltage01V(void)
 {
     uint16_t voltage_01v;
 
+    if (s_run_manual_voltage_01v != 0U) {
+        return LimitRunVoltage01V(s_run_manual_voltage_01v);
+    }
+
     if (s_selected_freq_ch >= FREQ_EDIT_CH_COUNT) {
         return RUN_BASE_VOLTAGE_DEFAULT_01V;
     }
 
-    voltage_01v = ClampBaseVoltage01V(s_freq_profiles[s_selected_freq_ch].base_voltage_01v);
-    if ((Is2MHzTuneChannel(s_selected_freq_ch) != 0U)
-        && (voltage_01v > RUN_VOLTAGE_2MHZ_MAX_01V)) {
-        voltage_01v = RUN_VOLTAGE_2MHZ_MAX_01V;
-    }
-    return voltage_01v;
+    voltage_01v = s_freq_profiles[s_selected_freq_ch].base_voltage_01v;
+    return LimitRunVoltage01V(voltage_01v);
 }
 
 static void ServiceRunPowerControl(void)
@@ -2789,9 +2950,8 @@ static void ServiceRunPowerControl(void)
     uint16_t duty;
     uint32_t current_ma;
 
-    if (RUN_POWER_CONTROL_ENABLED == 0U) return;
+    if ((RUN_POWER_CONTROL_ENABLED == 0U) && (RUN_VOLTAGE_TRACK_ENABLED == 0U)) return;
     if (s_autotune_running != 0U) return;
-    if (s_run_power_hold_active != 0U) return;
     if ((now - s_run_power_control_tick) < RUN_POWER_CONTROL_INTERVAL_MS) return;
 
     s_run_power_control_tick = now;
@@ -2799,6 +2959,15 @@ static void ServiceRunPowerControl(void)
     target_voltage_01v = RunTargetVoltage01V();
     duty = g_us_state.target_duty;
     current_ma = (ADC_Control_GetCurrentuA() + 500UL) / 1000UL;
+
+    if (current_ma >= RUN_POWER_CONTROL_CUR_GUARD_MA) {
+        duty = (duty > RUN_POWER_CONTROL_STEP_FAST)
+             ? (uint16_t)(duty - RUN_POWER_CONTROL_STEP_FAST)
+             : DUTY_MIN;
+        MegasonicCtrl_SetDuty(duty);
+        MegasonicCtrl_Update();
+        return;
+    }
 
     if ((uint16_t)(voltage_01v + RUN_VOLTAGE_CONTROL_DEADBAND_01V) < target_voltage_01v) {
         if (duty < DUTY_CLAMP_MAX) {
@@ -2808,15 +2977,6 @@ static void ServiceRunPowerControl(void)
             MegasonicCtrl_SetDuty(duty);
             MegasonicCtrl_Update();
         }
-        return;
-    }
-
-    if (current_ma >= RUN_POWER_CONTROL_CUR_GUARD_MA) {
-        duty = (duty > RUN_POWER_CONTROL_STEP_FAST)
-             ? (uint16_t)(duty - RUN_POWER_CONTROL_STEP_FAST)
-             : DUTY_MIN;
-        MegasonicCtrl_SetDuty(duty);
-        MegasonicCtrl_Update();
         return;
     }
 
@@ -2830,6 +2990,11 @@ static void ServiceRunPowerControl(void)
              : DUTY_MIN;
         MegasonicCtrl_SetDuty(duty);
         MegasonicCtrl_Update();
+        return;
+    }
+
+    if ((RUN_POWER_CONTROL_ENABLED == 0U) || (s_run_power_hold_active != 0U)) {
+        return;
     }
 }
 
@@ -4270,6 +4435,8 @@ static void ServiceRunPowerRetune(void)
 
 static void ServiceRunBuckProtect(void)
 {
+    uint32_t current_ma;
+
     if (ADC_Control_GetVoltage01V() >= RUN_BUCK_OVERVOLT_01V) {
         MegasonicCtrl_EmergencyStop();
         LatchOvercurrentSnapshot();
@@ -4277,7 +4444,18 @@ static void ServiceRunBuckProtect(void)
         return;
     }
 
-    (void)StopIfOvercurrentNow();
+    ADC_Control_Process();
+    current_ma = (ADC_Control_GetCurrentuA() + 500UL) / 1000UL;
+    if (current_ma >= RUN_HIGH_CUR_PROTECT_MA) {
+        if (s_run_overcurrent_confirm_count < 0xFFU) {
+            s_run_overcurrent_confirm_count++;
+        }
+        if (s_run_overcurrent_confirm_count >= RUN_OVERCURRENT_CONFIRM_COUNT) {
+            SetCurrentProtectionError();
+        }
+    } else {
+        s_run_overcurrent_confirm_count = 0U;
+    }
 }
 
 static void ServiceRemoteRunRequest(void)
@@ -4469,7 +4647,7 @@ static void HandleSelectState(ButtonEvent_t evt_start,
 
             delta = EventStepDelta(evt_up, evt_down);
             if (s_run_freq_adjust_active == 0U) {
-                if (AdjustRunOutput(delta) != 0U) {
+                if (AdjustRunVoltage(delta) != 0U) {
                     StartClickBeep();
                 }
             } else if (delta != 0) {
@@ -4484,6 +4662,11 @@ static void HandleSelectState(ButtonEvent_t evt_start,
         if (evt_set == BTN_EVT_PRESS) {
             (void)ForceStoreFlush();
             MenuScreen_ForceRefresh();
+            return;
+        }
+
+        delta = EventStepDelta(evt_up, evt_down);
+        if (delta != 0) {
             return;
         }
 
@@ -4510,9 +4693,8 @@ static void HandleSelectState(ButtonEvent_t evt_start,
         return;
     }
 
-    if (evt_set == BTN_EVT_LONG_PRESS) {
+    if (TryExitToInitialBySetHold(evt_set) != 0U) {
         (void)ForceStoreFlush();
-        s_select_mode_active = 0U;
         MenuScreen_ForceRefresh();
         return;
     }
@@ -4743,11 +4925,11 @@ static void HandleSettingFreqState(ButtonEvent_t evt_start,
         MenuScreen_ForceRefresh();
     }
 
-    if (evt_start == BTN_EVT_LONG_PRESS) {
+    if ((AUTO_TUNE_ENABLED != 0U) && (evt_start == BTN_EVT_LONG_PRESS)) {
         s_autotune_armed = 1U;
         s_autotune_long_tick = HAL_GetTick();
         StartLongPressBeep();
-    } else if ((s_autotune_armed != 0U) && (evt_start == BTN_EVT_REPEAT)) {
+    } else if ((AUTO_TUNE_ENABLED != 0U) && (s_autotune_armed != 0U) && (evt_start == BTN_EVT_REPEAT)) {
         if ((HAL_GetTick() - s_autotune_long_tick) >= TUNE_START_HOLD_EXTRA_MS) {
             RunAutoTuneAndSave();
             s_autotune_armed = 0U;
@@ -4820,6 +5002,7 @@ static void HandleSettingFreqState(ButtonEvent_t evt_start,
                 ClampU16(s_freq_edit_freq, FREQ_EDIT_MIN, FREQ_EDIT_MAX);
             s_freq_profiles[edit_ch].l_step =
                 (uint8_t)ClampU16(s_freq_edit_l_step, 1U, 16U);
+            MarkStoreDirty();
         }
         MenuScreen_ForceRefresh();
         StartClickBeep();
@@ -4950,6 +5133,7 @@ static void HandleSettingPowerState(ButtonEvent_t evt_start,
             if (s_power_edit_def != old_def) {
                 ClearPowerTunePoints(edit_ch);
             }
+            MarkStoreDirty();
         }
         MenuScreen_ForceRefresh();
         StartClickBeep();
@@ -5145,6 +5329,7 @@ void Menu_Init(void)
     s_store_dirty = 0U;
     s_store_due_tick = 0U;
     s_store_fail_count = 0U;
+    s_buck_overvolt_notice_until_tick = 0U;
     s_saved_mode_shadow = s_selected_mode;
     s_saved_freq_ch_shadow = s_selected_freq_ch;
     s_saved_power_ch_shadow = s_selected_power_ch;
@@ -5276,7 +5461,20 @@ uint16_t Menu_GetOutputSetPower01W(void)
 
 uint16_t Menu_GetOutputEstPower01W(void)
 {
+    if (g_us_state.running != 0U) {
+        return MapVoltageToSelectedPower01W(RunTargetVoltage01V());
+    }
+
     return s_output_est_01w;
+}
+
+uint16_t Menu_GetRunTargetVoltage01V(void)
+{
+    if (g_us_state.running == 0U) {
+        return MapPowerToSelectedVoltage01V(s_output_set_01w);
+    }
+
+    return RunTargetVoltage01V();
 }
 
 uint8_t Menu_IsRunFreqAdjustActive(void)
@@ -5352,6 +5550,14 @@ uint8_t Menu_HasError(void)
 ErrorCode_t Menu_GetErrorCode(void)
 {
     return s_error_code;
+}
+
+uint8_t Menu_IsBuckOverVoltNoticeActive(void)
+{
+    if (s_buck_overvolt_notice_until_tick == 0U) {
+        return 0U;
+    }
+    return ((int32_t)(HAL_GetTick() - s_buck_overvolt_notice_until_tick) < 0) ? 1U : 0U;
 }
 
 uint16_t Menu_GetOvercurrentLatchmA(void)

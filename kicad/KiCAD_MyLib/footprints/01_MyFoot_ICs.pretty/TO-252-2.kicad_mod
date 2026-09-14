@@ -3,12 +3,11 @@
 	(generator "pcbnew")
 	(generator_version "10.0")
 	(layer "F.Cu")
-	(descr "TO-252/DPAK SMD package, http://www.infineon.com/cms/en/product/packages/PG-TO252/PG-TO252-3-1/")
 	(tags "DPAK TO-252 DPAK-3 TO-252-3 SOT-428")
 	(property "Reference" "REF**"
 		(at 0 -4.5 0)
 		(layer "F.SilkS")
-		(uuid "248102fc-6e25-488e-a621-cc2a1464a2bf")
+		(uuid "72263770-5702-4bc6-9eaf-a0fb3d09133a")
 		(effects
 			(font
 				(size 1.1 1.1)
@@ -19,7 +18,7 @@
 	(property "Value" "TO-252-2"
 		(at 0.89 4.5 0)
 		(layer "F.Fab")
-		(uuid "e3df6e8b-4449-4e8e-aed3-4b9ec2033d94")
+		(uuid "2a413305-6aec-4f14-9165-dec935cb5756")
 		(effects
 			(font
 				(size 1 1)
@@ -31,7 +30,7 @@
 		(at 0 0 0)
 		(layer "F.Fab")
 		(hide yes)
-		(uuid "333c9fe6-f099-4f9b-990f-29284a450269")
+		(uuid "bfc598fb-0a36-417d-996d-0cb2648fa7ae")
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -42,7 +41,7 @@
 		(at 0 0 0)
 		(layer "F.Fab")
 		(hide yes)
-		(uuid "2e895e56-5fe1-4479-8f51-d80438a67f63")
+		(uuid "b6dc10ad-829a-439c-9a6e-ec134952cddf")
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -53,7 +52,7 @@
 		(at 0 0 0)
 		(layer "F.SilkS")
 		(hide yes)
-		(uuid "41e9f01b-3766-4693-aaa7-c2475bb9e45a")
+		(uuid "5cbfe775-0ca3-45c0-ac00-a32b8fd2f5ea")
 		(effects
 			(font
 				(size 1 1)
@@ -71,7 +70,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "cea4eaba-0df7-483a-a820-8143bdd35817")
+		(uuid "455b162e-f1c4-4c02-8f63-5ab1183844c0")
 	)
 	(fp_line
 		(start -2.42 3.45)
@@ -81,7 +80,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "149b5a8a-0ae0-40c9-888e-7eb6daaf17fd")
+		(uuid "da555504-776d-429c-90f2-fd982438f177")
 	)
 	(fp_line
 		(start 4 -3.45)
@@ -91,7 +90,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "a5326ebb-be84-45ef-ac93-a20f4eaff421")
+		(uuid "ffbfc528-e324-478c-af7b-64bfd731034b")
 	)
 	(fp_line
 		(start 4 3.45)
@@ -101,7 +100,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "512e0cbe-c5f6-44c7-984d-52315128f561")
+		(uuid "e2212594-5ed6-4689-92fd-07ae66fd64cb")
 	)
 	(fp_poly
 		(pts
@@ -113,7 +112,7 @@
 		)
 		(fill yes)
 		(layer "F.SilkS")
-		(uuid "5f66dd9c-1a6a-43e6-b287-58bb6ce15a03")
+		(uuid "fe10e613-24a4-41f4-9f0b-61827be0a039")
 	)
 	(fp_rect
 		(start -5.96 -3.5)
@@ -124,7 +123,7 @@
 		)
 		(fill no)
 		(layer "F.CrtYd")
-		(uuid "e6493604-df4b-47ca-9c3c-ce42e637d267")
+		(uuid "0a513021-2300-46d2-aa22-eaa4dbe612ef")
 	)
 	(fp_line
 		(start -4.92 -2.655)
@@ -134,7 +133,7 @@
 			(type solid)
 		)
 		(layer "F.Fab")
-		(uuid "e22d366a-edcc-4159-9323-9001c48001e1")
+		(uuid "7a13cf41-f87c-4df2-8230-05f25d75f4c8")
 	)
 	(fp_line
 		(start -4.92 -1.905)
@@ -144,7 +143,7 @@
 			(type solid)
 		)
 		(layer "F.Fab")
-		(uuid "ea2d0710-776c-4dc2-9663-7f3b0e8408ef")
+		(uuid "7d7b63f3-1f09-4535-9c8e-03df4b936933")
 	)
 	(fp_line
 		(start -4.92 1.905)
@@ -154,7 +153,7 @@
 			(type solid)
 		)
 		(layer "F.Fab")
-		(uuid "2363b0a0-6669-45ea-9ef9-d26129db46a7")
+		(uuid "8e3454aa-c6fc-43b4-8def-6aebb7f042a7")
 	)
 	(fp_line
 		(start -4.92 2.655)
@@ -164,7 +163,7 @@
 			(type solid)
 		)
 		(layer "F.Fab")
-		(uuid "a36b22a4-79be-48d2-8d27-31dbdd8895ca")
+		(uuid "a83df44a-c289-44f0-adb2-3e3bb9b247aa")
 	)
 	(fp_line
 		(start -2.22 1.905)
@@ -174,7 +173,7 @@
 			(type solid)
 		)
 		(layer "F.Fab")
-		(uuid "b850550c-3f63-4f61-8638-17fab0c1d8bf")
+		(uuid "683f107a-3048-4abe-aa65-8c4a72d1f691")
 	)
 	(fp_line
 		(start -1.815 -2.655)
@@ -184,7 +183,7 @@
 			(type solid)
 		)
 		(layer "F.Fab")
-		(uuid "24276916-a059-4df3-b4ac-3e7b87e76021")
+		(uuid "0e6a9ffa-05fe-46e4-b40e-03133dd02759")
 	)
 	(fp_line
 		(start 4 -2.7)
@@ -194,7 +193,7 @@
 			(type solid)
 		)
 		(layer "F.Fab")
-		(uuid "fa6c5e87-e39c-49c6-b13a-2bf9197ae230")
+		(uuid "33eaa95a-7f44-4c07-9ba4-3b1ee77bb271")
 	)
 	(fp_line
 		(start 5 -2.7)
@@ -204,7 +203,7 @@
 			(type solid)
 		)
 		(layer "F.Fab")
-		(uuid "37247ac5-a97f-4f69-b840-4eea54a7b1c6")
+		(uuid "9582cc16-0b1c-49f1-985f-f7dd78aed200")
 	)
 	(fp_line
 		(start 5 2.7)
@@ -214,7 +213,7 @@
 			(type solid)
 		)
 		(layer "F.Fab")
-		(uuid "52aa97ba-75c5-4565-bae4-edeb6361ca63")
+		(uuid "37f21b39-8ce1-49a8-ba9a-dbc47c3fb337")
 	)
 	(fp_poly
 		(pts
@@ -226,12 +225,12 @@
 		)
 		(fill no)
 		(layer "F.Fab")
-		(uuid "19a98e03-ef8b-4934-9b53-c63ab618cdfc")
+		(uuid "24de3255-dd10-4c99-943f-fe2bc29aafdf")
 	)
 	(fp_text user "${REFERENCE}"
 		(at 0.89 0 0)
 		(layer "F.Fab")
-		(uuid "034f5872-2fd4-4803-97e2-6a683db6ecf7")
+		(uuid "e20e781d-1137-4612-929e-b9f22a284500")
 		(effects
 			(font
 				(size 1 1)
@@ -244,60 +243,60 @@
 		(size 3.05 3)
 		(layers "F.Paste")
 		(roundrect_rratio 0.09)
-		(uuid "a02ce783-d4ca-4186-961c-60c36f5bb48b")
+		(uuid "584a93a1-7152-4ec6-9097-3c5bb257704d")
 	)
 	(pad "" smd roundrect
 		(at 0.61 1.4)
 		(size 3.05 3)
 		(layers "F.Paste")
 		(roundrect_rratio 0.09)
-		(uuid "b998e0ad-67e5-4df2-8cac-b7f280f68245")
+		(uuid "92ce8e5f-a89e-4875-ad2e-8e4dc4d8e0e9")
 	)
 	(pad "" smd roundrect
 		(at 3.89 -1.41)
 		(size 4 3)
 		(layers "F.Paste")
 		(roundrect_rratio 0.090909)
-		(uuid "49af79c2-eaa8-4a66-b7ce-85c42628b2ca")
+		(uuid "7e95cc90-d93c-4338-b0ea-c7fb70258213")
 	)
 	(pad "" smd roundrect
 		(at 3.99 1.41)
 		(size 3.8 3)
 		(layers "F.Paste")
 		(roundrect_rratio 0.090909)
-		(uuid "6da26ba0-461d-4f8b-ae61-323ce9862fd5")
+		(uuid "ca9ecbf4-d158-4e4a-92b3-373765f64384")
 	)
 	(pad "1" smd roundrect
 		(at -4.51 -2.28)
 		(size 2.8 1.2)
 		(layers "F.Cu" "F.Mask" "F.Paste")
 		(roundrect_rratio 0.208333)
-		(uuid "56965daf-d51b-4cb2-acb9-973241c049b1")
+		(uuid "918f50c1-b49e-402b-aea1-b98a07a9d1ea")
 	)
 	(pad "2" smd roundrect
 		(at 2.49 0)
 		(size 6.8 5.8)
 		(layers "F.Cu" "F.Mask")
 		(roundrect_rratio 0.043103)
-		(uuid "9436b125-2f3a-49fc-80e9-d1c2ccaeee48")
+		(uuid "58b87dcc-d87c-4700-b622-223345ae3001")
 	)
 	(pad "3" smd roundrect
 		(at -4.51 2.28)
 		(size 2.8 1.2)
 		(layers "F.Cu" "F.Mask" "F.Paste")
 		(roundrect_rratio 0.208333)
-		(uuid "4315ed55-d7cd-4087-8956-5e462c6d5370")
+		(uuid "b8b18750-dccc-4300-a1de-b3297e031d80")
 	)
 	(embedded_fonts no)
 	(model "${KICAD10_3DMODEL_DIR}/Package_TO_SOT_SMD.3dshapes/TO-252-2.step"
 		(offset
-			(xyz 0 0 0)
+			(xyz 0.8 0 0)
 		)
 		(scale
 			(xyz 1 1 1)
 		)
 		(rotate
-			(xyz 0 0 0)
+			(xyz -0 -0 -0)
 		)
 	)
 )

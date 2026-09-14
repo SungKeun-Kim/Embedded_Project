@@ -8,6 +8,8 @@
 #include "stm32g4xx_hal.h"
 #include "button.h"
 #include "modbus_rtu.h"
+#include "adc_control.h"
+#include "ultrasonic_ctrl.h"
 
 /* ================================================================
    Cortex-M4 프로세서 예외 핸들러
@@ -99,4 +101,20 @@ void TIM4_IRQHandler(void)
         __HAL_TIM_CLEAR_FLAG(&htim4, TIM_FLAG_UPDATE);
         Modbus_FrameTimeoutCallback();
     }
+}
+
+/* TIM7 10 kHz — PA8/PA9 주파수 Sweep 갱신 */
+void TIM7_DAC_IRQHandler(void)
+{
+    if (__HAL_TIM_GET_FLAG(&htim7_sweep, TIM_FLAG_UPDATE) != RESET &&
+        __HAL_TIM_GET_IT_SOURCE(&htim7_sweep, TIM_IT_UPDATE) != RESET) {
+        __HAL_TIM_CLEAR_IT(&htim7_sweep, TIM_IT_UPDATE);
+        UltrasonicCtrl_SweepTimerCallback();
+    }
+}
+
+/* ADC2/PA6 입력 소비전류 circular DMA half/full 완료 */
+void DMA1_Channel1_IRQHandler(void)
+{
+    HAL_DMA_IRQHandler(&hdma_adc2);
 }

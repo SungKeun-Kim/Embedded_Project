@@ -6,10 +6,10 @@
     python tests/test_logic.py
 
 검증 항목:
-    - ARR 계산 정확도 (주파수 → 레지스터 역산)
-    - CCR 계산 정확도 (듀티비 → 레지스터 역산)
+    - HRTIM PER 계산 정확도 (주파수 → 레지스터 역산)
+    - TIM3 CH2 위상제어 CCR 계산 정확도
     - 주파수-듀티 교차 일관성 (LCD 표시 검증 시뮬레이션)
-    - ADC → 듀티 매핑 정확도
+    - CT ADC 정규화 정확도
     - Modbus CRC-16 알려진 벡터
     - 파라미터 범위 상수 일관성
     - 소프트 스타트 시뮬레이션
@@ -18,15 +18,20 @@
 import sys
 
 # ── params.h 상수 복제 ──
-TIM1_CLOCK_HZ   = 170_000_000
+HRTIM_CLOCK_HZ  = 680_000_000
+TIM3_CLOCK_HZ   = 170_000_000
+PHASE_PWM_FREQUENCY_HZ = 3_000
+PHASE_PWM_PERIOD_COUNTS = TIM3_CLOCK_HZ // PHASE_PWM_FREQUENCY_HZ
 FREQ_DEFAULT     = 280    # 28.0 kHz
-FREQ_MIN         = 200    # 20.0 kHz
-FREQ_MAX         = 500    # 50.0 kHz
+FREQ_MIN         = 150    # 15.0 kHz
+FREQ_MAX         = 1280   # 128.0 kHz
 FREQ_STEP        = 1
 DUTY_DEFAULT     = 450    # 45.0%
 DUTY_MIN         = 0
 DUTY_MAX         = 1000   # 100.0%
 DUTY_CLAMP_MAX   = 900    # 90.0%
+PWM_OUTPUT_DUTY_MIN = 50  # 5.0%
+PWM_OUTPUT_DUTY_MAX = 1000 # 100.0%
 ADC_RESOLUTION   = 4096
 ADC_DEADZONE_LOW = 50
 ADC_DEADZONE_HIGH= 4045
@@ -67,22 +72,31 @@ def test_assert_near(a, b, tol, msg):
 # ── 테스트 대상 함수 (C 로직과 동일, 정수 산술) ──
 
 def calc_arr(freq_01khz: int) -> int:
-    """Center-aligned 모드 ARR 계산 (C 코드와 동일 정수 산술)"""
+    """HRTIM edge-aligned PER 계산 (C 코드와 동일 정수 산술)"""
     freq_01khz = max(FREQ_MIN, min(FREQ_MAX, freq_01khz))
     freq_hz = freq_01khz * 100
-    arr = TIM1_CLOCK_HZ // (2 * freq_hz) - 1
+    arr = HRTIM_CLOCK_HZ // freq_hz
     return arr
 
 def arr_to_freq_khz(arr: int) -> float:
-    """ARR → 실제 주파수(kHz) 역산"""
-    return TIM1_CLOCK_HZ / (2.0 * (arr + 1)) / 1000.0
+    """HRTIM PER → 실제 주파수(kHz) 역산"""
+    return HRTIM_CLOCK_HZ / arr / 1000.0
 
-def calc_ccr(arr: int, duty_01pct: int) -> int:
-    """CCR 계산 (듀티비 클램핑 포함)"""
+def calc_ccr(period: int, duty_01pct: int) -> int:
+    """TIM3 CH2 CCR 계산 (듀티비 클램핑 포함)"""
     if duty_01pct > DUTY_CLAMP_MAX:
         duty_01pct = DUTY_CLAMP_MAX
-    ccr = (arr * duty_01pct) // 1000
+    pwm_output_duty = PWM_OUTPUT_DUTY_MIN + (
+        duty_01pct * (PWM_OUTPUT_DUTY_MAX - PWM_OUTPUT_DUTY_MIN)
+    ) // DUTY_CLAMP_MAX
+    ccr = (period * pwm_output_duty) // 1000
     return ccr
+
+def output_value_to_phase_duty(local_duty: int, output_value: int) -> int:
+    """PB1 로컬 상한과 Modbus 출력값을 내부 지령으로 결합"""
+    local_duty = min(local_duty, DUTY_CLAMP_MAX)
+    output_value = min(output_value, 500)
+    return local_duty * output_value // 500
 
 def ccr_to_duty_pct(ccr: int, arr: int) -> float:
     """CCR → 실제 듀티비(%) 역산"""
@@ -91,7 +105,7 @@ def ccr_to_duty_pct(ccr: int, arr: int) -> float:
     return ccr / arr * 100.0
 
 def adc_to_duty_mapped(adc_raw: int) -> int:
-    """ADC → 듀티 매핑 (데드존 적용)"""
+    """CT ADC → 정규화 전류값 (데드존 적용)"""
     if adc_raw <= ADC_DEADZONE_LOW:
         return 0
     if adc_raw >= ADC_DEADZONE_HIGH:
@@ -116,7 +130,7 @@ def crc16_modbus(data: bytes) -> int:
 # ═══════════════════════════════════════════
 
 def test_arr_calculation():
-    print("[TEST] ARR 계산 정확도")
+    print("[TEST] HRTIM PER 계산 정확도")
 
     # 28.0 kHz
     arr_28k = calc_arr(280)
@@ -130,17 +144,17 @@ def test_arr_calculation():
     test_assert_near(actual_freq, 40.0, 0.05,
         "40.0kHz 설정 시 역산 주파수 오차 < 0.05kHz")
 
-    # 경계값: FREQ_MIN (20.0 kHz)
+    # 경계값: FREQ_MIN (15.0 kHz)
     arr_min = calc_arr(FREQ_MIN)
     actual_freq = arr_to_freq_khz(arr_min)
-    test_assert_near(actual_freq, 20.0, 0.05,
-        "FREQ_MIN(20.0kHz) 역산 정확도")
+    test_assert_near(actual_freq, 15.0, 0.05,
+        "FREQ_MIN(15.0kHz) 역산 정확도")
 
-    # 경계값: FREQ_MAX (50.0 kHz)
+    # 경계값: FREQ_MAX (128.0 kHz)
     arr_max = calc_arr(FREQ_MAX)
     actual_freq = arr_to_freq_khz(arr_max)
-    test_assert_near(actual_freq, 50.0, 0.1,
-        "FREQ_MAX(50.0kHz) 역산 정확도")
+    test_assert_near(actual_freq, 128.0, 0.1,
+        "FREQ_MAX(128.0kHz) 역산 정확도")
 
     # 범위 이하 입력 → 클램핑
     arr_under = calc_arr(100)
@@ -148,35 +162,49 @@ def test_arr_calculation():
         "FREQ_MIN 미만 입력 시 클램핑")
 
     # 범위 초과 입력 → 클램핑
-    arr_over = calc_arr(600)
+    arr_over = calc_arr(1300)
     test_assert_eq(arr_over, arr_max,
         "FREQ_MAX 초과 입력 시 클램핑")
 
 def test_ccr_calculation():
-    print("[TEST] CCR 계산 정확도 (듀티비)")
+    print("[TEST] TIM3 CH2 위상제어 CCR 계산")
 
-    arr = calc_arr(280)
+    period = PHASE_PWM_PERIOD_COUNTS
+    test_assert_eq(period, 56_666, "TIM3 3kHz period 계산")
 
-    # 45.0% 듀티
-    ccr_45 = calc_ccr(arr, 450)
-    actual_duty = ccr_to_duty_pct(ccr_45, arr)
-    test_assert_near(actual_duty, 45.0, 0.5,
-        "45.0% 듀티 역산 오차 < 0.5%")
+    # 내부 45.0% -> PA7 PWM_OUTPUT 52.5%
+    ccr_45 = calc_ccr(period, 450)
+    actual_duty = ccr_to_duty_pct(ccr_45, period)
+    test_assert_near(actual_duty, 52.5, 0.5,
+        "내부 45.0% -> PWM_OUTPUT 52.5%")
 
-    # 0% 듀티
-    ccr_0 = calc_ccr(arr, 0)
-    test_assert_eq(ccr_0, 0, "0% 듀티 → CCR=0")
+    # 내부 0% -> PA7 최소 5%
+    ccr_0 = calc_ccr(period, 0)
+    test_assert_near(ccr_to_duty_pct(ccr_0, period), 5.0, 0.1,
+        "내부 0% -> PWM_OUTPUT 5%")
 
     # 100% 입력 → 90% 클램핑
-    ccr_100 = calc_ccr(arr, 1000)
-    ccr_90 = calc_ccr(arr, 900)
+    ccr_100 = calc_ccr(period, 1000)
+    ccr_90 = calc_ccr(period, 900)
     test_assert_eq(ccr_100, ccr_90,
         "100% 입력 시 DUTY_CLAMP_MAX(90%)로 클램핑")
 
-    # 클램핑된 듀티가 90% 이하인지 확인
-    clamped_duty = ccr_to_duty_pct(ccr_100, arr)
-    test_assert(clamped_duty <= 90.1,
-        "클램핑 후 실제 듀티 ≤ 90%")
+    # 최대 내부 지령은 PA7 100%
+    clamped_duty = ccr_to_duty_pct(ccr_100, period)
+    test_assert_near(clamped_duty, 100.0, 0.1,
+        "클램핑 후 PWM_OUTPUT 실제 듀티 = 100%")
+
+    # PB1 로컬 상한과 Modbus OUTPUT_VALUE 결합
+    for local, command, expected in (
+        (900, 0, 5.0),
+        (900, 250, 52.5),
+        (900, 500, 100.0),
+        (450, 500, 52.5),
+    ):
+        duty = output_value_to_phase_duty(local, command)
+        actual = ccr_to_duty_pct(calc_ccr(period, duty), period)
+        test_assert_near(actual, expected, 0.1,
+            f"VR={local}, OUTPUT_VALUE={command} PWM 출력")
 
 def test_frequency_duty_consistency():
     print("[TEST] 주파수-듀티 교차 일관성 (LCD 표시 검증 시뮬레이션)")
@@ -195,7 +223,7 @@ def test_frequency_duty_consistency():
 
     # 4) 원래 설정값과 비교 — LCD 정합성 테스트
     test_assert_eq(readback_01khz, display_freq_01khz,
-        "LCD 표시 주파수 = TIM1 ARR 역산 주파수 (28.0kHz)")
+        "LCD 표시 주파수 = HRTIM PER 역산 주파수 (28.0kHz)")
 
     # 모든 유효 주파수에 대해 반복 검증
     mismatch_count = 0
@@ -214,21 +242,20 @@ def test_frequency_duty_consistency():
         for line in mismatch_list:
             print(line)
 
-    # 허용 오차: ±0.1kHz 이내 불일치는 정수 절사로 인한 것이므로 
-    # 실제 Hz 오차가 50Hz 미만인지 확인
+    # HRTIM period 정수 양자화에 따른 실제 Hz 오차가 100Hz 이하인지 확인
     actual_error_count = 0
     for f in range(FREQ_MIN, FREQ_MAX + 1, FREQ_STEP):
         arr = calc_arr(f)
-        actual_hz = TIM1_CLOCK_HZ / (2 * (arr + 1))
+        actual_hz = HRTIM_CLOCK_HZ / arr
         expected_hz = f * 100
-        if abs(actual_hz - expected_hz) > 50:  # 50Hz 오차 허용
+        if abs(actual_hz - expected_hz) > 100:  # 100Hz 오차 허용
             actual_error_count += 1
 
     test_assert_eq(actual_error_count, 0,
-        "FREQ_MIN~FREQ_MAX 전 구간 실제 Hz 오차 < 50Hz")
+        "FREQ_MIN~FREQ_MAX 전 구간 실제 Hz 오차 ≤ 100Hz")
 
 def test_adc_mapping():
-    print("[TEST] ADC → 듀티비 매핑")
+    print("[TEST] CT ADC 정규화")
 
     # 데드존 이하 → 0%
     test_assert_eq(adc_to_duty_mapped(0), 0, "ADC=0 → 0%")
@@ -252,7 +279,7 @@ def test_adc_mapping():
             monotonic = False
             break
         prev = d
-    test_assert(monotonic, "ADC→듀티 매핑이 단조 증가")
+    test_assert(monotonic, "CT ADC 정규화가 단조 증가")
 
 def test_crc16():
     print("[TEST] Modbus CRC-16")
@@ -285,12 +312,12 @@ def test_parameter_ranges():
     test_assert(ADC_DEADZONE_LOW < ADC_DEADZONE_HIGH, "ADC 데드존 순서 정상")
     test_assert(ADC_DEADZONE_HIGH < ADC_RESOLUTION, "ADC 데드존 상한 < 해상도")
 
-    # ARR 범위: 16비트(65535) 이내인지 확인
+    # HRTIM PER 범위: 16비트(65535) 이내인지 확인
     arr_at_min = calc_arr(FREQ_MIN)
-    test_assert(arr_at_min <= 65535, "FREQ_MIN에서 ARR ≤ 16비트")
+    test_assert(arr_at_min <= 65535, "FREQ_MIN에서 PER ≤ 16비트")
 
     arr_at_max = calc_arr(FREQ_MAX)
-    test_assert(arr_at_max > 0, "FREQ_MAX에서 ARR > 0")
+    test_assert(arr_at_max > 0, "FREQ_MAX에서 PER > 0")
 
 def test_soft_start_simulation():
     print("[TEST] 소프트 스타트 시뮬레이션")

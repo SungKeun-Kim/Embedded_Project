@@ -1,14 +1,14 @@
 (footprint "SW_PUSH-12mm"
-	(version 20241229)
+	(version 20260206)
 	(generator "pcbnew")
-	(generator_version "9.0")
+	(generator_version "10.0")
 	(layer "F.Cu")
 	(descr "Generic SW PUSH 12mm, e.g https://sten-eswitch-13110800-production.s3.amazonaws.com/system/asset/product_line/data_sheet/143/TL1100.pdf")
 	(tags "tact sw push 12mm")
 	(property "Reference" "REF**"
 		(at -0.42 -7.91 0)
 		(layer "F.SilkS")
-		(uuid "d1cacafe-8a76-44dc-b95c-ef5134b08eae")
+		(uuid "ff0cd1e5-72d3-4e60-a23f-d265658d3277")
 		(effects
 			(font
 				(size 1.1 1.1)
@@ -19,7 +19,7 @@
 	(property "Value" "SW_PUSH-12mm"
 		(at 0.12 8 0)
 		(layer "F.Fab")
-		(uuid "8d5892e0-1c39-434e-bda6-231825380cdd")
+		(uuid "c5da6973-d13f-4637-a22e-a25e19a09393")
 		(effects
 			(font
 				(size 1 1)
@@ -32,7 +32,7 @@
 		(unlocked yes)
 		(layer "F.Fab")
 		(hide yes)
-		(uuid "44494a51-e5c9-4c05-990e-8aaac319f518")
+		(uuid "ab4f05fc-0ba9-4b6c-b002-16b3fd354af6")
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -45,7 +45,7 @@
 		(unlocked yes)
 		(layer "F.Fab")
 		(hide yes)
-		(uuid "1420f15e-227f-4b2c-8622-cccef4faba2c")
+		(uuid "34b1b92b-49fe-481b-afd0-0d18c6ba11bc")
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -54,6 +54,7 @@
 		)
 	)
 	(attr through_hole)
+	(duplicate_pad_numbers_are_jumpers no)
 	(fp_line
 		(start -6.11 -6.11)
 		(end -6.11 -4)
@@ -62,7 +63,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "791de51c-3379-42ce-b9d6-855ca8f8997c")
+		(uuid "b20c2d1b-daa7-4a8e-a0bd-6aef5638e0e9")
 	)
 	(fp_line
 		(start -6.11 -6.11)
@@ -72,7 +73,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "7e60b296-4907-4164-8089-996afbb9ecbc")
+		(uuid "1d0a9a8e-910c-4921-87ad-7ef45c261061")
 	)
 	(fp_line
 		(start -6.11 -1)
@@ -82,7 +83,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "a0d45b3b-a787-46a0-a9b0-8085cdd784f3")
+		(uuid "79a2fddb-b467-44c3-b078-19d6e43d8860")
 	)
 	(fp_line
 		(start -6.11 4)
@@ -92,7 +93,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "2a3bf812-03bb-4a32-9d27-ad550a3e0d9e")
+		(uuid "748c7c41-8155-4109-bdf4-46901981e03d")
 	)
 	(fp_line
 		(start 6.11 -6.11)
@@ -102,7 +103,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "adf05890-c56e-4bad-93ea-8407e6e5dc48")
+		(uuid "08210b53-de90-418d-8afb-adc7868de796")
 	)
 	(fp_line
 		(start 6.11 -1)
@@ -112,7 +113,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "3e1c6419-b94e-47bd-baac-c1a9612f3f2d")
+		(uuid "a9037f3d-ea60-4d94-a85f-ea0810feec71")
 	)
 	(fp_line
 		(start 6.11 4)
@@ -122,7 +123,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "f37e27f8-9994-422e-8e3a-e1d2f27ab6ca")
+		(uuid "fce1a124-72e0-4566-96d8-b963c5710dcf")
 	)
 	(fp_line
 		(start 6.11 6.11)
@@ -132,7 +133,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "e43afae9-4ab0-4967-a4ee-2264edf95524")
+		(uuid "2feebcb7-8014-4aff-9028-7655b988c3d5")
 	)
 	(fp_circle
 		(center 0 0)
@@ -143,7 +144,7 @@
 		)
 		(fill no)
 		(layer "F.SilkS")
-		(uuid "7f7bfec6-bd0b-4e96-9723-1158c7304ae6")
+		(uuid "dcc40a54-5c09-4838-9283-efb12251a59b")
 	)
 	(fp_rect
 		(start -7.75 -7.25)
@@ -154,7 +155,7 @@
 		)
 		(fill no)
 		(layer "F.CrtYd")
-		(uuid "c795058e-1fc6-462f-93f5-fa9da6f70067")
+		(uuid "24888b30-7dee-4f80-86de-db22d2b52747")
 	)
 	(fp_rect
 		(start -6 -6)
@@ -165,12 +166,12 @@
 		)
 		(fill no)
 		(layer "F.Fab")
-		(uuid "cfba3387-c180-4739-bb8d-4ed0758bb62d")
+		(uuid "fd79df50-80a1-4f78-87a1-df527f6cb0a8")
 	)
 	(fp_text user "${REFERENCE}"
 		(at 0 0 0)
 		(layer "F.Fab")
-		(uuid "53b2306c-c219-4256-8d61-863213bd5b57")
+		(uuid "3a5861e4-ee3e-44b4-920c-214ad2f81ac9")
 		(effects
 			(font
 				(size 1 1)
@@ -184,7 +185,7 @@
 		(drill 1.4)
 		(layers "*.Cu" "*.Mask")
 		(remove_unused_layers no)
-		(uuid "b2e72713-cc9e-47df-bc8c-1b7ab01b813e")
+		(uuid "e5d9c14a-d345-4fee-bcd3-3fde0a61a256")
 	)
 	(pad "2" thru_hole circle
 		(at 6.25 2.5)
@@ -192,7 +193,7 @@
 		(drill 1.4)
 		(layers "*.Cu" "*.Mask")
 		(remove_unused_layers no)
-		(uuid "812c5867-c8b4-408e-b964-8215697f175a")
+		(uuid "e9be19b3-fe68-4e4e-bf25-5b1931bf7a6b")
 	)
 	(pad "3" thru_hole circle
 		(at 6.25 -2.5)
@@ -200,7 +201,7 @@
 		(drill 1.4)
 		(layers "*.Cu" "*.Mask")
 		(remove_unused_layers no)
-		(uuid "8c01209f-1a52-46c0-a819-d3bb2b9ccc40")
+		(uuid "b8fe85f0-6e44-4964-9d6c-162d4d9ec71e")
 	)
 	(pad "4" thru_hole circle
 		(at -6.25 -2.5)
@@ -208,10 +209,10 @@
 		(drill 1.4)
 		(layers "*.Cu" "*.Mask")
 		(remove_unused_layers no)
-		(uuid "03467557-4b61-4e5f-8f43-7fe2b230174f")
+		(uuid "997d66dc-30f2-442c-8775-671013d31121")
 	)
 	(embedded_fonts no)
-	(model "${KICAD9_3DMODEL_DIR}/Button_Switch_THT.3dshapes/SW_PUSH-12mm_Wuerth-430476085716.step"
+	(model "${KICAD10_3DMODEL_DIR}/Button_Switch_THT.3dshapes/SW_PUSH-12mm_Wuerth-430476085716.step"
 		(offset
 			(xyz -6.25 2.5 0)
 		)

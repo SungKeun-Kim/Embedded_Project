@@ -57,7 +57,9 @@ static uint16_t ClampDeadTimeNs(uint16_t deadtime_ns)
 
 static uint32_t DeadTimeNsToTicks(uint16_t deadtime_ns)
 {
-    uint32_t ticks = (uint32_t)(((uint64_t)deadtime_ns * (uint64_t)HRTIM_CLOCK_HZ
+    deadtime_ns = ClampDeadTimeNs(deadtime_ns);
+
+    uint32_t ticks = (uint32_t)(((uint64_t)deadtime_ns * HRTIM_EFF_CLOCK_HZ
                                  + 999999999ULL)
                                 / 1000000000ULL);
     if (ticks < 2U) ticks = 2U;
@@ -77,10 +79,68 @@ static uint32_t Freq01kHzToPeriod(uint16_t freq_01khz)
         freq_hz = (uint32_t)FREQ_DEFAULT * 100U;
     }
 
-    period = (uint32_t)((uint64_t)HRTIM_CLOCK_HZ / (uint64_t)freq_hz);
+    period = (uint32_t)((HRTIM_EFF_CLOCK_HZ + ((uint64_t)freq_hz / 2ULL))
+                        / (uint64_t)freq_hz);
     if (period < 20U) period = 20U;
     if (period > 0xFFFDU) period = 0xFFFDU;
     return period;
+}
+
+static uint8_t NearestFreqIndex(uint16_t freq_01khz)
+{
+    static const uint16_t freq_table[FREQ_EDIT_CH_COUNT] = {
+        FREQ_CH0_DEFAULT, FREQ_CH1_DEFAULT, FREQ_CH2_DEFAULT, FREQ_CH3_DEFAULT, FREQ_CH4_DEFAULT,
+        FREQ_CH5_DEFAULT, FREQ_CH6_DEFAULT, FREQ_CH7_DEFAULT, FREQ_CH8_DEFAULT, FREQ_CH9_DEFAULT,
+    };
+    uint8_t best = 0U;
+    uint32_t best_diff = 0xFFFFFFFFUL;
+
+    for (uint8_t i = 0U; i < FREQ_EDIT_CH_COUNT; i++) {
+        uint32_t diff = (freq_01khz > freq_table[i])
+                      ? (uint32_t)(freq_01khz - freq_table[i])
+                      : (uint32_t)(freq_table[i] - freq_01khz);
+        if (diff < best_diff) {
+            best_diff = diff;
+            best = i;
+        }
+    }
+
+    return best;
+}
+
+static uint16_t DutyTableForFrequency(uint16_t freq_01khz)
+{
+    static const uint16_t duty_table[FREQ_EDIT_CH_COUNT] = {
+        HRTIM_DUTY_CH0_01PCT, HRTIM_DUTY_CH1_01PCT, HRTIM_DUTY_CH2_01PCT, HRTIM_DUTY_CH3_01PCT,
+        HRTIM_DUTY_CH4_01PCT, HRTIM_DUTY_CH5_01PCT, HRTIM_DUTY_CH6_01PCT, HRTIM_DUTY_CH7_01PCT,
+        HRTIM_DUTY_CH8_01PCT, HRTIM_DUTY_CH9_01PCT,
+    };
+
+    return duty_table[NearestFreqIndex(freq_01khz)];
+}
+
+static uint16_t MaxDutyForPeriodAndDeadTicks(uint32_t period, uint32_t dead_ticks)
+{
+    uint32_t half_period = period / 2U;
+    uint32_t guard_ticks = (dead_ticks + 1U) / 2U;
+    uint32_t max_on_ticks;
+    uint32_t max_duty;
+
+    if (half_period <= (2U * guard_ticks)) {
+        return 0U;
+    }
+
+    max_on_ticks = half_period - (2U * guard_ticks);
+    max_duty = (max_on_ticks * 1000U) / period;
+    if (max_duty > HRTIM_DUTY_MARGIN_01PCT) {
+        max_duty -= HRTIM_DUTY_MARGIN_01PCT;
+    } else {
+        max_duty = 0U;
+    }
+    if (max_duty > DUTY_CLAMP_MAX) {
+        max_duty = DUTY_CLAMP_MAX;
+    }
+    return (uint16_t)max_duty;
 }
 
 static void MegasonicPWM_ApplyTiming(void)
@@ -106,7 +166,7 @@ static void MegasonicPWM_ApplyTiming(void)
 
     s_current_period = period;
 
-    ta->TIMxCR = HRTIM_PRESCALERRATIO_DIV1 | HRTIM_TIMCR_CONT;
+    ta->TIMxCR = HRTIM_PRESCALERRATIO_MUL32 | HRTIM_TIMCR_CONT;
     ta->PERxR = period;
     if ((HRTIM1->sMasterRegs.MCR & HRTIM_MCR_TACEN) == 0U) {
         ta->CNTxR = 0U;
@@ -146,8 +206,8 @@ void MegasonicPWM_Init(void)
     __HAL_RCC_HRTIM1_RELEASE_RESET();
 
     hhrtim1.Instance = HRTIM1;
-    (void)HAL_HRTIM_DLLCalibrationStart(&hhrtim1, HRTIM_CALIBRATIONRATE_3);
-    (void)HAL_HRTIM_PollForDLLCalibration(&hhrtim1, 10U);
+    (void)HAL_HRTIM_DLLCalibrationStart(&hhrtim1, HRTIM_CALIBRATIONRATE_0);
+    (void)HAL_HRTIM_PollForDLLCalibration(&hhrtim1, HAL_MAX_DELAY);
     s_current_freq_01khz = FREQ_DEFAULT;
     s_current_duty_01pct = 0U;
     s_current_deadtime_ns = HRTIM_DEADTIME_NS;
@@ -166,34 +226,45 @@ void MegasonicPWM_SetFrequency(uint16_t freq_01khz)
     }
 
     s_current_freq_01khz = freq_01khz;
+    s_current_duty_01pct = MegasonicPWM_ClampDutyForFrequency(s_current_freq_01khz, s_current_duty_01pct);
     MegasonicPWM_ApplyTiming();
 }
 
 uint16_t MegasonicPWM_DeadTimeForFrequency(uint16_t freq_01khz)
 {
-    static const uint16_t freq_table[FREQ_EDIT_CH_COUNT] = {
-        FREQ_CH0_DEFAULT, FREQ_CH1_DEFAULT, FREQ_CH2_DEFAULT, FREQ_CH3_DEFAULT, FREQ_CH4_DEFAULT,
-        FREQ_CH5_DEFAULT, FREQ_CH6_DEFAULT, FREQ_CH7_DEFAULT, FREQ_CH8_DEFAULT, FREQ_CH9_DEFAULT,
-    };
     static const uint16_t deadtime_table[FREQ_EDIT_CH_COUNT] = {
         HRTIM_DEADTIME_CH0_NS, HRTIM_DEADTIME_CH1_NS, HRTIM_DEADTIME_CH2_NS, HRTIM_DEADTIME_CH3_NS,
         HRTIM_DEADTIME_CH4_NS, HRTIM_DEADTIME_CH5_NS, HRTIM_DEADTIME_CH6_NS, HRTIM_DEADTIME_CH7_NS,
         HRTIM_DEADTIME_CH8_NS, HRTIM_DEADTIME_CH9_NS,
     };
-    uint8_t best = 0U;
-    uint32_t best_diff = 0xFFFFFFFFUL;
 
-    for (uint8_t i = 0U; i < FREQ_EDIT_CH_COUNT; i++) {
-        uint32_t diff = (freq_01khz > freq_table[i])
-                      ? (uint32_t)(freq_01khz - freq_table[i])
-                      : (uint32_t)(freq_table[i] - freq_01khz);
-        if (diff < best_diff) {
-            best_diff = diff;
-            best = i;
-        }
+    return deadtime_table[NearestFreqIndex(freq_01khz)];
+}
+
+uint16_t MegasonicPWM_MaxDutyForFrequency(uint16_t freq_01khz)
+{
+    uint32_t period = Freq01kHzToPeriod(freq_01khz);
+    uint32_t dead_ticks = DeadTimeNsToTicks(MegasonicPWM_DeadTimeForFrequency(freq_01khz));
+
+    return MaxDutyForPeriodAndDeadTicks(period, dead_ticks);
+}
+
+uint16_t MegasonicPWM_RecommendedDutyForFrequency(uint16_t freq_01khz)
+{
+    return MegasonicPWM_ClampDutyForFrequency(freq_01khz, DutyTableForFrequency(freq_01khz));
+}
+
+uint16_t MegasonicPWM_ClampDutyForFrequency(uint16_t freq_01khz, uint16_t duty_01pct)
+{
+    uint16_t max_duty = MegasonicPWM_MaxDutyForFrequency(freq_01khz);
+
+    if (duty_01pct > DUTY_CLAMP_MAX) {
+        duty_01pct = DUTY_CLAMP_MAX;
     }
-
-    return deadtime_table[best];
+    if (duty_01pct > max_duty) {
+        duty_01pct = max_duty;
+    }
+    return duty_01pct;
 }
 
 void MegasonicPWM_SetDeadTimeNs(uint16_t deadtime_ns)
@@ -214,7 +285,7 @@ uint16_t MegasonicPWM_GetDeadTimeNs(void)
 
 void MegasonicPWM_SetDuty(uint16_t duty_01pct)
 {
-    if (duty_01pct > DUTY_CLAMP_MAX) duty_01pct = DUTY_CLAMP_MAX;
+    duty_01pct = MegasonicPWM_ClampDutyForFrequency(s_current_freq_01khz, duty_01pct);
     if (s_current_duty_01pct == duty_01pct) {
         return;
     }
@@ -256,7 +327,8 @@ uint16_t MegasonicPWM_GetActualFreq01kHz(void)
         return 0U;
     }
 
-    freq_hz = (uint32_t)((uint64_t)HRTIM_CLOCK_HZ / s_current_period);
+    freq_hz = (uint32_t)((HRTIM_EFF_CLOCK_HZ + ((uint64_t)s_current_period / 2ULL))
+                         / (uint64_t)s_current_period);
     freq_01khz = (freq_hz + 50U) / 100U;
     if (freq_01khz > 0xFFFFU) {
         freq_01khz = 0xFFFFU;

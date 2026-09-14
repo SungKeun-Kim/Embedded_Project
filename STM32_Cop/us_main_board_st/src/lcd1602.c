@@ -24,8 +24,8 @@ void LCD_Init(void)
 {
     LCD_HW_InitDelay();
 
-    /* 전원 ON 후 최소 15 ms 대기 */
-    HAL_Delay(20);
+    /* LCD 전원/콘트라스트가 안정될 때까지 충분히 대기 */
+    HAL_Delay(100);
 
     /*
      * 4비트 모드 초기화 시퀀스 (HD44780 데이터시트 규격):
@@ -34,13 +34,13 @@ void LCD_Init(void)
     LCD_HW_WriteNibble(0x03);
     HAL_Delay(5);           /* >4.1 ms */
     LCD_HW_WriteNibble(0x03);
-    LCD_HW_DelayUs(150);    /* >100 µs */
+    LCD_HW_DelayUs(200);    /* >100 µs */
     LCD_HW_WriteNibble(0x03);
-    LCD_HW_DelayUs(150);
+    LCD_HW_DelayUs(200);
 
     /* 4비트 모드 전환 */
     LCD_HW_WriteNibble(0x02);
-    LCD_HW_DelayUs(150);
+    LCD_HW_DelayUs(200);
 
     /* Function Set: 4비트, 2행, 5×8 */
     LCD_HW_WriteByte(LCD_CMD_FUNCTION_4BIT, 0);

@@ -9698,6 +9698,26 @@
 			(embedded_fonts no)
 		)
 	)
+	(text "220VAC_L"
+		(exclude_from_sim no)
+		(at 35.814 254.762 0)
+		(effects
+			(font
+				(size 1.397 1.397)
+			)
+		)
+		(uuid "001f6aa3-613c-4cb4-b353-88945490b368")
+	)
+	(text "220VAC_N"
+		(exclude_from_sim no)
+		(at 35.56 244.602 0)
+		(effects
+			(font
+				(size 1.397 1.397)
+			)
+		)
+		(uuid "fe84c477-f986-439c-842a-0b8db2b08760")
+	)
 	(junction
 		(at 256.54 76.2)
 		(diameter 0)

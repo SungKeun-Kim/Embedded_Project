@@ -25,7 +25,8 @@
 #include <string.h>
 
 #define SETTINGS_STORE_MAGIC       0x53544734UL   /* 'STG4' */
-#define SETTINGS_STORE_VERSION     0x0006U
+#define SETTINGS_STORE_VERSION     0x0007U
+#define SETTINGS_STORE_V6_VERSION  0x0006U
 #define SETTINGS_STORE_V5_VERSION  0x0005U
 #define SETTINGS_STORE_V4_VERSION  0x0004U
 #define SETTINGS_STORE_V3_VERSION  0x0003U
@@ -533,6 +534,24 @@ static void CopyImageToStoreData(const SettingsFlashImage_t *img,
     out_data->rs485_parity    = img->rs485_parity;
 }
 
+static void ClearStoredPowerTune(SettingsStoreData_t *out_data)
+{
+    uint8_t i;
+    uint8_t j;
+
+    for (i = 0U; i < POWER_8STEP_COUNT; i++) {
+        out_data->power_profiles[i].tuned_freq_01khz = 0U;
+        out_data->power_profiles[i].tuned_gate_duty_01pct = 0U;
+        out_data->power_profiles[i].tuned_freq_ch = 0U;
+        out_data->power_profiles[i].tuned_valid = 0U;
+        out_data->power_profiles[i].tuned_valid_mask = 0U;
+        for (j = 0U; j < FREQ_EDIT_CH_COUNT; j++) {
+            out_data->power_profiles[i].tuned_freq_offset_01khz[j] = 0;
+            out_data->power_profiles[i].tuned_gate_duty_02pct[j] = 0U;
+        }
+    }
+}
+
 static void CopyImageV5ToStoreData(const SettingsFlashImageV5_t *img,
                                    SettingsStoreData_t *out_data)
 {
@@ -734,9 +753,26 @@ FindBestPingPongV5(uint32_t payload_size)
     return NULL;
 }
 
+static const SettingsFlashImage_t *
+FindBestPingPongV6(uint32_t payload_size)
+{
+    const SettingsFlashImage_t *img_a = (const SettingsFlashImage_t *)SETTINGS_SLOT_A_ADDR;
+    const SettingsFlashImage_t *img_b = (const SettingsFlashImage_t *)SETTINGS_SLOT_B_ADDR;
+    uint8_t va = IsImageValid(img_a, payload_size, SETTINGS_STORE_V6_VERSION);
+    uint8_t vb = IsImageValid(img_b, payload_size, SETTINGS_STORE_V6_VERSION);
+
+    if (va && vb) {
+        return (img_a->sequence >= img_b->sequence) ? img_a : img_b;
+    }
+    if (va) return img_a;
+    if (vb) return img_b;
+    return NULL;
+}
+
 uint8_t SettingsStore_Load(SettingsStoreData_t *out_data)
 {
     const SettingsFlashImage_t *img;
+    const SettingsFlashImage_t *img_v6;
     const SettingsFlashImageV5_t *img_v5;
     const SettingsFlashImageV4_t *img_v4;
     uint32_t payload_size;
@@ -751,6 +787,13 @@ uint8_t SettingsStore_Load(SettingsStoreData_t *out_data)
     img = FindBestPingPong(payload_size, NULL, NULL, NULL);
     if (img != NULL) {
         CopyImageToStoreData(img, out_data);
+        return 1U;
+    }
+
+    img_v6 = FindBestPingPongV6(payload_size);
+    if (img_v6 != NULL) {
+        CopyImageToStoreData(img_v6, out_data);
+        ClearStoredPowerTune(out_data);
         return 1U;
     }
 

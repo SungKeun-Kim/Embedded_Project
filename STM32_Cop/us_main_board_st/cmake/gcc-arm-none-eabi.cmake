@@ -29,7 +29,7 @@ set(CMAKE_C_FLAGS_INIT
 set(CMAKE_ASM_FLAGS_INIT
     "${MCU_FLAGS} -fdata-sections -ffunction-sections")
 set(CMAKE_EXE_LINKER_FLAGS_INIT
-    "${MCU_FLAGS} -Wl,--gc-sections -specs=nano.specs -specs=nosys.specs -lc -lm -lnosys")
+    "${MCU_FLAGS} -Wl,--gc-sections -specs=nano.specs -lc -lm")
 
 # 빌드 타입별 최적화
 set(CMAKE_C_FLAGS_DEBUG          "-Og -g3 -DDEBUG" CACHE STRING "")

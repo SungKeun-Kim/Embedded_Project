@@ -18,7 +18,7 @@ set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cmake/gcc-arm-none-eabi.cm
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 
 # ---------- 프로젝트 ----------
-project(us_main_board VERSION 1.0.0 LANGUAGES C ASM)
+project(us_main_board VERSION 1.2.0 LANGUAGES C ASM)
 message("Build type: ${CMAKE_BUILD_TYPE}")
 
 # ---------- CubeMX 자동생성 vs 수동 구성 선택 ----------
@@ -57,6 +57,24 @@ else()
     message("-- [MODE] 수동 구성 (Drivers/ 직접 참조)")
 
     set(DRIVERS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Drivers")
+    if(NOT EXISTS "${DRIVERS_DIR}/STM32G4xx_HAL_Driver")
+        set(CUBE_G4_FIRMWARE_DIR "" CACHE PATH
+            "STM32CubeG4 firmware package directory (contains Drivers)")
+
+        if(NOT CUBE_G4_FIRMWARE_DIR)
+            set(CUBE_G4_FIRMWARE_DIR
+                "$ENV{USERPROFILE}/STM32Cube/Repository/STM32Cube_FW_G4_V1.6.2"
+                CACHE PATH "STM32CubeG4 firmware package directory (contains Drivers)" FORCE)
+        endif()
+
+        if(EXISTS "${CUBE_G4_FIRMWARE_DIR}/Drivers/STM32G4xx_HAL_Driver")
+            set(DRIVERS_DIR "${CUBE_G4_FIRMWARE_DIR}/Drivers")
+            message("-- STM32CubeG4 Drivers 사용: ${DRIVERS_DIR}")
+        else()
+            message(FATAL_ERROR
+                "Drivers/ 또는 CUBE_G4_FIRMWARE_DIR에 STM32CubeG4 HAL/CMSIS가 필요합니다.")
+        endif()
+    endif()
 
     # CMSIS
     set(CMSIS_INCLUDE_DIRS
@@ -76,7 +94,6 @@ else()
         "${HAL_DIR}/Src/stm32g4xx_hal_rcc.c"
         "${HAL_DIR}/Src/stm32g4xx_hal_rcc_ex.c"
         "${HAL_DIR}/Src/stm32g4xx_hal_gpio.c"
-        "${HAL_DIR}/Src/stm32g4xx_hal_gpio_ex.c"
         "${HAL_DIR}/Src/stm32g4xx_hal_tim.c"
         "${HAL_DIR}/Src/stm32g4xx_hal_tim_ex.c"
         "${HAL_DIR}/Src/stm32g4xx_hal_uart.c"
@@ -84,6 +101,8 @@ else()
         "${HAL_DIR}/Src/stm32g4xx_hal_adc.c"
         "${HAL_DIR}/Src/stm32g4xx_hal_adc_ex.c"
         "${HAL_DIR}/Src/stm32g4xx_hal_comp.c"
+        "${HAL_DIR}/Src/stm32g4xx_hal_dac.c"
+        "${HAL_DIR}/Src/stm32g4xx_hal_dac_ex.c"
         "${HAL_DIR}/Src/stm32g4xx_hal_dma.c"
         "${HAL_DIR}/Src/stm32g4xx_hal_dma_ex.c"
         "${HAL_DIR}/Src/stm32g4xx_hal_exti.c"
@@ -103,7 +122,7 @@ else()
     set(STARTUP_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/startup/startup_stm32g474xx.s")
 
     # 링커 스크립트
-    set(LINKER_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/ldscripts/STM32G474RCTx_FLASH.ld")
+    set(LINKER_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/ldscripts/STM32G474CBTx_FLASH.ld")
 
     # 실행 파일
     add_executable(${PROJECT_NAME}
@@ -177,7 +196,12 @@ endif()
 find_program(PYTHON_EXE python3 python)
 if(PYTHON_EXE)
     add_custom_target(test_host
-        COMMAND ${PYTHON_EXE} "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_logic.py"
+        COMMAND ${PYTHON_EXE} -X utf8 "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_logic.py"
+        COMMAND ${PYTHON_EXE} -X utf8 "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_resonance_tuning.py"
+        COMMAND ${PYTHON_EXE} -X utf8 "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_menu_cycle.py"
+        COMMAND ${PYTHON_EXE} -X utf8 "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_buzzer_hrtim_sync.py"
+        COMMAND ${PYTHON_EXE} -X utf8 "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_modbus_config.py"
+        COMMAND ${PYTHON_EXE} -X utf8 "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_operation_manual.py"
         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
         COMMENT "=== 호스트 단위 테스트 실행 ==="
     )

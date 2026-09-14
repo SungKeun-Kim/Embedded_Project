@@ -1,0 +1,23 @@
+* text=auto
+
+*.c     text eol=crlf
+*.h     text eol=crlf
+*.ld    text eol=crlf
+*.cmake text eol=crlf
+*.txt   text eol=crlf
+*.md    text eol=crlf
+*.json  text eol=crlf
+*.yml   text eol=crlf
+*.yaml  text eol=crlf
+*.ini   text eol=crlf
+*.bat   text eol=crlf
+
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.pdf   binary
+*.elf   binary
+*.bin   binary
+*.hex   binary

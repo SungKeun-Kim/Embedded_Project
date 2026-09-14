@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>KP22315 간헐 스위칭 점검 체크리스트</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 12mm 13mm 13mm;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: #18212b;
+      font-family: "Malgun Gothic", "맑은 고딕", sans-serif;
+      font-size: 9.2pt;
+      line-height: 1.38;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    h1 {
+      margin: 0 0 2mm;
+      color: #173e67;
+      font-size: 20pt;
+      letter-spacing: -0.5px;
+    }
+    h2 {
+      margin: 5mm 0 2mm;
+      padding: 1.6mm 2.4mm;
+      border-left: 4px solid #2474ad;
+      background: #edf5fb;
+      color: #173e67;
+      font-size: 12.2pt;
+    }
+    h3 {
+      margin: 3.5mm 0 1.5mm;
+      color: #234f76;
+      font-size: 10.4pt;
+    }
+    p { margin: 1.2mm 0; }
+    ul { margin: 1.2mm 0 1.2mm 5mm; padding-left: 4mm; }
+    li { margin: 0.8mm 0; }
+    .subtitle {
+      margin-bottom: 4mm;
+      color: #526372;
+      font-size: 9.5pt;
+    }
+    .meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.6mm 5mm;
+      padding: 3mm;
+      border: 1px solid #9eabb6;
+      border-radius: 2mm;
+    }
+    .line {
+      display: inline-block;
+      min-width: 43mm;
+      height: 4mm;
+      border-bottom: 1px solid #4d5963;
+      vertical-align: bottom;
+    }
+    .short { min-width: 24mm; }
+    .warning {
+      margin: 3mm 0;
+      padding: 2.5mm 3mm;
+      border: 1px solid #d49225;
+      border-radius: 2mm;
+      background: #fff8e8;
+      color: #6d4500;
+    }
+    .key {
+      margin: 3mm 0;
+      padding: 2.5mm 3mm;
+      border: 1px solid #5a9ac4;
+      border-radius: 2mm;
+      background: #f2f8fc;
+    }
+    .check {
+      padding-left: 0;
+      list-style: none;
+    }
+    table {
+      width: 100%;
+      margin: 2mm 0;
+      border-collapse: collapse;
+      page-break-inside: avoid;
+    }
+    th, td {
+      padding: 1.5mm 1.8mm;
+      border: 1px solid #84919b;
+      vertical-align: top;
+    }
+    th {
+      background: #e8f0f6;
+      color: #173e67;
+      font-weight: 700;
+      text-align: left;
+    }
+    td.blank { height: 8mm; }
+    .center { text-align: center; }
+    .mono {
+      font-family: Consolas, "Malgun Gothic", monospace;
+      font-size: 8.7pt;
+    }
+    .small { font-size: 8.2pt; }
+    .page-break { page-break-before: always; }
+    .avoid { page-break-inside: avoid; }
+    .result {
+      padding: 2.5mm 3mm;
+      border: 1.5px solid #2474ad;
+      border-radius: 2mm;
+      min-height: 28mm;
+    }
+    .footer-note {
+      margin-top: 4mm;
+      padding-top: 2mm;
+      border-top: 1px solid #aeb8c0;
+      color: #596772;
+      font-size: 7.8pt;
+    }
+  </style>
+</head>
+<body>
+  <h1>KP22315 간헐 스위칭 점검 체크리스트</h1>
+  <p class="subtitle">대상 증상: +12V LED가 흐리게 깜빡이고 2차 출력이 낮게 측정되는 경우</p>
+
+  <div class="meta">
+    <div>보드명/Revision: <span class="line"></span></div>
+    <div>점검일: <span class="line short"></span></div>
+    <div>입력전압: <span class="line short"></span> VAC</div>
+    <div>점검자: <span class="line short"></span></div>
+    <div>목표 출력: +12V / <span class="line short"></span> V</div>
+    <div>연결 부하: <span class="line"></span></div>
+  </div>
+
+  <div class="warning">
+    <strong>고전압 안전:</strong> C4에는 220VAC 입력 시 약 300~325VDC가 남을 수 있다.
+    전원 OFF 후 C4가 충분히 방전되었는지 확인한다. 일반 접지형 오실로스코프의 GND 클립을
+    U1 GND/C4 음극에 직접 연결하지 않는다. 1차측 활선 파형은 절연된 측정환경과 고전압 차동 프로브가 있을 때만 측정한다.
+  </div>
+
+  <div class="key">
+    <strong>기동 순서:</strong>
+    Drain의 내부 고전압 기동회로가 VDD를 약 12.5V까지 충전
+    → 내장 MOSFET 스위칭 시작
+    → T2 보조권선과 D3가 VDD 유지.
+    R3/R4/R31/R32는 최초 VDD 충전보다 스위칭 후의 전류제한·보호판정에 관여한다.
+  </div>
+
+  <h2>1. 증상과 재기동 주기 기록</h2>
+  <ul class="check">
+    <li>□ 정상 보드와 동일한 AC 입력 및 동일한 부하 조건으로 비교했다.</li>
+    <li>□ 외부 부하를 분리해도 동일하게 깜빡인다.</li>
+    <li>□ 정상 T2로 교체해도 동일 증상임을 확인했다.</li>
+    <li>□ LED 깜빡임 주기: <span class="line short"></span> 초</li>
+    <li>□ 약 1.3초 주기이면 KP22315의 보호 후 auto-restart 가능성이 높다.</li>
+  </ul>
+
+  <h2>2. 전원 OFF 상태의 연결·실장 점검</h2>
+  <table>
+    <thead>
+      <tr><th style="width:7%">완료</th><th>점검 항목</th><th style="width:31%">측정값/메모</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="center">□</td><td>U1 방향과 pin 1 표시가 footprint와 일치</td><td></td></tr>
+      <tr><td class="center">□</td><td>U1 Drain pin 6/7/8 → T2 primary pin 3 도통</td><td></td></tr>
+      <tr><td class="center">□</td><td>T2 primary pin 1 → C4(+) 도통</td><td></td></tr>
+      <tr><td class="center">□</td><td>T2 보조권선 pin 5 → D3 anode 도통</td><td></td></tr>
+      <tr><td class="center">□</td><td>D3 cathode → C10(+) 도통 및 D3 방향 정상</td><td></td></tr>
+      <tr><td class="center">□</td><td>C10(−) → T2 pin 6 및 1차측 GND 도통</td><td></td></tr>
+      <tr><td class="center">□</td><td>R7/R8은 각각 4.7Ω이며 4.7kΩ 오실장이 아님</td><td>R7: ______ Ω / R8: ______ Ω</td></tr>
+      <tr><td class="center">□</td><td>D4는 22V Zener이고 방향·누설이 정상</td><td></td></tr>
+      <tr><td class="center">□</td><td>C10 47µF/35V 극성·용량·ESR 정상, C9 100nF short 없음</td><td></td></tr>
+      <tr><td class="center">□</td><td>1차측 hot GND와 2차측 GND가 패턴으로 직접 연결되지 않음</td><td></td></tr>
+    </tbody>
+  </table>
+
+  <h2>3. VDD 기동 상태 확인</h2>
+  <p>모든 전압은 <strong>C10(−)/U1 pin 1의 1차측 hot GND 기준</strong>으로 기록한다.</p>
+  <table>
+    <thead>
+      <tr>
+        <th>측정 위치</th><th>정상 보드</th><th>불량 보드</th><th>판정 기준</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>D3 cathode / C10(+)</td><td class="blank"></td><td></td>
+        <td>기동 시 약 12.0~13.0V 이상 상승</td>
+      </tr>
+      <tr>
+        <td>R7 이후 U1 pin 2 VDD</td><td class="blank"></td><td></td>
+        <td>약 12.5V에서 스위칭 시작, 6.8V 아래에서 정지</td>
+      </tr>
+      <tr>
+        <td>R7 양단 전압차</td><td class="blank"></td><td></td>
+        <td>큰 전압차이면 R7 오실장 또는 U1 VDD 과전류 의심</td>
+      </tr>
+      <tr>
+        <td>VDD 최저/최고값</td><td class="blank"></td><td></td>
+        <td>12.5V ↔ 6.8V 반복이면 보조전원 유지 실패 가능</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>VDD 결과 판정</h3>
+  <ul class="check">
+    <li>□ C10(+)와 U1 VDD 모두 12V 미만: Drain 기동경로, C10/D4/C9 누설, U1 불량 확인</li>
+    <li>□ C10(+)는 정상이나 U1 VDD만 낮음: R7 단선·오실장 또는 U1 과전류 확인</li>
+    <li>□ VDD가 12.5V까지 오른 뒤 6.8V로 반복 하강: D3·보조권선 PCB 연결·C10 확인</li>
+    <li>□ VDD가 안정적이나 스위칭이 정지: FB, DEM, CS 보호조건으로 이동</li>
+  </ul>
+
+  <h2>4. R3/R4 및 CS 전류검출 점검</h2>
+  <p class="mono">R3 = R4 = 0.47Ω, 병렬 합성값 ≈ 0.235Ω<br>
+  일반 OCP: 0.2V ÷ 0.235Ω ≈ 0.85A peak / AOCP: 0.26V ÷ 0.235Ω ≈ 1.1A peak</p>
+  <table>
+    <thead>
+      <tr><th style="width:7%">완료</th><th>점검 항목</th><th style="width:31%">측정값/메모</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="center">□</td><td>R3/R4 각각 약 0.47Ω, 둘 중 하나의 단선·미납땜 없음</td><td>R3: ______ / R4: ______ Ω</td></tr>
+      <tr><td class="center">□</td><td>리드 저항을 제외한 병렬 합성값 약 0.235Ω</td><td>합성: ______ Ω</td></tr>
+      <tr><td class="center">□</td><td>U1 pin 5 CS → R3/R4 도통</td><td></td></tr>
+      <tr><td class="center">□</td><td>R3/R4 GND가 U1 pin 1로 짧게 Kelvin 귀환</td><td></td></tr>
+      <tr><td class="center">□</td><td>Drain/T2 primary 패턴이 CS 패턴 가까이 지나지 않음</td><td></td></tr>
+      <tr><td class="center">□</td><td>CS pulse가 500ns 이후에도 0.2V를 넘는지 확인</td><td>CS peak: ______ V</td></tr>
+    </tbody>
+  </table>
+  <div class="warning small">
+    <strong>R3/R4 값 임의 감소 금지:</strong> 저항을 낮추면 Peak current가 증가하여 증상이 잠시 가려질 수 있으나,
+    U1 내장 MOSFET·T2·2차 정류기를 손상시킬 수 있다. 정상 보드의 동일값과 layout을 먼저 복원한다.
+  </div>
+
+  <h2>5. R31/R32 및 DEM 점검</h2>
+  <table>
+    <thead>
+      <tr><th>입력 조건</th><th>R32</th><th>R31</th><th>분압비</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>220VAC 계열</td><td>180kΩ</td><td>22kΩ</td><td>약 0.109</td></tr>
+      <tr><td>100~120VAC</td><td>82kΩ</td><td>10kΩ</td><td>약 0.109</td></tr>
+    </tbody>
+  </table>
+  <ul class="check">
+    <li>□ 입력전압에 맞는 R31/R32 조합이 실장됨</li>
+    <li>□ R32 180kΩ의 marking `184`, R31 22kΩ의 marking `223` 확인</li>
+    <li>□ R31/R32 접점 → U1 pin 4 DEM 도통</li>
+    <li>□ R31 GND → U1 pin 1이 짧고 다른 Power GND 전류와 분리됨</li>
+    <li>□ DEM 패턴이 Drain, D2, T2 primary의 고 dv/dt 패턴과 이격됨</li>
+    <li>□ R32의 working voltage와 PCB 표면 절연거리 충분</li>
+  </ul>
+
+  <h2>6. FB 회로와 스위칭 허용 조건 점검</h2>
+  <table>
+    <thead>
+      <tr><th style="width:7%">완료</th><th>점검 항목</th><th style="width:31%">측정값/메모</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="center">□</td><td>U1 pin 3 FB → U3 pin 4 도통</td><td></td></tr>
+      <tr><td class="center">□</td><td>U3 pin 3 → U1 pin 1 hot GND 도통</td><td></td></tr>
+      <tr><td class="center">□</td><td>U3 TLP785의 pin 1/2 및 3/4 방향이 footprint와 일치</td><td></td></tr>
+      <tr><td class="center">□</td><td>C6는 470pF이고 470nF/0.47µF 오실장이 아님</td><td>C6: ______</td></tr>
+      <tr><td class="center">□</td><td>출력이 낮을 때 FB가 비정상적으로 0~1V에 고정되지 않음</td><td>FB: ______ V</td></tr>
+    </tbody>
+  </table>
+
+  <table>
+    <thead>
+      <tr><th>FB/스위칭 상태</th><th>우선 의심 항목</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>출력이 낮은데 FB 약 0~1V</td><td>Optocoupler 오동작, pinout/납땜, C6 short</td></tr>
+      <tr><td>FB 약 3.6~5V, 약 75ms 후 정지</td><td>출력 미상승, OLP, VDD 유지 실패</td></tr>
+      <tr><td>몇 cycle 후 즉시 정지</td><td>DEM 출력 OVP 또는 CS AOCP</td></tr>
+      <tr><td>약 90ms 후 정지</td><td>DEM Brownout 가능성</td></tr>
+      <tr><td>약 1.3초마다 재시작</td><td>보호 후 auto-restart</td></tr>
+    </tbody>
+  </table>
+
+  <h2>7. 정상 보드와 파형 비교 기록</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>항목</th><th>정상 보드</th><th>불량 보드</th><th>차이/판정</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>C4 DC BUS</td><td class="blank"></td><td></td><td></td></tr>
+      <tr><td>C10(+) 기동 최고전압</td><td class="blank"></td><td></td><td></td></tr>
+      <tr><td>U1 pin 2 VDD 최저/최고</td><td class="blank"></td><td></td><td></td></tr>
+      <tr><td>U1 pin 3 FB</td><td class="blank"></td><td></td><td></td></tr>
+      <tr><td>U1 pin 4 DEM peak</td><td class="blank"></td><td></td><td></td></tr>
+      <tr><td>U1 pin 5 CS peak</td><td class="blank"></td><td></td><td></td></tr>
+      <tr><td>Drain 동작시간/재기동 주기</td><td class="blank"></td><td></td><td></td></tr>
+      <tr><td>+12V 출력</td><td class="blank"></td><td></td><td></td></tr>
+      <tr><td>보조 출력(+8V/8.5V)</td><td class="blank"></td><td></td><td></td></tr>
+    </tbody>
+  </table>
+
+  <h2>8. 최종 판정</h2>
+  <div class="result">
+    <p>□ Drain/VDD 기동경로 &nbsp; □ 보조권선 VDD 유지경로 &nbsp; □ FB</p>
+    <p>□ DEM/Brownout·OVP &nbsp; □ CS/OCP·layout &nbsp; □ U1 footprint/IC 불량</p>
+    <p>원인 및 조치:</p>
+    <p>________________________________________________________________________________</p>
+    <p>________________________________________________________________________________</p>
+  </div>
+
+  <h3>권장 점검 우선순위</h3>
+  <p class="mono">① C10(+)와 U1 VDD 분리 측정 → ② R7/R8·D4·C10 → ③ FB → ④ DEM R31/R32 및 layout
+  → ⑤ CS/R3/R4 및 Kelvin GND → ⑥ U1 footprint·Drain·IC</p>
+
+  <p class="footer-note">
+    기준 IC: Kiwi Instruments KP22315WGA. 주요 참고값: VDD ON 약 12.5V, VDD OFF 약 6.8V,
+    FB OLP 약 3.6V/75ms, CS OCP 약 0.2V, CS AOCP 약 0.26V, DEM 출력 OVP 약 3.0V,
+    보호 후 재기동 약 1.3초. 실제 판정은 사용 중인 IC 데이터시트와 정상 보드 파형을 함께 비교한다.
+  </p>
+</body>
+</html>

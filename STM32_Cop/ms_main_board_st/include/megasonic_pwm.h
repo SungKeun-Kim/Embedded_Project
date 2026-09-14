@@ -35,6 +35,28 @@ void MegasonicPWM_SetFrequency(uint16_t freq_01khz);
 uint16_t MegasonicPWM_DeadTimeForFrequency(uint16_t freq_01khz);
 
 /**
+ * @brief 현재 deadtime 정책에서 주파수별 최대 안전 게이트 듀티 산출
+ * @param freq_01khz 주파수(×0.1 kHz 단위)
+ * @return 듀티(×0.1%)
+ */
+uint16_t MegasonicPWM_MaxDutyForFrequency(uint16_t freq_01khz);
+
+/**
+ * @brief 주파수별 기본 게이트 듀티 산출
+ * @param freq_01khz 주파수(×0.1 kHz 단위)
+ * @return deadtime 한계를 반영한 추천 듀티(×0.1%)
+ */
+uint16_t MegasonicPWM_RecommendedDutyForFrequency(uint16_t freq_01khz);
+
+/**
+ * @brief 요청 듀티를 주파수/deadtime 한계 안으로 제한
+ * @param freq_01khz 주파수(×0.1 kHz 단위)
+ * @param duty_01pct 요청 듀티(×0.1%)
+ * @return 제한된 듀티(×0.1%)
+ */
+uint16_t MegasonicPWM_ClampDutyForFrequency(uint16_t freq_01khz, uint16_t duty_01pct);
+
+/**
  * @brief HRTIM 상보 PWM deadtime 설정
  * @param deadtime_ns deadtime(ns)
  */

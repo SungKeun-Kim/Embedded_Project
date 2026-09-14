@@ -197,8 +197,9 @@ void DAC3_Init(void)
     HAL_DAC_Start(&hdac3, DAC_CHANNEL_2);
 }
 
+/* 레거시 예시: 현재 CBT6 보드는 PA7을 PWM_OUTPUT으로 사용하므로 적용 금지 */
 /* COMP1: PA1(+) vs DAC3_CH1(-) → TIM2_IC1 */
-/* COMP2: PA7(+) vs DAC3_CH2(-) → TIM2_IC2 */
+/* COMP2: PA7(+) vs DAC3_CH2(-) → TIM2_IC2 (PCB 재배선 시에만 가능) */
 void COMP_Init(void)
 {
     __HAL_RCC_SYSCFG_CLK_ENABLE();  // COMP 클럭
@@ -213,7 +214,7 @@ void COMP_Init(void)
     hcomp1.Init.Mode = COMP_POWERMODE_HIGHSPEED;          // 15ns 응답
     HAL_COMP_Init(&hcomp1);
     HAL_COMP_Start(&hcomp1);
-    /* COMP2도 동일 패턴 (DAC3_CH2, PA7) */
+    /* COMP2/PA7 예시는 현재 CBT6 핀맵과 충돌하므로 그대로 사용하지 않는다. */
 }
 
 /* TIM2 듀얼 입력 캡처 — 위상차 측정 */

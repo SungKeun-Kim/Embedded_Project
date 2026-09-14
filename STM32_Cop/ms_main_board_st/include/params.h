@@ -13,6 +13,7 @@ extern "C" {
 #endif
 
 #include <stdint.h>
+#include "board_runtime_config.h"
 
 /* ================================================================
    시스템 클럭 (STM32G474RBT6 — 170 MHz)
@@ -24,25 +25,28 @@ extern "C" {
 /* ================================================================
    HRTIM 메가소닉 PWM (HRTIM Timer A)
    ================================================================ */
-#define HRTIM_CLOCK_HZ          170000000U  /* HRTIM 입력 클럭 */
+#define HRTIM_CLOCK_HZ          170000000U  /* HRTIM 입력 클럭: APB2 170 MHz */
 #define HRTIM_DLL_MUL           32U         /* DLL ×32 배율 */
 #define HRTIM_EFF_CLOCK_HZ     ((uint64_t)HRTIM_CLOCK_HZ * (uint64_t)HRTIM_DLL_MUL) /* 5.44 GHz 유효 */
 
 /* ================================================================
    메가소닉 주파수 (×0.1 kHz 단위)
-   전체 허용 범위: 300kHz ~ 2200kHz
-   FREQENCY 편집 프리셋: 10채널 (1CH=400kHz ... 10CH=2200kHz)
+   전체 허용 범위: 300kHz ~ 2300kHz
+   FREQENCY 편집 프리셋: 10채널 (1CH=400kHz ... 10CH=2300kHz)
    ================================================================ */
 #define FREQ_EDIT_CH_COUNT      10U
 #define FREQ_EDIT_CH1_01KHZ     4000U       /*  400.0 kHz */
-#define FREQ_EDIT_CH_STEP_01KHZ 2000U       /*  200.0 kHz 간격 */
+#define FREQ_EDIT_CH_STEP_01KHZ 2000U       /* CH1~CH9: 200.0 kHz 간격 */
 #define FREQ_EDIT_MIN           3000U       /*  300.0 kHz (CH1 하한 확장) */
-#define FREQ_EDIT_MAX          (FREQ_EDIT_CH1_01KHZ + ((FREQ_EDIT_CH_COUNT - 1U) * FREQ_EDIT_CH_STEP_01KHZ))
+#define FREQ_EDIT_MAX           23000U      /* 2300.0 kHz */
 
 #define FREQ_DEFAULT            4000U       /* 400.0 kHz (1CH 기본) */
 #define FREQ_MIN                FREQ_EDIT_MIN
 #define FREQ_MAX                FREQ_EDIT_MAX
 #define FREQ_STEP               10U         /*   1.0 kHz 단위 (일반 증감/통신용) */
+#ifndef AUTO_TUNE_ENABLED
+#define AUTO_TUNE_ENABLED       0U          /* manual frequency bring-up: disable START-hold autotune */
+#endif
 
 /* ================================================================
    메뉴 오토튜닝 시험 파라미터 (진동자 미연결 시 UI/로직 검증용)
@@ -92,7 +96,9 @@ extern "C" {
 #define RUN_FREQ_TRACK_SAMPLE_DELAY_MS 2U
 
 /* RUN 중 목표 W 맞춤: 기준 전압은 고정하고 gate duty 우선, 부족하면 주파수만 제한 보정 */
-#define RUN_RETUNE_ENABLED             1U
+#ifndef RUN_RETUNE_ENABLED
+#define RUN_RETUNE_ENABLED             0U
+#endif
 #define RUN_RETUNE_START_DELAY_MS      300U   /* START/UP/DOWN 후 W 표시 안정화 대기 */
 #define RUN_START_QUICK_CHECK_MS       80U    /* START 직후 직접 W 샘플링 전 최소 안정화 대기 */
 #define RUN_RETUNE_COARSE_RANGE_01KHZ  400U   /* fallback 주파수 보정: 아래쪽 최대 -40.0 kHz */
@@ -136,7 +142,8 @@ extern "C" {
 #define RUN_POWER_2MHZ_HOLD_INTERVAL_MS 1200U /* CH09가 목표 범위에 들어온 뒤 짧게 확인 보류 */
 #define RUN_POWER_MAINTAIN_TRIGGER_01W 12U    /* 목표 W에서 ±0.12W 벗어나면 재튜닝 */
 #define RUN_POWER_MAINTAIN_MISS_LIMIT  3U     /* 10% 밖 상태가 이 횟수 연속일 때만 재튜닝 */
-#define RUN_BASE_VOLTAGE_DEFAULT_01V   2800U  /* 채널별 기준 전압 기본값 28.00V */
+#define RUN_BASE_VOLTAGE_DEFAULT_01V   RUN_BASE_VOLTAGE_MIN_01V /* 채널별 기준 전압 기본값: 최저 전압 */
+#define RUN_BASE_VOLTAGE_LEGACY_DEFAULT_01V 2800U /* 이전 기본값 28.00V */
 #define RUN_BASE_VOLTAGE_MIN_01V       1200U  /* 0.5W 맞춤 중 전압 하한 */
 #define RUN_BASE_VOLTAGE_MAX_01V       3500U  /* 0.5W 맞춤 중 전압 상한 */
 #define RUN_BASE_VOLTAGE_STEP_01V      50U    /* 기준 전압 탐색 0.50V step */
@@ -149,9 +156,10 @@ extern "C" {
 #define DUTY_MAX                1000U       /* 100.0% */
 #define DUTY_CLAMP_MAX          900U        /* 90.0% — 안전 상한 */
 #define DUTY_STEP               10U         /*  1.0% 단위 */
-#define HRTIM_START_DUTY_01PCT  350U        /* START 직후부터 게이트 듀티 35.0% */
-#define HRTIM_RUN_DUTY_01PCT    350U        /* 발진 게이트 파형 고정 듀티 35.0% */
+#define HRTIM_START_DUTY_01PCT  400U        /* START 직후부터 게이트 듀티 40.0% */
+#define HRTIM_RUN_DUTY_01PCT    400U        /* 발진 게이트 파형 고정 듀티 40.0% */
 #define HRTIM_GATE_RAMP_MS      0U          /* W 제어 안정화를 위해 게이트 램프 사용 안 함 */
+#define HRTIM_DUTY_MARGIN_01PCT 10U         /* deadtime 한계 대비 듀티 여유 1.0% */
 
 /* ================================================================
    HRTIM 데드타임 (나노초 단위)
@@ -159,9 +167,15 @@ extern "C" {
    - 저주파/긴 주기에서는 여유를 크게, 고주파/짧은 주기에서는 기존 검증값
      기준으로 과도하게 듀티를 잃지 않도록 설정한다.
    ================================================================ */
-#define HRTIM_DEADTIME_NS       100U        /* fallback/default */
-#define HRTIM_DEADTIME_MIN_NS   30U
-#define HRTIM_DEADTIME_MAX_NS   200U
+#ifndef HRTIM_DEADTIME_NS
+#define HRTIM_DEADTIME_NS       60U         /* fallback/default: UCC21520 DT 6.8k ~= 68ns */
+#endif
+#ifndef HRTIM_DEADTIME_MIN_NS
+#define HRTIM_DEADTIME_MIN_NS   40U         /* UCC21520 DT 6.8k fitted: MCU input non-overlap lower guard */
+#endif
+#ifndef HRTIM_DEADTIME_MAX_NS
+#define HRTIM_DEADTIME_MAX_NS   120U
+#endif
 
 /* ================================================================
    소프트 스타트
@@ -217,7 +231,7 @@ typedef enum {
 #define POWER_DEFAULT           50U     /* W0.5 / 기본 운전 기준 */
 #define POWER_MIN               50U     /* W0.5 / 최소 설정 */
 #define POWER_MAX               250U    /* W2.5 / 최대 설정 */
-#define POWER_STEP              10U     /* 0.10 W 단위 */
+#define POWER_STEP              RUN_MANUAL_POWER_STEP_01W /* 0.05 W 단위 */
 
 /* 8POWER 프로파일 범위 */
 #define POWER_PROFILE_LOW_DEFAULT  30U  /* L: 0.30 W */
@@ -251,9 +265,30 @@ typedef enum {
 #define RUN_START_PRECHARGE_TIMEOUT_MS    2500U /* Buck 선충전 제한시간 */
 #define RUN_START_PRECHARGE_STEP_01PCT    20U   /* 선충전 duty 증가 2.0% */
 #define RUN_START_PRECHARGE_SETTLE_MS     60U   /* 선충전 단계 안정화 시간 */
+#ifndef BUCK_OUTPUT_MIN_01V
 #define BUCK_OUTPUT_MIN_01V               230U  /* R27=95k/R33=4.99k/R35=8.87k: DAC 3.3V 기준 약 2.30V */
+#endif
+#ifndef BUCK_OUTPUT_MAX_01V
 #define BUCK_OUTPUT_MAX_01V               3770U /* R27=95k/R33=4.99k/R35=8.87k: DAC 0V 기준 약 37.70V */
+#endif
+#ifndef RUN_BUCK_OVERVOLT_01V
 #define RUN_BUCK_OVERVOLT_01V             3800U /* RUN 중 38.00V 이상이면 즉시 정지 */
+#endif
+#ifndef RUN_MANUAL_VOLTAGE_MAX_01V
+#define RUN_MANUAL_VOLTAGE_MAX_01V        BUCK_OUTPUT_MAX_01V
+#endif
+#ifndef RUN_MANUAL_POWER_STEP_01W
+#define RUN_MANUAL_POWER_STEP_01W          5U
+#endif
+#ifndef RUN_VOLTAGE_TRACK_ENABLED
+#define RUN_VOLTAGE_TRACK_ENABLED          0U
+#endif
+#ifndef RUN_BUCK_LIMIT_NOTICE_MS
+#define RUN_BUCK_LIMIT_NOTICE_MS          900U
+#endif
+#ifndef RUN_START_UNDERVOLT_TOL_01V
+#define RUN_START_UNDERVOLT_TOL_01V       TUNE_VOLTAGE_TOL_01V
+#endif
 #define RUN_POWER_CONTROL_CUR_GUARD_MA    450U  /* 500mA 차단 전 전압 명령을 낮추는 가드 */
 #define RUN_HIGH_CUR_PROTECT_MA           500U  /* 절대 과전류 보호 */
 
@@ -334,8 +369,12 @@ typedef enum {
 #define ADC_HYSTERESIS          2U          /* 히스테리시스 카운트 */
 
 /* ADC2_IN4 출력 전압 분압: R28=91k(상단), R34=4.99k(하단) => 약 19.24배 */
+#ifndef ADC_VOL_DIV_TOP_OHM
 #define ADC_VOL_DIV_TOP_OHM     91000UL
+#endif
+#ifndef ADC_VOL_DIV_BOTTOM_OHM
 #define ADC_VOL_DIV_BOTTOM_OHM  4990UL
+#endif
 /* ADC2_IN4 경로 검증 전 서비스 측정용 고정 전압 (×0.01V), 0이면 ADC 분압 사용 */
 #define ADC_VOL_FIXED_01V       0U
 
@@ -380,7 +419,7 @@ static const uint32_t MODBUS_BAUD_TABLE[MODBUS_BAUD_INDEX_COUNT] = {
 
 /* ================================================================
    10채널 주파수 테이블 기본값 (×0.1 kHz)
-   1CH=400kHz ~ 10CH=2200kHz, 200kHz 간격
+   1CH=400kHz ~ 9CH=2000kHz는 200kHz 간격, 10CH=2300kHz
    ================================================================ */
 #define FREQ_CH0_DEFAULT        4000U       /*  400.0 kHz (1CH)  */
 #define FREQ_CH1_DEFAULT        6000U       /*  600.0 kHz (2CH)  */
@@ -391,20 +430,88 @@ static const uint32_t MODBUS_BAUD_TABLE[MODBUS_BAUD_INDEX_COUNT] = {
 #define FREQ_CH6_DEFAULT        16000U      /* 1600.0 kHz (7CH)  */
 #define FREQ_CH7_DEFAULT        18000U      /* 1800.0 kHz (8CH)  */
 #define FREQ_CH8_DEFAULT        20000U      /* 2000.0 kHz (9CH)  */
-#define FREQ_CH9_DEFAULT        22000U      /* 2200.0 kHz (10CH) */
+#define FREQ_CH9_LEGACY_DEFAULT 22000U      /* 이전 펌웨어의 10CH 기본값 */
+#define FREQ_CH9_DEFAULT        23000U      /* 2300.0 kHz (10CH) */
 #define FREQ_CHANNEL_COUNT      10U
 
+#if (FREQ_EDIT_MAX != FREQ_CH9_DEFAULT)
+#error "FREQ_EDIT_MAX must match the CH10 default frequency."
+#endif
+
 /* 주파수 채널별 기본 deadtime */
-#define HRTIM_DEADTIME_CH0_NS   160U        /*  400 kHz */
-#define HRTIM_DEADTIME_CH1_NS   140U        /*  600 kHz */
-#define HRTIM_DEADTIME_CH2_NS   120U        /*  800 kHz */
-#define HRTIM_DEADTIME_CH3_NS   100U        /* 1000 kHz */
-#define HRTIM_DEADTIME_CH4_NS   100U        /* 1200 kHz */
-#define HRTIM_DEADTIME_CH5_NS   90U         /* 1400 kHz */
-#define HRTIM_DEADTIME_CH6_NS   80U         /* 1600 kHz */
-#define HRTIM_DEADTIME_CH7_NS   70U         /* 1800 kHz */
-#define HRTIM_DEADTIME_CH8_NS   40U         /* 2000 kHz: 40% gate duty가 실제 반영되도록 여유 확보 */
-#define HRTIM_DEADTIME_CH9_NS   50U         /* 2200 kHz */
+#ifndef HRTIM_DEADTIME_CH0_NS
+#define HRTIM_DEADTIME_CH0_NS   90U         /*  400 kHz */
+#endif
+#ifndef HRTIM_DEADTIME_CH1_NS
+#define HRTIM_DEADTIME_CH1_NS   80U         /*  600 kHz */
+#endif
+#ifndef HRTIM_DEADTIME_CH2_NS
+#define HRTIM_DEADTIME_CH2_NS   75U         /*  800 kHz */
+#endif
+#ifndef HRTIM_DEADTIME_CH3_NS
+#define HRTIM_DEADTIME_CH3_NS   70U         /* 1000 kHz */
+#endif
+#ifndef HRTIM_DEADTIME_CH4_NS
+#define HRTIM_DEADTIME_CH4_NS   65U         /* 1200 kHz */
+#endif
+#ifndef HRTIM_DEADTIME_CH5_NS
+#define HRTIM_DEADTIME_CH5_NS   60U         /* 1400 kHz */
+#endif
+#ifndef HRTIM_DEADTIME_CH6_NS
+#define HRTIM_DEADTIME_CH6_NS   55U         /* 1600 kHz */
+#endif
+#ifndef HRTIM_DEADTIME_CH7_NS
+#define HRTIM_DEADTIME_CH7_NS   50U         /* 1800 kHz */
+#endif
+#ifndef HRTIM_DEADTIME_CH8_NS
+#define HRTIM_DEADTIME_CH8_NS   50U         /* 2000 kHz */
+#endif
+#ifndef HRTIM_DEADTIME_CH9_NS
+#define HRTIM_DEADTIME_CH9_NS   45U         /* 2300 kHz */
+#endif
+
+/* 주파수 채널별 기본 게이트 듀티. 실제 적용값은 deadtime 한계로 다시 clamp된다. */
+#ifndef HRTIM_DUTY_CH0_01PCT
+#define HRTIM_DUTY_CH0_01PCT    400U        /*  400 kHz: 40.0% */
+#endif
+#ifndef HRTIM_DUTY_CH1_01PCT
+#define HRTIM_DUTY_CH1_01PCT    400U        /*  600 kHz: 40.0% */
+#endif
+#ifndef HRTIM_DUTY_CH2_01PCT
+#define HRTIM_DUTY_CH2_01PCT    390U        /*  800 kHz: 39.0% */
+#endif
+#ifndef HRTIM_DUTY_CH3_01PCT
+#define HRTIM_DUTY_CH3_01PCT    380U        /* 1000 kHz: 38.0% */
+#endif
+#ifndef HRTIM_DUTY_CH4_01PCT
+#define HRTIM_DUTY_CH4_01PCT    360U        /* 1200 kHz: 36.0% */
+#endif
+#ifndef HRTIM_DUTY_CH5_01PCT
+#define HRTIM_DUTY_CH5_01PCT    340U        /* 1400 kHz: 34.0% */
+#endif
+#ifndef HRTIM_DUTY_CH6_01PCT
+#define HRTIM_DUTY_CH6_01PCT    320U        /* 1600 kHz: 32.0% */
+#endif
+#ifndef HRTIM_DUTY_CH7_01PCT
+#define HRTIM_DUTY_CH7_01PCT    300U        /* 1800 kHz: 30.0% */
+#endif
+#ifndef HRTIM_DUTY_CH8_01PCT
+#define HRTIM_DUTY_CH8_01PCT    280U        /* 2000 kHz: 28.0% */
+#endif
+#ifndef HRTIM_DUTY_CH9_01PCT
+#define HRTIM_DUTY_CH9_01PCT    260U        /* 2300 kHz: 26.0% */
+#endif
+
+#if (HRTIM_DEADTIME_MIN_NS < 40U)
+#error "HRTIM_DEADTIME_MIN_NS must stay at least 40ns with UCC21520 DT resistor fitted."
+#endif
+#if (HRTIM_DEADTIME_CH0_NS < HRTIM_DEADTIME_MIN_NS) || (HRTIM_DEADTIME_CH1_NS < HRTIM_DEADTIME_MIN_NS) || \
+    (HRTIM_DEADTIME_CH2_NS < HRTIM_DEADTIME_MIN_NS) || (HRTIM_DEADTIME_CH3_NS < HRTIM_DEADTIME_MIN_NS) || \
+    (HRTIM_DEADTIME_CH4_NS < HRTIM_DEADTIME_MIN_NS) || (HRTIM_DEADTIME_CH5_NS < HRTIM_DEADTIME_MIN_NS) || \
+    (HRTIM_DEADTIME_CH6_NS < HRTIM_DEADTIME_MIN_NS) || (HRTIM_DEADTIME_CH7_NS < HRTIM_DEADTIME_MIN_NS) || \
+    (HRTIM_DEADTIME_CH8_NS < HRTIM_DEADTIME_MIN_NS) || (HRTIM_DEADTIME_CH9_NS < HRTIM_DEADTIME_MIN_NS)
+#error "All HRTIM channel deadtime values must be >= HRTIM_DEADTIME_MIN_NS."
+#endif
 
 /* ================================================================
    LCD 화면 갱신

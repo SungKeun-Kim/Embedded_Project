@@ -4,7 +4,7 @@
 
 // ========================================
 // AC 조광기 (AC Dimmer) 제어 코드
-// ATtiny85 전용 - Timer1 폴링 방식 제로크로스 검출
+// ATtiny85 전용 - 저항 + AC-input 옵토커플러 방식 제로크로스 검출
 // 50Hz/60Hz 자동 감지 지원 (ISR 내부 기반)
 // 25μs 고분해능 타이머 (v3.1)
 // ========================================
@@ -16,8 +16,8 @@
 //    - 퓨즈 설정: LFUSE=0xE2, HFUSE=0xDF, EFUSE=0xFF
 //
 // 2. 제로크로스 검출부:
-//    - AC 220V → 9V 다운 트랜스 → H11AA1 제로크로스 옵토커플러
-//    - H11AA1 출력 (풀업) → ATtiny85 PB2 (7번 핀)
+//    - AC 220V → 22kΩ/2W + 22kΩ/2W → EL354N AC-input 옵토커플러
+//    - EL354N 출력 → 4.7kΩ 풀업/D9/R30/C8 → ATtiny85 PB2 (7번 핀)
 //    - ※ INT0 미사용 - Timer1 ISR 내에서 25μs 폴링으로 엣지 검출
 //
 // 3. 위상 제어부:
@@ -49,6 +49,7 @@
 //      → EMI 노이즈(트라이악 발화시)를 시간 기반으로 원천 차단
 //      → 실제 ZC(8.3ms 주기)만 통과, 디바운스 불필요
 //    - INT0 미사용으로 인터럽트 설정 관련 문제 완전 제거
+//    - 저항 방식의 ZC 보정: 50μs 시험값 (EL354N 에지 시점 편차 여유)
 //    - 트리거 펄스 폭: 500μs (20 × 25μs)
 //
 // Timer1 설정 (ATtiny85):
@@ -65,7 +66,10 @@ const uint8_t POT_PIN   = 3;                 // PB3 (2번 핀) - 아날로그 �
 // ---- 타이밍 상수 (25μs 틱 단위) ----
 // 60Hz 반주기 = 8.33ms = 333틱, 50Hz = 10ms = 400틱
 const uint8_t TRIGGER_PULSE_WIDTH = 20;      // 트리거 펄스 폭 (20 × 25μs = 500μs)
-const uint8_t ZC_OFFSET = 16;               // ZC 오프셋 (16 × 25μs = 0.4ms)
+// ZVC 상승엣지는 실제 AC 0V보다 먼저 발생하므로 그 차이를 보정한다.
+// 다운 트랜스 방식의 16틱(400μs)은 저항 방식에 그대로 적용하지 않는다.
+// 2틱(50μs)을 시험값으로 사용하며, ZVC 펄스 누락 방지가 아닌 검출 후 시점 보정값이다.
+const uint8_t ZC_OFFSET = 2;                // 저항 방식 ZC 오프셋 시험값 (2 × 25μs = 50μs)
 const uint16_t SAFETY_TIMEOUT = 420;         // 10.5ms (50Hz 대응, ZC 미검출시 타임아웃)
 const uint16_t MIN_ZC_PERIOD = 280;          // 7ms (노이즈 필터)
 const uint16_t MAX_ZC_PERIOD = 450;          // ZC 주기 유효 상한 (50Hz + 빠른칩 대응 여유)
@@ -76,14 +80,18 @@ const uint16_t ZC_PERIOD_REF = 332;          // 기준 주기 (60Hz @ 8MHz, 25μ
 // 최대출력 손실은 반주기 대비 약 0.25~0.3%/틱 수준으로 미미한 편.
 const uint16_t MIN_DIM_DEFAULT = 128;        // 부팅·비율 기준 (332틱 대비 128틱 ≈ 38.6%)
 const uint16_t MIN_DIM_BASE = 128;           // 캘리브/런타임 minDim = avgPeriod × 이값 / ZC_PERIOD_REF
-const uint16_t MAX_DIM_DEFAULT = 310;        // 기본값 (부팅 시, 보수적)
-const uint8_t MAX_DIM_MARGIN = 20;           // maxDim 기본 여유 (측정주기 - 20)
 const uint8_t MAX_DIM_GUARD = 2;             // 제로크로스 경계 넘김 방지용 추가 가드(2틱)
-                                             // 332 - 20 - 2 = 310
-const uint16_t MAX_DIM_MIN = 310;            // maxDim 하한 (느린칩 대응)
+const uint16_t MAX_DIM_DEFAULT = ZC_PERIOD_REF - ZC_OFFSET
+                              - TRIGGER_PULSE_WIDTH - MAX_DIM_GUARD;
+                                             // 332 - 2 - 20 - 2 = 308틱
 const uint16_t MAX_DIM_MAX = 391;            // maxDim 상한 (50Hz 대응)
 const uint16_t MIN_DIM_MIN = 115;            // minDim 하한 (경험적 안정 래치 한계)
 const uint16_t MIN_DIM_MAX = 161;            // minDim 상한 (50Hz 대응)
+
+// ZC_OFFSET을 시험 조정하더라도 최소 유효 주기 안에 위상 지연과 게이트 펄스가 들어가야 한다.
+static_assert((uint16_t)ZC_OFFSET + TRIGGER_PULSE_WIDTH + MAX_DIM_GUARD + MIN_DIM_MAX
+              <= MIN_ZC_PERIOD,
+              "ZC_OFFSET is too large for the valid half-cycle range");
 
 // ---- ADC 보정 상수 ----
 // PB3 입력 전압 범위: 0.3V ~ 4.3V (동작 범위), 5V = OFF
@@ -97,7 +105,7 @@ const uint8_t SOFT_START_CYCLES = 10;       // 소프트 스타트 (10 × 50ms =
 
 // ---- 상태 머신 정의 ----
 #define S_IDLE      0                         // 대기: 다음 제로크로스 대기 중
-#define S_ZC_OFFSET 1                         // ZC 오프셋: 실제 ZC까지 0.4ms 대기
+#define S_ZC_OFFSET 1                         // ZC 오프셋: 실제 ZC까지 보정 시간 대기
 #define S_DELAY     2                         // 지연: 위상 지연 카운트 중
 #define S_TRIGGER   3                         // 트리거: 게이트 펄스 출력 중 (500μs)
 
@@ -112,6 +120,20 @@ volatile uint16_t maxDim = MAX_DIM_DEFAULT;  // 동적 최대 지연값 (자동 
 volatile uint16_t lastZcPeriod = 0;          // 마지막 ZC 주기 틱 수 (ISR→loop 전달)
 volatile bool newZcReady = false;            // 새 ZC 주기 측정 완료 플래그
 int potValue;                                // ADC 읽기 값
+
+// 다음 ZC 전에 게이트 펄스가 끝나도록 maxDim을 계산한다.
+// 검출 에지부터의 전체 시간 = ZC_OFFSET + maxDim + TRIGGER_PULSE_WIDTH + GUARD
+static uint16_t calculateMaxDim(uint16_t period) {
+  int16_t value = (int16_t)period
+                - (int16_t)ZC_OFFSET
+                - (int16_t)TRIGGER_PULSE_WIDTH
+                - (int16_t)MAX_DIM_GUARD;
+
+  // 정상 유효 주기에서는 static_assert에 의해 MIN_DIM_MAX 이상이 보장된다.
+  if (value < (int16_t)MIN_DIM_MAX) value = MIN_DIM_MAX;
+  if (value > (int16_t)MAX_DIM_MAX) value = MAX_DIM_MAX;
+  return (uint16_t)value;
+}
 
 void setup() {
   // ==========================================
@@ -180,7 +202,7 @@ void setup() {
       calibCounter = 0;
       sei();
       
-      // 유효한 주기만 합산 (280~440 범위)
+      // 유효한 주기만 합산 (280~450 범위)
       if (ticks >= MIN_ZC_PERIOD && ticks <= MAX_ZC_PERIOD) {
         periodSum += ticks;
         samples++;
@@ -190,11 +212,8 @@ void setup() {
     // avgPeriod 계산
     uint16_t avgPeriod = periodSum / 8;
     
-    // maxDim 계산 (avgPeriod - margin)
-    int16_t calcMax = (int16_t)avgPeriod - MAX_DIM_MARGIN - MAX_DIM_GUARD;
-    if (calcMax < (int16_t)MAX_DIM_MIN) calcMax = MAX_DIM_MIN;
-    if (calcMax > (int16_t)MAX_DIM_MAX) calcMax = MAX_DIM_MAX;
-    maxDim = (uint16_t)calcMax;
+    // maxDim 계산: offset과 게이트 펄스를 포함해 다음 ZC 전 종료
+    maxDim = calculateMaxDim(avgPeriod);
     
     // minDim 계산 (비율 기반: avgPeriod × MIN_DIM_BASE / 332)
     int16_t calcMin = (int16_t)((int32_t)avgPeriod * MIN_DIM_BASE / ZC_PERIOD_REF);
@@ -221,7 +240,7 @@ void setup() {
 //
 // ★★★ 핵심 설계 원칙 ★★★
 // 1. ZC 엣지 검출은 IDLE 상태에서만 수행
-// 2. ZC_OFFSET: 상승엣지 후 0.4ms 대기 → 실제 ZC 시점 보정
+// 2. ZC_OFFSET: 상승엣지 후 설정 시간 대기 → 실제 ZC 시점 보정
 // 3. 최소 주기 가드: 마지막 ZC 후 7ms(280틱) 이내는 무시
 //    → 트라이악 EMI 노이즈 완전 차단
 // ==========================================
@@ -335,16 +354,14 @@ void loop() {
       if (periodCount >= 16) {
         uint16_t avg = periodAccum / 16;
 
-        int16_t calcMax = (int16_t)avg - MAX_DIM_MARGIN - MAX_DIM_GUARD;
-        if (calcMax < (int16_t)MAX_DIM_MIN) calcMax = MAX_DIM_MIN;
-        if (calcMax > (int16_t)MAX_DIM_MAX) calcMax = MAX_DIM_MAX;
+        uint16_t calcMax = calculateMaxDim(avg);
 
         int16_t calcMin = (int16_t)((int32_t)avg * MIN_DIM_BASE / ZC_PERIOD_REF);
         if (calcMin < (int16_t)MIN_DIM_MIN) calcMin = MIN_DIM_MIN;
         if (calcMin > (int16_t)MIN_DIM_MAX) calcMin = MIN_DIM_MAX;
 
         cli();
-        maxDim = (uint16_t)calcMax;
+        maxDim = calcMax;
         minDim = (uint16_t)calcMin;
         sei();
 

@@ -93,7 +93,7 @@
 | PA9 | 43 | HRTIM1_CHA2(AF13) | CHA2 / INB | 초음파 HRTIM 출력 A2 |
 | PB3 | 56 | GPIO_Output | SONIC_ON | 발진 Enable/게이트 드라이버 Enable |
 
-> **선정 사유**: 20kHz~168kHz 발진 중 중심주파수 기준 ±100Hz~±1000Hz 스윕을 만들기 위해 HRTIM을 사용한다. PA8/PA9는 같은 HRTIM Timer A의 출력쌍(CHA1/CHA2)이므로 pair deadtime 설정과 주파수 가변 제어에 적합하다.
+> **선정 사유**: 20kHz~168kHz 발진 중 중심주파수 기준 ±100Hz~±1000Hz 스윕을 만들기 위해 HRTIM을 사용한다. PA8/PA9는 같은 HRTIM Timer A의 출력쌍(CHA1/CHA2)이므로 주기·위상 동기 갱신에 적합하다. 앞단 IRF7351 레그 내부 deadtime은 각 IR2104가 담당하고, TR1 뒤 IRFP460 보호용 zero-vector는 HRTIM이 중심주파수 72.0 kHz 미만에서 1.4 us, 이상에서 0.8 us로 생성한다.
 
 #### PA9 / UCPD1_DBCC1 주의 및 초기화
 

@@ -23,6 +23,8 @@ void SysTick_Handler(void);
 /* 외부 인터럽트 핸들러 */
 void USART2_IRQHandler(void);
 void TIM4_IRQHandler(void);
+void TIM7_DAC_IRQHandler(void);
+void DMA1_Channel1_IRQHandler(void);
 
 #ifdef __cplusplus
 }

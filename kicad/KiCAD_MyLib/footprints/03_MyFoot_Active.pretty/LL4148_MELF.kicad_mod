@@ -6,7 +6,7 @@
 	(property "Reference" "REF**"
 		(at -0.221405 -1.80151 0)
 		(layer "F.SilkS")
-		(uuid "0404fa3b-5e12-42a9-ad5c-a14b996fee73")
+		(uuid "a2fbeb60-f57c-471f-aff8-a1e8d5414d00")
 		(effects
 			(font
 				(size 1.1 1.1)
@@ -17,7 +17,7 @@
 	(property "Value" "LL4148_MELF"
 		(at -0.221405 1.80998 0)
 		(layer "F.Fab")
-		(uuid "2678418d-2df9-46a5-a260-05849df36c72")
+		(uuid "2ed87932-2df7-4b4a-9184-6dd421cb5d65")
 		(effects
 			(font
 				(size 1 1)
@@ -29,7 +29,7 @@
 		(at 0 0 0)
 		(layer "F.Fab")
 		(hide yes)
-		(uuid "18dff97c-0eb3-4bb8-a2ca-aaa0e506bfa0")
+		(uuid "49ed0a9d-9eeb-4a83-8535-22fc3084eeb9")
 		(effects
 			(font
 				(size 1 1)
@@ -41,7 +41,7 @@
 		(at 0 0 0)
 		(layer "F.Fab")
 		(hide yes)
-		(uuid "c6736b18-529e-4aef-9c72-ba7f1eaf7dc4")
+		(uuid "87e4f264-1252-42ae-9e5b-41beca43cf41")
 		(effects
 			(font
 				(size 1 1)
@@ -49,6 +49,7 @@
 			)
 		)
 	)
+	(attr smd)
 	(duplicate_pad_numbers_are_jumpers no)
 	(fp_line
 		(start -2.5 -1.00584)
@@ -58,7 +59,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "c89b74d1-87c6-44ce-ac4e-3595e8712403")
+		(uuid "85613edf-33a1-4997-a193-b214ed1ff5cd")
 	)
 	(fp_line
 		(start -2.5 1)
@@ -68,7 +69,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "7a71ece4-2b84-44d8-8664-7bba5cc4a3b2")
+		(uuid "70bc9357-8067-463d-867b-76f60dd5014d")
 	)
 	(fp_line
 		(start -2.5 1.00838)
@@ -78,7 +79,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "9e583f9b-fee7-4d32-bac5-84707f20756a")
+		(uuid "0a242d52-7620-41ee-9dcb-278e783c9308")
 	)
 	(fp_line
 		(start -0.8 0)
@@ -88,7 +89,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "5df5ef8a-3e81-4dd9-a77d-ecb0a17c7492")
+		(uuid "1ab64c42-3435-4557-8474-836510c25558")
 	)
 	(fp_line
 		(start -0.4 -0.65)
@@ -98,7 +99,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "7393ad83-cad4-4be8-8415-757206a732d4")
+		(uuid "6e181827-011e-4f91-8461-af849c3e61b1")
 	)
 	(fp_line
 		(start -0.4 -0.025)
@@ -108,7 +109,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "a62822c2-acd6-4c3a-9608-05cf87475d55")
+		(uuid "1fb84e40-6988-4834-8154-00b05d96daa3")
 	)
 	(fp_line
 		(start 0.2 -0.625)
@@ -118,7 +119,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "8d72e115-8c3c-4cfd-838d-db00c0e581ff")
+		(uuid "8211f006-f228-40d0-a8dc-901df69644c7")
 	)
 	(fp_line
 		(start 0.2 0.6)
@@ -128,7 +129,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "38e9db73-189f-4c2a-a4ad-f58bdecec1ae")
+		(uuid "fbf5a26f-0438-4b39-866b-4ba649984140")
 	)
 	(fp_line
 		(start 0.6 0)
@@ -138,7 +139,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "e67df8c1-35ab-45bb-aaa1-efaf8673341e")
+		(uuid "cc203b64-119f-4815-804d-49151427ea94")
 	)
 	(fp_line
 		(start 2.5 1.00838)
@@ -148,7 +149,7 @@
 			(type solid)
 		)
 		(layer "F.SilkS")
-		(uuid "cd9e6e57-72f4-4b03-9859-c3c768ec575d")
+		(uuid "39331e24-631c-4557-b986-b5169420034b")
 	)
 	(fp_rect
 		(start -2.65 -1.15)
@@ -159,7 +160,7 @@
 		)
 		(fill no)
 		(layer "F.CrtYd")
-		(uuid "afa4421e-1955-4a5c-93f3-f2b0b97e2692")
+		(uuid "88e8713e-5499-4e20-a969-48bbdfe635d5")
 	)
 	(fp_line
 		(start -2.5 -1.00584)
@@ -169,7 +170,7 @@
 			(type solid)
 		)
 		(layer "User.1")
-		(uuid "183e0b95-fa42-4ff8-aad4-8a348f24cd66")
+		(uuid "82e0d05f-c561-4830-930d-2d047c7010ac")
 	)
 	(fp_line
 		(start -2.5 1.01431)
@@ -179,24 +180,24 @@
 			(type solid)
 		)
 		(layer "User.1")
-		(uuid "f873f2c3-a245-4e36-88e8-77ebe1109b79")
+		(uuid "21e3a398-48e8-4dc3-83ce-28aed454a48c")
 	)
 	(pad "1" smd roundrect
 		(at -1.6891 0 270)
 		(size 1.80001 1.4224)
 		(layers "F.Cu" "F.Mask" "F.Paste")
 		(roundrect_rratio 0.1757592801)
-		(uuid "c2764a95-c8ed-418e-9805-ce1f8b7dad1c")
+		(uuid "48358087-2f8a-45d2-96ea-af9a079f212c")
 	)
 	(pad "2" smd roundrect
 		(at 1.6891 0 90)
 		(size 1.80001 1.4224)
 		(layers "F.Cu" "F.Mask" "F.Paste")
 		(roundrect_rratio 0.1757592801)
-		(uuid "65bb188f-b10c-429e-b0ef-443f5b779d7c")
+		(uuid "a9b31582-30af-4f88-857e-9629ccecd320")
 	)
 	(embedded_fonts no)
-	(model "${KICAD9_3DMODEL_DIR}/Diode_SMD.3dshapes/D_MiniMELF.step"
+	(model "${KICAD10_3DMODEL_DIR}/Diode_SMD.3dshapes/D_MiniMELF.step"
 		(offset
 			(xyz 0 0 0)
 		)
