@@ -1,0 +1,11 @@
+{
+  "cmake.cmakePath": "C:/ST/STM32CubeCLT_1.19.0/CMake/bin/cmake.exe",
+  "cmake.configurePreset": "vscode-debug",
+  "cmake.buildPreset": "vscode-debug",
+  "cmake.configureOnOpen": true,
+  "cmake.preferredGenerators": [
+    "Ninja"
+  ],
+  "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+  "C_Cpp.default.compileCommands": "${workspaceFolder}/build/vscode-debug/compile_commands.json"
+}

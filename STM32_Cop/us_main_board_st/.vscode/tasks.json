@@ -1,0 +1,109 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Configure Debug (STM32)",
+      "type": "process",
+      "command": "${config:cmake.cmakePath}",
+      "args": [
+        "--preset",
+        "vscode-debug"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Build Debug (STM32)",
+      "type": "process",
+      "command": "${config:cmake.cmakePath}",
+      "args": [
+        "--build",
+        "--preset",
+        "vscode-debug",
+        "--parallel"
+      ],
+      "dependsOn": "Configure Debug (STM32)",
+      "dependsOrder": "sequence",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": [
+        "$gcc"
+      ]
+    },
+    {
+      "label": "Configure Release (STM32)",
+      "type": "process",
+      "command": "${config:cmake.cmakePath}",
+      "args": [
+        "--preset",
+        "vscode-release"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Build Release (STM32)",
+      "type": "process",
+      "command": "${config:cmake.cmakePath}",
+      "args": [
+        "--build",
+        "--preset",
+        "vscode-release",
+        "--parallel"
+      ],
+      "dependsOn": "Configure Release (STM32)",
+      "dependsOrder": "sequence",
+      "group": "build",
+      "problemMatcher": [
+        "$gcc"
+      ]
+    },
+    {
+      "label": "Run Host Tests",
+      "type": "process",
+      "command": "${config:cmake.cmakePath}",
+      "args": [
+        "--build",
+        "--preset",
+        "vscode-release",
+        "--target",
+        "test_host"
+      ],
+      "dependsOn": "Configure Release (STM32)",
+      "dependsOrder": "sequence",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Upload UPDATE HEX (ST-LINK; stop output first)",
+      "type": "process",
+      "command": "C:\\ST\\STM32CubeCLT_1.19.0\\STM32CubeProgrammer\\bin\\STM32_Programmer_CLI.exe",
+      "args": [
+        "-c",
+        "port=SWD",
+        "-w",
+        "${workspaceFolder}\\production\\US_MAIN_BOARD_UPDATE_V1.2.0.hex",
+        "-v",
+        "-rst"
+      ],
+      "dependsOn": "Build Release (STM32)",
+      "dependsOrder": "sequence",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "detail": "초음파 출력을 정지한 뒤 실행하세요. UPDATE HEX만 기록하며 mass erase는 수행하지 않습니다.",
+      "problemMatcher": []
+    }
+  ]
+}

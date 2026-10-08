@@ -162,6 +162,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     SUFFIX ".elf"
 )
 
+find_program(PYTHON_EXE python3 python)
+
 # ---------- 포스트 빌드: bin / hex 생성 ----------
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_OBJCOPY} -O ihex   $<TARGET_FILE:${PROJECT_NAME}> ${PROJECT_NAME}.hex
@@ -169,6 +171,31 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_SIZE}    $<TARGET_FILE:${PROJECT_NAME}>
     COMMENT "=== 바이너리 생성 완료 ==="
 )
+
+if(PYTHON_EXE)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${PYTHON_EXE} -X utf8
+            "${CMAKE_CURRENT_SOURCE_DIR}/tools/generate_factory_hex.py"
+            "${PROJECT_NAME}.hex"
+            "${PROJECT_NAME}_factory.hex"
+        COMMENT "=== CubeProgrammer 양산용 Factory HEX 생성 ==="
+    )
+
+    if(CMAKE_BUILD_TYPE STREQUAL "Release")
+        # 디버그 이미지가 현장 배포용 production HEX를 덮어쓰지 않게 한다.
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E make_directory
+                "${CMAKE_CURRENT_SOURCE_DIR}/production"
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${PROJECT_NAME}.hex"
+                "${CMAKE_CURRENT_SOURCE_DIR}/production/US_MAIN_BOARD_UPDATE_V${PROJECT_VERSION}.hex"
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${PROJECT_NAME}_factory.hex"
+                "${CMAKE_CURRENT_SOURCE_DIR}/production/US_MAIN_BOARD_FACTORY_V${PROJECT_VERSION}.hex"
+            COMMENT "=== CubeProgrammer UPDATE/FACTORY HEX 배포 ==="
+        )
+    endif()
+endif()
 
 # ---------- 커스텀 타겟: Flash 업로드 (ST-Link) ----------
 find_program(STFLASH st-flash)
@@ -193,7 +220,6 @@ if(OPENOCD)
 endif()
 
 # ---------- 호스트 단위 테스트 (Python) ----------
-find_program(PYTHON_EXE python3 python)
 if(PYTHON_EXE)
     add_custom_target(test_host
         COMMAND ${PYTHON_EXE} -X utf8 "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_logic.py"

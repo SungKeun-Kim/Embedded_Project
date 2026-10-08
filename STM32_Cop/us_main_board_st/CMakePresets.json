@@ -1,0 +1,56 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 22,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "vscode-debug",
+      "displayName": "VS Code Debug (STM32G474)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/vscode-debug",
+      "environment": {
+        "ARM_TOOLCHAIN_PATH": "C:/ST/STM32CubeCLT_1.19.0/GNU-tools-for-STM32"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_MAKE_PROGRAM": "C:/ST/STM32CubeCLT_1.19.0/Ninja/bin/ninja.exe",
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/gcc-arm-none-eabi.cmake",
+        "CUBE_G4_FIRMWARE_DIR": "$env{USERPROFILE}/STM32Cube/Repository/STM32Cube_FW_G4_V1.6.2",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    },
+    {
+      "name": "vscode-release",
+      "displayName": "VS Code Release (STM32G474)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/vscode-release",
+      "environment": {
+        "ARM_TOOLCHAIN_PATH": "C:/ST/STM32CubeCLT_1.19.0/GNU-tools-for-STM32"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_MAKE_PROGRAM": "C:/ST/STM32CubeCLT_1.19.0/Ninja/bin/ninja.exe",
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/gcc-arm-none-eabi.cmake",
+        "CUBE_G4_FIRMWARE_DIR": "$env{USERPROFILE}/STM32Cube/Repository/STM32Cube_FW_G4_V1.6.2",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "vscode-debug",
+      "displayName": "Build VS Code Debug",
+      "configurePreset": "vscode-debug",
+      "jobs": 8
+    },
+    {
+      "name": "vscode-release",
+      "displayName": "Build VS Code Release",
+      "configurePreset": "vscode-release",
+      "jobs": 8
+    }
+  ]
+}

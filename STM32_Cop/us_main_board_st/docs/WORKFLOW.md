@@ -74,6 +74,34 @@ cmake --build build
 
 > CubeMX 모드 감지 메시지: `-- [MODE] CubeMX 자동 생성 구성 사용` 확인
 
+### 0-4. VS Code 빌드·디버그·업로드
+
+STM32CubeCLT와 STM32CubeG4 펌웨어 팩이 설치된 Windows 개발 PC에서는 프로젝트 폴더
+(`us_main_board_st`)를 VS Code로 연다. `.vscode/`와 `CMakePresets.json`이 Debug/Release
+컴파일, Cortex-Debug, ST-LINK 업로드 작업을 제공한다.
+
+- **Debug 빌드**: `Ctrl+Shift+B` 또는 `Build Debug (STM32)` 작업
+- **Release 빌드**: `Build Release (STM32)` 작업
+- **호스트 시험**: `Run Host Tests` 작업
+- **디버그 및 프로그램 쓰기**: 실행 및 디버그에서 `Debug STM32G474 (ST-LINK)` 선택
+  (Debug 빌드를 마친 뒤 ST-LINK GDB 서버로 연결하고 `main`에서 멈춤)
+- **현장 업데이트**: `Upload UPDATE HEX (ST-LINK; stop output first)` 작업
+  (Release 빌드 후 UPDATE HEX 쓰기, Verify, Reset 실행)
+
+디버그/업로드 전에 초음파 출력을 정지하고 ST-LINK의 SWDIO, SWCLK, GND, NRST를
+연결한다. 업로드 작업은 설정 보존용 UPDATE HEX를 사용하며 mass erase를 실행하지 않는다.
+
+명령줄에서 직접 실행하려면 다음 preset을 사용한다.
+
+```powershell
+cmake --preset vscode-debug
+cmake --build --preset vscode-debug
+
+cmake --preset vscode-release
+cmake --build --preset vscode-release
+cmake --build --preset vscode-release --target test_host
+```
+
 ---
 
 ## Step 1 ~ 8: 에이전트 코딩 요청
@@ -296,6 +324,7 @@ copilot-instructions.md, docs/SAFETY.md를 먼저 읽어라.
 ### 런타임 에러
 
 | 증상                   | 원인                              | 해결                                                              |
+| `LOAD segment with RWX permissions` | Flash 초기화 배열의 쓰기 플래그 | 링커 스크립트의 Flash 초기화 배열을 `READONLY`로 선언 |
 | ---------------------- | --------------------------------- | ----------------------------------------------------------------- |
 | HRTIM 출력 안 됨       | Timer A 또는 출력 Enable 미설정   | PA8/PA9 AF13, Timer A count, TA1/TA2 output, PA15를 순서대로 확인 |
 | LCD 아무것도 안 보임   | V0 대비 미조절 또는 초기화 타이밍 | 가변저항 조절, 15ms→4.1ms→100µs 준수                              |

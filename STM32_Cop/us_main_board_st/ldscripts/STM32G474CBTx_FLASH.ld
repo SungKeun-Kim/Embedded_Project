@@ -1,8 +1,9 @@
 /*
  * STM32G474CBTx 링커 스크립트
- * Flash: 128 KB (0x08000000)
- *   - Application: 126 KB
- *   - Settings:      2 KB (마지막 Page, 0x0801F800)
+ * Flash: 128 KB dual-bank
+ *   - Application: Bank 1의 62 KB
+ *   - Settings:     Bank 1 마지막 2 KB Page (0x0800F800)
+ * Bank 2는 0x08040000부터 시작하므로 연속 128 KB로 배치하지 않는다.
  * SRAM:  128 KB (0x20000000) — SRAM1(80KB) + SRAM2(16KB) + CCMSRAM(32KB)
  */
 
@@ -14,8 +15,8 @@ _Min_Stack_Size = 0x800;   /* 2 KB */
 
 MEMORY
 {
-    FLASH    (rx)  : ORIGIN = 0x08000000, LENGTH = 126K
-    SETTINGS (r)   : ORIGIN = 0x0801F800, LENGTH = 2K
+    FLASH    (rx)  : ORIGIN = 0x08000000, LENGTH = 62K
+    SETTINGS (r)   : ORIGIN = 0x0800F800, LENGTH = 2K
     RAM      (rwx) : ORIGIN = 0x20000000, LENGTH = 128K
 }
 
@@ -66,14 +67,14 @@ SECTIONS
         __exidx_end = .;
     } >FLASH
 
-    .preinit_array :
+    .preinit_array (READONLY) :
     {
         PROVIDE_HIDDEN(__preinit_array_start = .);
         KEEP(*(.preinit_array*))
         PROVIDE_HIDDEN(__preinit_array_end = .);
     } >FLASH
 
-    .init_array :
+    .init_array (READONLY) :
     {
         PROVIDE_HIDDEN(__init_array_start = .);
         KEEP(*(SORT(.init_array.*)))
@@ -81,7 +82,7 @@ SECTIONS
         PROVIDE_HIDDEN(__init_array_end = .);
     } >FLASH
 
-    .fini_array :
+    .fini_array (READONLY) :
     {
         PROVIDE_HIDDEN(__fini_array_start = .);
         KEEP(*(SORT(.fini_array.*)))
