@@ -43,7 +43,7 @@
 | 3.2 | 데드타임 설정 (BDTR)          | `ultrasonic_pwm.c`  | 상보 출력 간 데드타임 200~500ns  | ✅ 완료   |
 | 3.3 | 주파수 가변 (15~128kHz)       | `ultrasonic_pwm.c`  | 메뉴에서 주파수 변경 → 파형 확인 | ✅ 완료   |
 | 3.4 | 듀티비 가변                   | `ultrasonic_pwm.c`  | 메뉴/가변저항 → 듀티 변경 확인   | ✅ 완료   |
-| 3.5 | 소프트 스타트 구현            | `ultrasonic_ctrl.c` | 0%→목표값 500ms 램프업           | ✅ 완료   |
+| 3.5 | 소프트 스타트 구현            | `ultrasonic_ctrl.c` | 0%→목표값 1500ms 램프업          | ✅ 완료   |
 | 3.6 | Start/Stop 토글 (BTN_OK)      | `ultrasonic_ctrl.c` | OK 버튼으로 출력 ON/OFF          | ✅ 완료   |
 | 3.7 | 비상 정지                     | `ultrasonic_ctrl.c` | 비상 조건 시 즉시 MOE 클리어     | ⬜ 미착수 |
 

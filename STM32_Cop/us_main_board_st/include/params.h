@@ -117,11 +117,14 @@ extern "C" {
 #define BUZZER_INVALID_ON_MS 60U
 #define BUZZER_INVALID_OFF_MS 45U
 #define BUZZER_INVALID_PULSE_COUNT 3U
+#define BUZZER_COMPLETE_ON_MS 120U
+#define BUZZER_COMPLETE_OFF_MS 80U
+#define BUZZER_COMPLETE_PULSE_COUNT 2U
 
 /* ================================================================
    소프트 스타트
    ================================================================ */
-#define SOFT_START_DURATION_MS 500U /* 0% → 목표 듀티까지 500 ms */
+#define SOFT_START_DURATION_MS 1500U /* 0% → 볼륨 목표값까지 1.5초 */
 #define SOFT_START_STEP_MS 10U      /* 10 ms 간격 증가 */
 
 /* ================================================================
@@ -168,7 +171,7 @@ typedef enum {
 /* ================================================================
    동작 시간 타이머
    ================================================================ */
-#define RUN_TIME_VALUE_DEFAULT 8U
+#define RUN_TIME_VALUE_DEFAULT 10U
 #define RUN_TIME_VALUE_MIN 1U
 #define RUN_TIME_VALUE_MAX 99U
 #define RUN_TIME_VALUE_STEP 1U
@@ -191,9 +194,11 @@ typedef enum {
 #define ADC_DEADZONE_LOW 50U    /* 하단 데드존 */
 #define ADC_DEADZONE_HIGH 4045U /* 상단 데드존 */
 #define PWM_VR_SAMPLE_INTERVAL_MS 5U /* PB1 ADC 고정 샘플링 주기 */
-#define ADC_FILTER_SAMPLES 32U       /* PB1 이동평균: 5ms x 32 = 160ms */
-#define ADC_HYSTERESIS 5U            /* PB1 제어값 0.5% deadband */
+#define ADC_FILTER_SAMPLES 8U        /* PB1 이동평균: 5ms x 8 = 40ms */
+#define ADC_HYSTERESIS 3U            /* PB1 제어값 0.3% deadband */
 #define PL_DISPLAY_HYSTERESIS_01PCT 5U /* PL 표시 경계 +/-0.5% */
+#define PL_DISPLAY_CONFIRM_REFRESHES 1U /* 첫 안정 후보에서 PL 표시 갱신 */
+#define PLC_POT_OVERRIDE_THRESHOLD 45U /* 통신 중 PB1 약 5% 이동 시 수동 인계 */
 
 /* PA6/SCT-13W 입력 소비전류 계측 (1:1000, burden 120 ohm) */
 #define CT_ADC_SAMPLE_RATE_HZ 4000U
@@ -201,14 +206,33 @@ typedef enum {
 #define CT_BURDEN_OHM 120U
 #define CT_TURNS_RATIO 1000U
 #define ADC_VDDA_MV 3300U
+#define CT_CURRENT_CALIBRATION_PERMILLE 1000U /* 이상적 CT/120 ohm 환산값 사용 */
+#define CT_CURRENT_AVERAGE_WINDOWS 5U /* 200 ms RMS 5개 평균 = 1초 */
 #define CT_CURRENT_RANGE_CENTIAMP 700U /* 정상 계측범위 0.00~7.00 A */
 
-/* 공진점 자동 탐색 기본값 (주파수 단위: 0.1 kHz = 100 Hz) */
-#define AUTO_TUNE_ROUGH_HALF_SPAN 10U /* 중심 기준 +/-1.0 kHz */
-#define AUTO_TUNE_FINE_HALF_SPAN 3U   /* PA6 후보 기준 +/-300 Hz */
-#define AUTO_TUNE_STEP 1U             /* 100 Hz */
-#define AUTO_TUNE_PHASE_SETTLE_MS 80U
-#define AUTO_TUNE_PHASE_MAX_ABS_01DEG 450 /* 정밀 채택 한계: +/-45.0도 */
+/* 운전 보호: LCD와 동일한 1초 평균 RMS 전류와 PWM 출력 지령을 감시한다. */
+#define TRANSDUCER_SIGNAL_LOSS_HOLD_MS 1000U
+#define TRANSDUCER_CHECK_OUTPUT_01PCT 500U /* PA7 출력 50.0% 이상 */
+#define TRANSDUCER_MIN_PEAK_COUNTS 50U /* DC 중심 기준 약 40 mV 진폭 */
+#define TRANSDUCER_SIGNAL_LOSS_WINDOWS                                  \
+  (TRANSDUCER_SIGNAL_LOSS_HOLD_MS /                                    \
+   ((CT_RMS_WINDOW_SAMPLES * 1000U) / CT_ADC_SAMPLE_RATE_HZ))
+#define CT_OVERCURRENT_LIMIT_CENTIAMP 700U /* 7.00 A RMS */
+#define CT_OVERCURRENT_HOLD_MS 5000U
+#define CT_OVERCURRENT_WINDOWS                                          \
+  (CT_OVERCURRENT_HOLD_MS /                                             \
+   ((CT_RMS_WINDOW_SAMPLES * 1000U) / CT_ADC_SAMPLE_RATE_HZ))
+
+/* 1차 Auto-Tuning: 입력전류 최저점을 10 Hz 단위로 20초간 추적한다. */
+#define AUTO_TUNE_DURATION_MS 20000U
+#define AUTO_TUNE_STEP_HZ 10U
+#define AUTO_TUNE_RESULT_OFFSET_HZ 200U
+#define AUTO_TUNE_OUTPUT_01PCT 480U /* 튜닝 중 PA7 PWM 출력 48.0% */
+#define AUTO_TUNE_DUTY_01PCT                                           \
+  (((AUTO_TUNE_OUTPUT_01PCT - PWM_OUTPUT_DUTY_MIN) * DUTY_CLAMP_MAX + \
+    ((PWM_OUTPUT_DUTY_MAX - PWM_OUTPUT_DUTY_MIN) / 2U)) /              \
+   (PWM_OUTPUT_DUTY_MAX - PWM_OUTPUT_DUTY_MIN))
+#define AUTO_TUNE_CURRENT_HYST_CENTIAMP 2U
 
 /* ================================================================
    버튼 타이밍
@@ -217,6 +241,7 @@ typedef enum {
 #define BTN_DEBOUNCE_MS 20U         /* 디바운스 시간 */
 #define BTN_LONG_PRESS_MS 1000U     /* 장기 누름 판정 */
 #define BTN_ADJUST_HOLD_MS 500U      /* UP/DOWN 빠른 반복 시작 */
+#define BTN_PROTECTED_MENU_HOLD_MS 2000U /* MODE+UP 보호 설정 진입 */
 #define BTN_HOLD_3S_MS 3000U        /* Auto-Tuning 시작 전용 */
 #define BTN_REPEAT_INTERVAL_MS 120U /* UP/DOWN 반복 이벤트 간격 */
 
@@ -247,7 +272,7 @@ static const uint32_t MODBUS_BAUD_TABLE[MODBUS_BAUD_INDEX_COUNT] = {
 #define LCD_COLS 16U
 #define LCD_ROWS 2U
 #define LCD_REFRESH_MIN_MS 100U  /* 최소 갱신 주기 */
-#define LCD_MAIN_REFRESH_MS 250U /* 운전 문자/입력 상태 갱신 주기 */
+#define LCD_MAIN_REFRESH_MS 200U /* RUN 회전 문자/입력 상태 갱신 주기 */
 #define LCD_SPLASH_TIME_MS 2000U /* 전원 인가 후 업체명 표시 시간 */
 
 /* ================================================================

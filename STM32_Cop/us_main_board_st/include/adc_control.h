@@ -39,11 +39,20 @@ uint16_t ADC_Control_GetRawFiltered(void);
  */
 uint16_t ADC_Control_GetCurrentNormalized(void);
 
-/** @brief PA6 입력 소비전류 RMS (0.01 A 단위, 예: 523 = 5.23 A) */
+/** @brief PA6 입력 소비전류 1초 평균 RMS (0.01 A 단위, 예: 523 = 5.23 A) */
 uint16_t ADC_Control_GetCurrentCentiAmp(void);
+
+/** @brief 최근 200 ms window RMS (주파수별 Auto-Tuning 비교 전용) */
+uint16_t ADC_Control_GetCurrentWindowCentiAmp(void);
 
 /** @brief 새 200 ms RMS 결과가 만들어질 때마다 증가하는 순번 */
 uint32_t ADC_Control_GetCurrentSampleCounter(void);
+
+/** @brief 최근 200 ms window의 ADC2_IN3 절대 최대 ADC count */
+uint16_t ADC_Control_GetCurrentPeakRaw(void);
+
+/** @brief 최근 200 ms window의 DC 중심 기준 최대 진폭 ADC count */
+uint16_t ADC_Control_GetCurrentPeakCounts(void);
 
 /** @brief 필터링된 PB1/PWM_VR ADC 원시값 반환 (0~4095) */
 uint16_t ADC_Control_GetPwmVrRawFiltered(void);

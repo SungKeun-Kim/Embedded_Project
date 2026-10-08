@@ -22,14 +22,14 @@ typedef enum {
   MENU_SUPERVISOR_BAUD,
   MENU_SUPERVISOR_ADDR,
   MENU_SUPERVISOR_TERM,
-  MENU_TIME,         /* 1. 동작 시간 */
-  MENU_FREQUENCY,    /* 2. 28/40/68/80k+ 선택 */
-  MENU_TUNE_SELECT,  /* 3. 수동/자동 선택 */
+  MENU_TIME,         /* 일반 MODE 메뉴: 동작 시간 */
+  MENU_FREQUENCY,    /* 보호 1. 28/40/68/80k+ 선택 */
+  MENU_TUNE_SELECT,  /* 보호 4. 수동/자동 선택 */
   MENU_TUNE_MANUAL,  /* 선택된 수동 튜닝 화면 */
   MENU_TUNE_AUTO,    /* 선택된 자동 튜닝 화면 */
-  MENU_SWEEP_WIDTH,  /* 4. 중심 기준 Sweep 폭 */
-  MENU_SWEEP_RATE,   /* 5. Sweep 왕복 속도 */
-  MENU_OUTPUT_MODE,  /* 6. Volume/정전류 */
+  MENU_SWEEP_WIDTH,  /* 보호 2. 중심 기준 Sweep 폭 */
+  MENU_SWEEP_RATE,   /* 보호 3. Sweep 왕복 속도 */
+  MENU_OUTPUT_MODE,  /* 보호 5. Volume/정전류 */
   MENU_CURRENT_SET,  /* 정전류 선택 시 목표 전류 */
 
   /* 기존 확장 API 이름은 다른 모듈/테스트 호환을 위해 예약한다. */
@@ -93,6 +93,8 @@ TuningMethod_t Menu_GetTuningMethod(void);
 OutputControlMode_t Menu_GetOutputControlMode(void);
 uint16_t Menu_GetSweepWidthHz(void);
 uint16_t Menu_GetSweepRateHz(void);
+/** @brief 현재 선택 Band에 저장된 중심주파수(0.1 kHz, 10 Hz값 반올림) */
+uint16_t Menu_GetCenterFrequency01kHz(void);
 uint16_t Menu_GetConstantCurrentCentiAmp(void);
 bool Menu_IsAutoTuneStarting(void);
 /** @brief 현재 선택한 주파수 대역 인덱스(0=28, 1=40, 2=68, 3=80k+) */

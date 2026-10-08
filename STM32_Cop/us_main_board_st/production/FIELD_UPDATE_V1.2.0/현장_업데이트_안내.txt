@@ -1,0 +1,31 @@
+STM32G474CBT6 초음파 발진기 현장 Firmware 업데이트
+=====================================================
+
+준비물
+1. Windows 노트북
+2. STM32CubeProgrammer 설치
+3. ST-LINK와 SWD 케이블
+4. 본 폴더의 US_MAIN_BOARD_UPDATE_V1.2.0.hex
+
+권장 방법: 원클릭 배치파일
+1. STM32CubeProgrammer GUI와 STM32CubeIDE를 모두 종료한다.
+2. 발진기 출력을 정지하고 보드 전원을 연결한다.
+3. ST-LINK의 SWDIO, SWCLK, NRST, GND를 보드에 연결한다.
+4. program_update.bat를 더블클릭한다.
+5. [PASS] Update, Verify, Reset and Run completed. 문구를 확인한다.
+6. 아무 키나 눌러 창을 닫고 ST-LINK를 분리한다.
+
+GUI 방법
+1. STM32CubeProgrammer를 실행한다.
+2. ST-LINK / SWD / Under reset / Hardware reset으로 Connect한다.
+3. US_MAIN_BOARD_UPDATE_V1.2.0.hex를 선택한다.
+4. Skip flash erase before programming은 체크 해제한다.
+5. Verify programming과 Run after programming을 체크한다.
+6. Full chip erase는 실행하지 않는다.
+7. Start Programming을 누르고 Download verified successfully를 확인한다.
+
+주의
+- US_MAIN_BOARD_FACTORY_V1.2.0.hex를 사용하지 않는다.
+- Full chip erase를 실행하지 않는다.
+- 업데이트용 HEX는 기존 주파수, Sweep, 운전시간과 통신 설정을 유지한다.
+- 현장에서 2 A, 3 A, 5 A 운전과 Auto-Tuning을 확인한다.

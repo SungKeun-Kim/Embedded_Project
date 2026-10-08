@@ -54,36 +54,28 @@
 
 ---
 
-## 3. 비상 정지 (Emergency Stop)
+## 3. 출력 정지와 Emergency Stop
 
-### 3.1 즉시 출력 차단 조건
+### 3.1 현재 구현된 운전 정지
 
-아래 조건 중 하나라도 감지 시 **TIM1 MOE 비트 즉시 클리어** (출력 즉시 차단):
+| 조건 | 검출 소스 | Firmware 동작 |
+| --- | --- | --- |
+| Local 모드 전환/긴급 정지 | `PA11/RUN_SW` 상태 토글 | 약 30ms 디바운스 후 출력 정지, Lock 해제, Local 전환 |
+| 통신 정지 | `RUN_STATUS_CONTROL(0x0005)=0` | Frame 처리 즉시 출력 정지 및 Lock 해제 |
+| 수동 Remote 정지 | `PA10/REMOTE=OFF` | 수동 운전 출력 정지 |
 
-| 조건                  | 검출 소스                 | 응답 시간 |
-| --------------------- | ------------------------- | --------- |
-| 과전류                | ADC2(PA6) > 과전류 임계치 | < 1ms     |
-| PLL 위상차 오버플로   | TIM2 위상차 > 허용 범위   | < 10ms    |
-| Modbus 비상 정지 명령 | 레지스터 0x0000 = 0       | 즉시      |
+`PB9/START_STOP` 장기 누름은 Emergency Stop으로 사용하지 않는다. 이 입력은
+Auto-Tuning 화면에서 3초 유지할 때 탐색을 시작하는 용도로 예약한다.
 
-### 3.2 출력 차단 절차
+### 3.2 Error latch와 Hardware Interlock
 
-```c
-/* 비상 정지 시퀀스 (순서 엄수) */
-1. __HAL_TIM_MOE_DISABLE(&htim1);    // ① PWM 출력 즉시 비활성화
-2. TIM1->CCR1 = 0;                    // ② 듀티비 0으로 클리어
-3. fault_flag = 1;                     // ③ Fault 상태 플래그 설정
-4. GPIO: Fault 릴레이(PA12) ON        // ④ 외부 알림
-5. GPIO: 부저(PC4) 경고음             // ⑤ 청각 알림
-6. LCD: 에러 메시지 표시               // ⑥ 시각 알림
-```
-
-### 3.3 비상 정지 후 재시작
-
-- Firmware v1.2.0은 Emergency Stop을 Error latch로 기록하고 0x0008에서 읽는다.
-- 출력 Stop과 원인 제거 후 0x0008에 0xFF00을 써서 Reset한다.
-- 과전류/과온도 등 Hardware Fault 검출은 향후 같은 Error 경로에 연결한다.
-- Reset 후 재시작 경로에는 반드시 Soft Start를 적용한다.
+`UltrasonicCtrl_EmergencyStop()`과 `ERROR_STATUS_RESET(0x0008)` 경로에는 PA6
+입력전류 보호가 연결되어 있다. LCD와 동일한 1초 평균 RMS 전류가 7.00 A 이상인
+상태가 약 5초 지속되면 PWM과 Signal 출력을 정지하고 `OVER CURRENT` Error latch를
+설정한다. 단일 ADC peak와 짧은 스위칭 spike는 과전류 유지시간에 포함하지 않는다.
+실제 설비의 비상정지는 Firmware 입력만 의존하지 말고 별도의 Hardware Interlock으로
+전력단을 차단해야 한다. Error latch가 설정된 경우 출력 정지와 원인 제거 후
+`0x0008`에 `0xFF00`을 써서 Reset하며, 재시작에는 Soft Start를 적용한다.
 
 ---
 
@@ -95,7 +87,7 @@
 ```
 
 - `HAL_ADCEx_Calibration_Start()` 호출 전 ADC 값 기반 출력 제어 시작 금지
-- 전류 센서(PA4) 값은 반드시 필터링 후 판단 (단일 샘플 기반 판단 금지)
+- 전류 센서(PA6/ADC2_IN3) 값은 반드시 필터링 후 판단 (단일 샘플 기반 판단 금지)
 - ADC 100% 풀스케일(4095)이 지속되면 센서 단선 의심 → 경고
 
 ---
@@ -113,8 +105,12 @@
 - PLC 출력값: 0~500 범위 외 → 예외 응답 0x03
 - Boolean: 0x0000/0xFF00 이외 → 예외 응답 0x03
 - Output/Run/Sweep 시작은 Local Lock=False이면 예외 응답 0x03
+- Local Lock ON은 RS485 보드 감지, RUN_SW=OFF, 메인화면 조건에서만 허용한다.
+- RS485 보드가 Lock/Run 중 빠지면 출력 정지와 Lock 해제를 수행한다.
 - Stop은 Local Lock 상태와 관계없이 항상 허용한다.
-- 예비 주소 0x0009~0x000B 접근 → 예외 응답 0x02
+- Modbus Stop은 Lock도 함께 해제하고 최신 PB1 Local 출력값으로 복귀한다.
+- 운전 중 Lock OFF도 허용하며, 즉시 최신 PB1 출력과 Local 접점 상태를 적용한다.
+- 상태 전용 주소 0x0009~0x000B 쓰기 → 예외 응답 0x02
 - Slave ID/Baud/Parity(0x0010~0x0012)는 PLC Read-only → 쓰기 시 예외 응답 0x02
 - FC10은 모든 주소와 값을 먼저 검사하고, 하나라도 잘못되면 전체를 적용하지 않는다.
 
@@ -123,7 +119,11 @@
 - Slave ID, Baud와 RTERM은 전원 투입 시 Supervisor에서만 변경하고 Parity는 8-E-1로 고정한다.
 - PLC는 0x0010~0x0012를 읽어 현재값을 확인할 수 있지만 쓸 수 없다.
 - 통신 설정은 CRC를 포함해 Flash에 저장하고, 저장 성공 후에만 UART에 적용한다.
-- Local 입력 Lock 중 짧은 버튼 조작은 무시하지만 장기 누름 비상 정지는 허용한다.
+- Local Lock 중에는 외부 PA10/REMOTE ON/OFF만 무시한다. PB1과 설정 버튼은
+  유지하고 PA11/RUN_SW 상태 변경은 Local 제어권 인계로 처리한다.
+- PB9/START_STOP 장기 누름은 Auto-Tuning 3초 입력 전용이며 일반 운전
+  비상정지로 사용하지 않는다.
+- PA11/RUN_SW 토글은 출력 정지와 함께 Lock을 해제하고 Local로 전환한다.
 - 통신 Watchdog은 Firmware v1.2.0에서 아직 지원하지 않는다.
 
 ---
@@ -146,6 +146,8 @@
 - 타이머 만료 시 출력 정상 종료 (비상 정지 아님, 소프트 스톱)
 - `PC14/END_BZ`를 2초간 ON → 외부 장비에 종료 알림
 - 타이머 카운트다운 중 버튼으로 시간을 바꾸면 새 설정 시간부터 다시 카운트다운
+- Modbus Run과 외부 REMOTE 수동 운전은 이 타이머를 사용하지 않는다. 통신 운전은
+  PLC의 Run OFF, 비상 정지 또는 전원 차단 전까지 유지된다.
 
 ---
 

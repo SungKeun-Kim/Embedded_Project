@@ -125,9 +125,17 @@ void Button_Process(void) {
     }
   }
 
+  /* 메뉴 조합키 중에는 MODE 단독 장기 입력음을 내지 않는다. */
+  const bool menu_combo =
+      s_btn[BTN_ID_MODE].stable == 0U &&
+      (s_btn[BTN_ID_UP].stable == 0U || s_btn[BTN_ID_DOWN].stable == 0U);
+
   /* MODE/START·STOP 장기 누름은 버튼을 놓을 때까지 연속음을 유지한다. */
   bool any_long_pressed = false;
   for (uint8_t i = 0; i < BTN_ID_COUNT; i++) {
+    if (menu_combo && i == BTN_ID_MODE) {
+      continue;
+    }
     if (i != BTN_ID_UP && i != BTN_ID_DOWN && s_btn[i].stable == 0 &&
         s_btn[i].long_fired != 0U) {
       any_long_pressed = true;
@@ -144,6 +152,13 @@ ButtonEvent_t Button_GetEvent(ButtonId_t id) {
   ButtonEvent_t evt = s_btn[id].event;
   s_btn[id].event = BTN_EVT_NONE; /* 소비 후 클리어 */
   return evt;
+}
+
+bool Button_IsPressed(ButtonId_t id) {
+  if (id >= BTN_ID_COUNT) {
+    return false;
+  }
+  return s_btn[id].stable == 0U;
 }
 
 bool Button_IsPhysicallyPressed(ButtonId_t id) {

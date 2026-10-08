@@ -19,12 +19,17 @@ assert "BUZZER_TIMER_COUNTER_HZ 1000000U" in params
 assert "GPIO_AF1_TIM2" in gpio
 assert "TIM2" in buzzer and "TIM_CHANNEL_1" in buzzer
 assert "Buzzer_RequestLongPress(any_long_pressed);" in button
+assert "menu_combo && i == BTN_ID_MODE" in button
+assert "Button_IsPhysicallyPressed(BTN_ID_MODE)" in menu
+assert "Button_IsPhysicallyPressed(BTN_ID_UP)" in menu
 assert "s_btn[i].event = BTN_EVT_DOWN;" in button
 assert "Buzzer_RequestButtonClick();" in menu
 assert "Buzzer_RequestAdjustTick();" in menu
 assert "Buzzer_RequestInvalidButton();" in menu
+assert "Buzzer_RequestComplete();" in menu
 assert "Buzzer_Play(BUZZER_STARTUP_BEEP_MS);" in main
 assert "BUZZER_INVALID_PULSE_COUNT 3U" in params
+assert "BUZZER_COMPLETE_PULSE_COUNT 2U" in params
 assert "BUZZER_ADJUST_BEEP_MS 25U" in params
 assert "BTN_ADJUST_HOLD_MS 500U" in params
 assert "BTN_REPEAT_INTERVAL_MS 120U" in params

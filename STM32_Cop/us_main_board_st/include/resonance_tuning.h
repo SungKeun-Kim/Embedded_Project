@@ -1,6 +1,6 @@
 /**
  * @file  resonance_tuning.h
- * @brief PA6 러프 탐색 + PA0/PA1 위상 정밀 탐색
+ * @brief PA6 입력전류 최저점을 이용한 1차 Auto-Tuning
  */
 #ifndef RESONANCE_TUNING_H
 #define RESONANCE_TUNING_H
@@ -27,11 +27,11 @@ void ResonanceTuning_Init(void);
 void ResonanceTuning_Process(void);
 
 /**
- * @brief 현재 중심주파수 기준 2단계 Auto-Tuning 시작
- * @return 출력이 정상 연속 운전 중이고 계측 HW가 준비됐을 때 true
- * @note 1단계 PA6 입력 소비전류 최소점, 2단계 PA0/PA1 위상차 최소점 순서이다.
+ * @brief 현재 중심주파수에서 10 Hz 방향 탐색 Auto-Tuning 시작
+ * @return 출력이 정상 연속 운전 중일 때 true
+ * @note 10초간 PA6 입력 소비전류 최저점을 찾고 결과에 +200 Hz를 적용한다.
  */
-bool ResonanceTuning_Start(uint16_t center_freq_01khz);
+bool ResonanceTuning_Start(uint32_t center_frequency_hz);
 
 /** @brief 탐색 취소 후 시작 주파수로 복귀 */
 void ResonanceTuning_Cancel(void);
@@ -40,6 +40,9 @@ bool ResonanceTuning_IsReady(void);
 ResonanceTuneState_t ResonanceTuning_GetState(void);
 uint16_t ResonanceTuning_GetScanFrequency(void);
 uint16_t ResonanceTuning_GetResultFrequency(void);
+uint32_t ResonanceTuning_GetScanFrequencyHz(void);
+uint32_t ResonanceTuning_GetResultFrequencyHz(void);
+uint32_t ResonanceTuning_GetRemainingMs(void);
 uint16_t ResonanceTuning_GetRoughCurrentCentiAmp(void);
 bool ResonanceTuning_WasPhaseRefined(void);
 

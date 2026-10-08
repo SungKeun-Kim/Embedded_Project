@@ -47,6 +47,9 @@ void Button_Process(void);
  */
 ButtonEvent_t Button_GetEvent(ButtonId_t id);
 
+/** @brief 디바운스가 완료된 현재 버튼 눌림 상태 */
+bool Button_IsPressed(ButtonId_t id);
+
 /** @brief 디바운스와 무관한 현재 물리 버튼 상태(Active LOW) */
 bool Button_IsPhysicallyPressed(ButtonId_t id);
 

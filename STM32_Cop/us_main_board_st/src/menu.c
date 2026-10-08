@@ -1,6 +1,6 @@
 /**
  * @file  menu.c
- * @brief RUN SW OFF 상태에서 MODE로 순환하는 운전 설정 메뉴
+ * @brief 일반 시간 메뉴와 MODE+UP 보호 설정 메뉴
  */
 #include "menu.h"
 
@@ -31,6 +31,7 @@ typedef struct {
 
 /* 수동/자동 튜닝으로 바뀐 중심주파수를 대역별로 따로 기억한다. */
 static uint16_t s_frequency_choices[FREQUENCY_CHOICE_COUNT];
+static uint8_t s_frequency_fine_10hz[FREQUENCY_CHOICE_COUNT];
 
 static MenuState_t s_state;
 static uint8_t s_menu_idx;
@@ -45,6 +46,13 @@ static uint16_t s_sweep_rate_hz;
 static uint16_t s_constant_current_centiamp;
 static bool s_auto_starting;
 static bool s_auto_result_handled;
+static bool s_protected_combo_tracking;
+static bool s_protected_combo_latched;
+static uint32_t s_protected_combo_tick;
+static bool s_supervisor_exit_combo_tracking;
+static bool s_supervisor_exit_combo_latched;
+static bool s_supervisor_exit_combo_armed;
+static uint32_t s_supervisor_exit_combo_tick;
 static uint32_t s_external_poll_tick;
 static uint8_t s_power_range_index;
 static uint8_t s_supervisor_baud_index;
@@ -67,15 +75,18 @@ static bool SaveRunTimer(void);
 static bool SaveOperatingSettings(void);
 static bool SaveSupervisorSettings(void);
 static bool IsSupervisorState(void);
+static bool HandleSupervisorExitCombo(void);
 static void HandleSupervisorMenu(ButtonEvent_t mode, ButtonEvent_t down,
                                  ButtonEvent_t up);
-static bool IsModbusBoardDetected(void);
 static void ApplyRterm(bool enabled);
+static bool IsProtectedSettingState(void);
+static bool HandleProtectedMenuCombo(void);
 static void AdvanceMenu(void);
 static void AbortTuningOutput(void);
 static void HandleAutoTuneProgress(void);
 static void AdjustFrequency(int8_t direction);
 static void AdjustManualTune(int8_t direction);
+static void ApplySelectedFrequency(void);
 static void GetManualTuneLimits(uint16_t *minimum, uint16_t *maximum);
 static bool IsIncrementEvent(ButtonEvent_t event);
 static bool IsShortPressAllowed(ButtonId_t id);
@@ -98,6 +109,9 @@ void Menu_Init(bool supervisor_boot) {
   s_frequency_choices[1] = FREQ_BAND_40_DEFAULT;
   s_frequency_choices[2] = FREQ_BAND_68_DEFAULT;
   s_frequency_choices[3] = FREQ_BAND_80_DEFAULT;
+  for (uint8_t index = 0U; index < FREQUENCY_CHOICE_COUNT; index++) {
+    s_frequency_fine_10hz[index] = 0U;
+  }
   s_tuning_method = TUNE_METHOD_MANUAL;
   s_output_control_mode = OUTPUT_CONTROL_VOLUME;
   s_sweep_width_hz = SWEEP_WIDTH_DEFAULT_HZ;
@@ -105,6 +119,14 @@ void Menu_Init(bool supervisor_boot) {
   s_constant_current_centiamp = CONST_CURRENT_DEFAULT_CENTIAMP;
   s_auto_starting = false;
   s_auto_result_handled = false;
+  s_protected_combo_tracking = false;
+  s_protected_combo_latched = false;
+  s_protected_combo_tick = 0U;
+  s_supervisor_exit_combo_tracking = false;
+  s_supervisor_exit_combo_latched = false;
+  /* 전원 투입 때 누른 MODE+DOWN을 먼저 놓은 뒤에만 종료 조합키를 받는다. */
+  s_supervisor_exit_combo_armed = !supervisor_boot;
+  s_supervisor_exit_combo_tick = 0U;
   s_power_range_index = saved.power_range_index;
   s_supervisor_baud_index = saved.baud_index;
   s_supervisor_address =
@@ -120,12 +142,15 @@ void Menu_Init(bool supervisor_boot) {
     s_frequency_index = saved.selected_frequency_band;
     for (uint8_t index = 0U; index < FREQUENCY_CHOICE_COUNT; index++) {
       s_frequency_choices[index] = saved.band_frequency[index];
+      s_frequency_fine_10hz[index] = saved.band_frequency_fine_10hz[index];
     }
+    s_sweep_width_hz = saved.sweep_width_hz;
+    s_sweep_rate_hz = saved.sweep_rate_hz;
   }
 
   s_edit_time_mode = g_us_state.run_time_mode;
   s_edit_time_value = g_us_state.run_time_value;
-  UltrasonicCtrl_SetFrequency(s_frequency_choices[s_frequency_index]);
+  ApplySelectedFrequency();
   ApplySweepParameters();
 
   ExternalInputInit(&s_run_input);
@@ -150,10 +175,13 @@ void Menu_Update(void) {
 
   UpdateExternalInputs();
   HandleAutoTuneProgress();
-  HandleButtonFeedback(mode, down, up, start_stop);
 
   /* Supervisor 설정은 PLC Local Lock과 일반 운전 메뉴보다 우선한다. */
   if (IsSupervisorState()) {
+    if (HandleSupervisorExitCombo()) {
+      return;
+    }
+    HandleButtonFeedback(mode, down, up, start_stop);
     HandleSupervisorMenu(mode, down, up);
     if (mode != BTN_EVT_NONE || down != BTN_EVT_NONE || up != BTN_EVT_NONE ||
         start_stop != BTN_EVT_NONE) {
@@ -162,23 +190,20 @@ void Menu_Update(void) {
     return;
   }
 
-  /* PLC Local Lock 중에는 접점과 로컬 버튼이 출력을 덮어쓰지 않는다. */
-  if (ModbusRegs_IsLocalInputLocked()) {
-    /* PDF 명세: Lock 중에도 START/STOP 장기 누름 비상정지는 허용한다. */
-    if (start_stop == BTN_EVT_LONG_PRESS && g_us_state.running) {
-      AbortTuningOutput();
-      UltrasonicCtrl_EmergencyStop();
-      s_state = MENU_MAIN;
-      MenuScreen_ForceRefresh();
-    }
-    return;
-  }
-
   if (s_run_input.changed) {
+    /* PA11/RUN_SW 토글은 출력 정지와 Local 제어권 인계를 동시에 수행한다. */
+    const bool had_error = g_us_state.error_active;
+    if (ModbusRegs_IsLocalInputLocked()) {
+      ModbusRegs_ReleaseLocalControl();
+    }
     AbortTuningOutput();
     UltrasonicCtrl_Stop();
+    if (!s_run_input.stable_active && g_us_state.error_active) {
+      (void)UltrasonicCtrl_ResetError();
+    }
     s_state = MENU_MAIN;
-    if (!s_run_input.stable_active && s_remote_input.stable_active) {
+    if (!had_error && !s_run_input.stable_active &&
+        s_remote_input.stable_active) {
       UltrasonicCtrl_StartUntimed();
     }
     MenuScreen_ForceRefresh();
@@ -192,7 +217,8 @@ void Menu_Update(void) {
   }
 
   /* 설정 중 REMOTE가 들어오면 설정을 닫고 REMOTE 운전을 우선한다. */
-  if (!s_run_input.stable_active && s_state != MENU_MAIN &&
+  if (!ModbusRegs_IsLocalInputLocked() && !s_run_input.stable_active &&
+      s_state != MENU_MAIN &&
       s_remote_input.activated) {
     AbortTuningOutput();
     s_state = MENU_MAIN;
@@ -203,7 +229,9 @@ void Menu_Update(void) {
   }
 
   if (s_state == MENU_MAIN) {
-    if (!s_run_input.stable_active) {
+    if (ModbusRegs_IsLocalInputLocked()) {
+      /* 통신 제어 준비/운전 중에는 PA10 REMOTE ON/OFF만 무시한다. */
+    } else if (!s_run_input.stable_active) {
       /* 수동 모드: REMOTE 현재 레벨을 그대로 출력 ON/OFF에 반영한다. */
       if (s_remote_input.stable_active && !g_us_state.running) {
         UltrasonicCtrl_StartUntimed();
@@ -217,17 +245,14 @@ void Menu_Update(void) {
     }
   }
 
-  /* Auto 화면의 1초 event는 3초 판정까지 기다린다. 그 외 운전 중에는 비상정지. */
-  if (start_stop == BTN_EVT_LONG_PRESS && s_state != MENU_TUNE_AUTO &&
-      g_us_state.running) {
-    AbortTuningOutput();
-    UltrasonicCtrl_EmergencyStop();
-    s_state = MENU_MAIN;
-    MenuScreen_ForceRefresh();
+  /* 두 버튼을 누르는 동안 단일 MODE/UP 이벤트를 소비하지 않는다. */
+  if (HandleProtectedMenuCombo()) {
     return;
   }
 
-  if (mode == BTN_EVT_LONG_PRESS) {
+  HandleButtonFeedback(mode, down, up, start_stop);
+
+  if (mode == BTN_EVT_LONG_PRESS && !IsProtectedSettingState()) {
     const bool save_frequency =
         s_state == MENU_FREQUENCY || s_state == MENU_TUNE_MANUAL ||
         (s_state == MENU_TUNE_AUTO &&
@@ -244,7 +269,7 @@ void Menu_Update(void) {
 
   if (s_state == MENU_MAIN) {
     if (s_run_input.stable_active) {
-      /* RUN SW ON: 설정 메뉴를 잠그고 START/STOP만 허용한다. */
+      /* RUN SW ON: START/STOP으로 설정된 시간만큼 자동 운전한다. */
       if (start_stop == BTN_EVT_PRESS) {
         ToggleAutomaticRun();
       }
@@ -304,8 +329,9 @@ void Menu_Update(void) {
         UltrasonicCtrl_Stop();
         s_time_save_error = !SaveOperatingSettings();
       } else {
-        /* 수동 튜닝은 SWEEP 접점 상태와 무관하게 고정 중심주파수를 출력한다. */
-        UltrasonicCtrl_SetMode(MODE_CONTINUOUS);
+        /* 보호 메뉴에서 정한 폭/속도로 SWEEP 시험출력을 실행한다. */
+        ApplySweepParameters();
+        UltrasonicCtrl_SetMode(MODE_SWEEP);
         UltrasonicCtrl_StartUntimed();
       }
     }
@@ -318,6 +344,7 @@ void Menu_Update(void) {
       ResonanceTuning_Cancel();
       s_auto_result_handled = false;
       UltrasonicCtrl_SetMode(MODE_CONTINUOUS);
+      UltrasonicCtrl_SetTuningDutyOverride(true, AUTO_TUNE_DUTY_01PCT);
       if (!g_us_state.running) {
         UltrasonicCtrl_StartUntimed();
       }
@@ -405,6 +432,12 @@ OutputControlMode_t Menu_GetOutputControlMode(void) {
 }
 uint16_t Menu_GetSweepWidthHz(void) { return s_sweep_width_hz; }
 uint16_t Menu_GetSweepRateHz(void) { return s_sweep_rate_hz; }
+uint16_t Menu_GetCenterFrequency01kHz(void) {
+  const uint32_t center_hz =
+      (uint32_t)s_frequency_choices[s_frequency_index] * 100U +
+      (uint32_t)s_frequency_fine_10hz[s_frequency_index] * 10U;
+  return (uint16_t)((center_hz + 50U) / 100U);
+}
 uint16_t Menu_GetConstantCurrentCentiAmp(void) {
   return s_constant_current_centiamp;
 }
@@ -434,6 +467,49 @@ static bool IsSupervisorState(void) {
          s_state == MENU_SUPERVISOR_TERM;
 }
 
+static bool HandleSupervisorExitCombo(void) {
+  const bool combo_pressed = Button_IsPressed(BTN_ID_MODE) &&
+                             Button_IsPressed(BTN_ID_DOWN);
+
+  if (!combo_pressed) {
+    s_supervisor_exit_combo_armed = true;
+    s_supervisor_exit_combo_tracking = false;
+    s_supervisor_exit_combo_latched = false;
+    return false;
+  }
+
+  if (!s_supervisor_exit_combo_armed) {
+    return true;
+  }
+
+  if (s_supervisor_exit_combo_latched) {
+    return true;
+  }
+
+  const uint32_t now = HAL_GetTick();
+  if (!s_supervisor_exit_combo_tracking) {
+    s_supervisor_exit_combo_tracking = true;
+    s_supervisor_exit_combo_tick = now;
+    Buzzer_RequestButtonClick();
+    return true;
+  }
+
+  if ((now - s_supervisor_exit_combo_tick) >= BTN_PROTECTED_MENU_HOLD_MS) {
+    s_supervisor_exit_combo_latched = true;
+    if (SaveSupervisorSettings()) {
+      Buzzer_RequestComplete();
+      s_state = MENU_MAIN;
+      s_menu_idx = 0U;
+      ApplySweepInput();
+    } else {
+      s_supervisor_save_error = true;
+      Buzzer_RequestInvalidButton();
+    }
+    MenuScreen_ForceRefresh();
+  }
+  return true;
+}
+
 static void HandleSupervisorMenu(ButtonEvent_t mode, ButtonEvent_t down,
                                  ButtonEvent_t up) {
   if (s_state == MENU_SUPERVISOR) {
@@ -453,13 +529,7 @@ static void HandleSupervisorMenu(ButtonEvent_t mode, ButtonEvent_t down,
       s_power_range_index--;
     }
     if (mode == BTN_EVT_PRESS) {
-      if (IsModbusBoardDetected()) {
-        s_state = MENU_SUPERVISOR_BAUD;
-      } else if (SaveSupervisorSettings()) {
-        s_state = MENU_MAIN;
-      } else {
-        s_supervisor_save_error = true;
-      }
+      s_state = MENU_SUPERVISOR_BAUD;
     }
     return;
   }
@@ -499,7 +569,8 @@ static void HandleSupervisorMenu(ButtonEvent_t mode, ButtonEvent_t down,
     }
     if (mode == BTN_EVT_PRESS) {
       if (SaveSupervisorSettings()) {
-        s_state = MENU_MAIN;
+        Buzzer_RequestComplete();
+        s_state = MENU_SUPERVISOR_PL;
       } else {
         s_supervisor_save_error = true;
       }
@@ -538,14 +609,72 @@ static bool SaveSupervisorSettings(void) {
   return true;
 }
 
-static bool IsModbusBoardDetected(void) {
-  return HAL_GPIO_ReadPin(MODBUS_DETECT_PORT, MODBUS_DETECT_PIN) ==
-         GPIO_PIN_RESET;
-}
-
 static void ApplyRterm(bool enabled) {
   HAL_GPIO_WritePin(MODBUS_RTERM_PORT, MODBUS_RTERM_PIN,
                     enabled ? GPIO_PIN_SET : GPIO_PIN_RESET);
+}
+
+static bool IsProtectedSettingState(void) {
+  return s_state == MENU_FREQUENCY || s_state == MENU_SWEEP_WIDTH ||
+         s_state == MENU_SWEEP_RATE || s_state == MENU_TUNE_SELECT ||
+         s_state == MENU_TUNE_MANUAL || s_state == MENU_TUNE_AUTO ||
+         s_state == MENU_OUTPUT_MODE || s_state == MENU_CURRENT_SET;
+}
+
+static bool HandleProtectedMenuCombo(void) {
+  const bool combo_pressed = Button_IsPressed(BTN_ID_MODE) &&
+                             Button_IsPressed(BTN_ID_UP);
+
+  if (!combo_pressed) {
+    s_protected_combo_tracking = false;
+    s_protected_combo_latched = false;
+    return false;
+  }
+
+  if (s_protected_combo_latched) {
+    return true;
+  }
+
+  const bool entering = s_state == MENU_MAIN &&
+                        !s_run_input.stable_active && !g_us_state.running;
+  const bool exiting = IsProtectedSettingState();
+  if (!entering && !exiting) {
+    if (!s_protected_combo_tracking) {
+      s_protected_combo_tracking = true;
+      Buzzer_RequestInvalidButton();
+    }
+    return true;
+  }
+
+  const uint32_t now = HAL_GetTick();
+  if (!s_protected_combo_tracking) {
+    s_protected_combo_tracking = true;
+    s_protected_combo_tick = now;
+    Buzzer_RequestButtonClick();
+    return true;
+  }
+
+  if ((now - s_protected_combo_tick) >= BTN_PROTECTED_MENU_HOLD_MS) {
+    s_protected_combo_latched = true;
+    if (exiting) {
+      AbortTuningOutput();
+      s_time_save_error = !SaveOperatingSettings();
+      if (!s_time_save_error) {
+        Buzzer_RequestComplete();
+      }
+      s_state = MENU_MAIN;
+      s_menu_idx = 0U;
+      ApplySweepInput();
+    } else {
+      s_time_save_error = false;
+      s_state = MENU_FREQUENCY;
+      s_menu_idx = 1U;
+      ApplySelectedFrequency();
+      ApplySweepParameters();
+    }
+    MenuScreen_ForceRefresh();
+  }
+  return true;
 }
 
 static void AdvanceMenu(void) {
@@ -553,13 +682,35 @@ static void AdvanceMenu(void) {
   case MENU_TIME:
     UltrasonicCtrl_SetRunTimer(s_edit_time_mode, s_edit_time_value);
     s_time_save_error = !SaveRunTimer();
-    s_state = MENU_FREQUENCY;
-    s_menu_idx = 2U;
+    if (!s_time_save_error) {
+      Buzzer_RequestComplete();
+    }
+    s_state = MENU_MAIN;
+    s_menu_idx = 0U;
     break;
   case MENU_FREQUENCY:
     s_time_save_error = !SaveOperatingSettings();
-    s_state = MENU_TUNE_SELECT;
+    if (!s_time_save_error) {
+      Buzzer_RequestComplete();
+    }
+    s_state = MENU_SWEEP_WIDTH;
+    s_menu_idx = 2U;
+    break;
+  case MENU_SWEEP_WIDTH:
+    s_time_save_error = !SaveOperatingSettings();
+    if (!s_time_save_error) {
+      Buzzer_RequestComplete();
+    }
+    s_state = MENU_SWEEP_RATE;
     s_menu_idx = 3U;
+    break;
+  case MENU_SWEEP_RATE:
+    s_time_save_error = !SaveOperatingSettings();
+    if (!s_time_save_error) {
+      Buzzer_RequestComplete();
+    }
+    s_state = MENU_TUNE_SELECT;
+    s_menu_idx = 4U;
     break;
   case MENU_TUNE_SELECT:
     ResonanceTuning_Cancel();
@@ -570,36 +721,49 @@ static void AdvanceMenu(void) {
                                                        : MENU_TUNE_AUTO;
     break;
   case MENU_TUNE_MANUAL:
-  case MENU_TUNE_AUTO:
     AbortTuningOutput();
     s_time_save_error = !SaveOperatingSettings();
+    if (!s_time_save_error) {
+      Buzzer_RequestComplete();
+    }
     ApplySweepInput();
-    s_state = MENU_SWEEP_WIDTH;
-    s_menu_idx = 4U;
-    break;
-  case MENU_SWEEP_WIDTH:
-    s_state = MENU_SWEEP_RATE;
+    s_state = MENU_OUTPUT_MODE;
     s_menu_idx = 5U;
     break;
-  case MENU_SWEEP_RATE:
+  case MENU_TUNE_AUTO:
+    if (ResonanceTuning_GetState() == RES_TUNE_COMPLETE) {
+      const uint32_t result_hz = ResonanceTuning_GetResultFrequencyHz();
+      s_frequency_choices[s_frequency_index] =
+          (uint16_t)(result_hz / 100U);
+      s_frequency_fine_10hz[s_frequency_index] =
+          (uint8_t)((result_hz % 100U) / 10U);
+      ApplySelectedFrequency();
+    }
+    AbortTuningOutput();
+    s_time_save_error = !SaveOperatingSettings();
+    if (!s_time_save_error) {
+      Buzzer_RequestComplete();
+    }
+    ApplySweepInput();
     s_state = MENU_OUTPUT_MODE;
-    s_menu_idx = 6U;
+    s_menu_idx = 5U;
     break;
   case MENU_OUTPUT_MODE:
     if (s_output_control_mode == OUTPUT_CONTROL_CONSTANT_CURRENT) {
       s_state = MENU_CURRENT_SET;
-      s_menu_idx = 7U;
+      s_menu_idx = 6U;
     } else {
-      s_state = MENU_MAIN;
-      s_menu_idx = 0U;
-      ApplySweepInput();
+      s_state = MENU_FREQUENCY;
+      s_menu_idx = 1U;
     }
     break;
   case MENU_CURRENT_SET:
+    s_state = MENU_FREQUENCY;
+    s_menu_idx = 1U;
+    break;
   default:
     s_state = MENU_MAIN;
     s_menu_idx = 0U;
-    ApplySweepInput();
     break;
   }
 }
@@ -614,6 +778,7 @@ static void AbortTuningOutput(void) {
       (s_state == MENU_TUNE_MANUAL || s_state == MENU_TUNE_AUTO)) {
     UltrasonicCtrl_Stop();
   }
+  UltrasonicCtrl_SetTuningDutyOverride(false, AUTO_TUNE_DUTY_01PCT);
 }
 
 static void HandleAutoTuneProgress(void) {
@@ -622,7 +787,7 @@ static void HandleAutoTuneProgress(void) {
   }
 
   if (s_auto_starting && g_us_state.running && !g_us_state.soft_starting) {
-    if (ResonanceTuning_Start(g_us_state.target_freq)) {
+    if (ResonanceTuning_Start(g_us_state.target_freq_hz)) {
       s_auto_starting = false;
       MenuScreen_ForceRefresh();
     }
@@ -635,10 +800,9 @@ static void HandleAutoTuneProgress(void) {
     if (g_us_state.running) {
       UltrasonicCtrl_Stop();
     }
+    UltrasonicCtrl_SetTuningDutyOverride(false, AUTO_TUNE_DUTY_01PCT);
     if (state == RES_TUNE_COMPLETE) {
-      s_frequency_choices[s_frequency_index] =
-          ResonanceTuning_GetResultFrequency();
-      s_time_save_error = !SaveOperatingSettings();
+      Buzzer_RequestComplete();
     }
     s_auto_result_handled = true;
     MenuScreen_ForceRefresh();
@@ -651,7 +815,7 @@ static void AdjustFrequency(int8_t direction) {
   } else if (direction < 0 && s_frequency_index > 0U) {
     s_frequency_index--;
   }
-  UltrasonicCtrl_SetFrequency(s_frequency_choices[s_frequency_index]);
+  ApplySelectedFrequency();
   ApplySweepParameters();
 }
 
@@ -667,7 +831,15 @@ static void AdjustManualTune(int8_t direction) {
   }
   UltrasonicCtrl_SetFrequency(frequency);
   s_frequency_choices[s_frequency_index] = frequency;
+  s_frequency_fine_10hz[s_frequency_index] = 0U;
   ApplySweepParameters();
+}
+
+static void ApplySelectedFrequency(void) {
+  const uint32_t frequency_hz =
+      (uint32_t)s_frequency_choices[s_frequency_index] * 100U +
+      (uint32_t)s_frequency_fine_10hz[s_frequency_index] * 10U;
+  UltrasonicCtrl_SetFrequencyHz(frequency_hz);
 }
 
 static void GetManualTuneLimits(uint16_t *minimum, uint16_t *maximum) {
@@ -741,6 +913,8 @@ static void ApplySweepParameters(void) {
 }
 
 static void ToggleAutomaticRun(void) {
+  /* PB9/START_STOP 또는 자동 REMOTE edge가 실행한 Local 운전이다. */
+  ModbusRegs_NotifyLocalRunControl();
   if (g_us_state.running) {
     UltrasonicCtrl_Stop();
   } else {
@@ -769,8 +943,11 @@ static bool SaveOperatingSettings(void) {
   settings.run_time_value = s_edit_time_value;
   settings.run_time_mode = (uint8_t)s_edit_time_mode;
   settings.selected_frequency_band = s_frequency_index;
+  settings.sweep_width_hz = s_sweep_width_hz;
+  settings.sweep_rate_hz = s_sweep_rate_hz;
   for (uint8_t index = 0U; index < FREQUENCY_CHOICE_COUNT; index++) {
     settings.band_frequency[index] = s_frequency_choices[index];
+    settings.band_frequency_fine_10hz[index] = s_frequency_fine_10hz[index];
   }
 
   if (loaded && settings.address == previous.address &&
@@ -778,10 +955,14 @@ static bool SaveOperatingSettings(void) {
       settings.parity == previous.parity &&
       settings.run_time_value == previous.run_time_value &&
       settings.run_time_mode == previous.run_time_mode &&
-      settings.selected_frequency_band == previous.selected_frequency_band) {
+      settings.selected_frequency_band == previous.selected_frequency_band &&
+      settings.sweep_width_hz == previous.sweep_width_hz &&
+      settings.sweep_rate_hz == previous.sweep_rate_hz) {
     bool frequencies_equal = true;
     for (uint8_t index = 0U; index < FREQUENCY_CHOICE_COUNT; index++) {
-      if (settings.band_frequency[index] != previous.band_frequency[index]) {
+      if (settings.band_frequency[index] != previous.band_frequency[index] ||
+          settings.band_frequency_fine_10hz[index] !=
+              previous.band_frequency_fine_10hz[index]) {
         frequencies_equal = false;
       }
     }
@@ -805,10 +986,6 @@ static bool IsShortPressAllowed(ButtonId_t id) {
     return (id == BTN_ID_UP || id == BTN_ID_DOWN) &&
            s_state != MENU_SUPERVISOR;
   }
-  if (ModbusRegs_IsLocalInputLocked()) {
-    return false;
-  }
-
   if (id == BTN_ID_MODE) {
     return s_state != MENU_MAIN ||
            (!s_run_input.stable_active && !g_us_state.running);
@@ -852,17 +1029,11 @@ static bool IsLongPressAllowed(ButtonId_t id) {
   if (IsSupervisorState()) {
     return IsShortPressAllowed(id);
   }
-  if (id == BTN_ID_START_STOP && g_us_state.running) {
-    return true;
-  }
-  if (ModbusRegs_IsLocalInputLocked()) {
-    return false;
-  }
   if (id == BTN_ID_MODE) {
     return s_state != MENU_MAIN;
   }
   if (id == BTN_ID_START_STOP) {
-    return s_state == MENU_TUNE_AUTO || g_us_state.running;
+    return s_state == MENU_TUNE_AUTO;
   }
   return IsShortPressAllowed(id);
 }
@@ -874,6 +1045,12 @@ static bool IsButtonDownAllowed(ButtonId_t id) {
 static void HandleButtonFeedback(ButtonEvent_t mode, ButtonEvent_t down,
                                  ButtonEvent_t up,
                                  ButtonEvent_t start_stop) {
+  /* 조합키가 거의 동시에 눌릴 때 첫 버튼을 단독 입력으로 울리지 않는다. */
+  if (Button_IsPhysicallyPressed(BTN_ID_MODE) &&
+      Button_IsPhysicallyPressed(BTN_ID_UP)) {
+    return;
+  }
+
   const ButtonEvent_t events[BTN_ID_COUNT] = {mode, down, up, start_stop};
   bool valid_press = false;
   bool invalid_press = false;

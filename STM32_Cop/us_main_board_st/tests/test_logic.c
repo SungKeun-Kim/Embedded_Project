@@ -107,14 +107,11 @@ static uint32_t calc_ccr(uint32_t period, uint16_t duty_01pct) {
   return ccr;
 }
 
-/* PB1 로컬 상한과 외부 OUTPUT_VALUE 0~500 -> 내부 PA7 지령 */
-static uint16_t output_value_to_phase_duty(uint16_t local_duty,
-                                           uint16_t output_value) {
-  if (local_duty > DUTY_CLAMP_MAX)
-    local_duty = DUTY_CLAMP_MAX;
+/* 외부 OUTPUT_VALUE 0~500 절대값 -> 내부 PA7 0~90% 지령 */
+static uint16_t output_value_to_phase_duty(uint16_t output_value) {
   if (output_value > 500U)
     output_value = 500U;
-  return (uint16_t)((uint32_t)local_duty * output_value / 500U);
+  return (uint16_t)(((uint32_t)DUTY_CLAMP_MAX * output_value + 250U) / 500U);
 }
 
 /* CCR → 실제 듀티비 역산 */
@@ -216,22 +213,22 @@ static void test_ccr_calculation(void) {
 
   /* 외부 OUTPUT_VALUE가 PA7 전체 5~100% 범위를 제어하는지 확인 */
   uint32_t ccr_external_min =
-      calc_ccr(period, output_value_to_phase_duty(900U, 0U));
+      calc_ccr(period, output_value_to_phase_duty(0U));
   uint32_t ccr_external_mid =
-      calc_ccr(period, output_value_to_phase_duty(900U, 250U));
+      calc_ccr(period, output_value_to_phase_duty(250U));
   uint32_t ccr_external_max =
-      calc_ccr(period, output_value_to_phase_duty(900U, 500U));
+      calc_ccr(period, output_value_to_phase_duty(500U));
   TEST_ASSERT_NEAR(ccr_to_duty_pct(ccr_external_min, period), 5.0, 0.1,
-                   "VR 최대, OUTPUT_VALUE=0 -> PWM_OUTPUT 5%");
+                   "OUTPUT_VALUE=0 -> PWM_OUTPUT 5%");
   TEST_ASSERT_NEAR(ccr_to_duty_pct(ccr_external_mid, period), 52.5, 0.1,
-                   "VR 최대, OUTPUT_VALUE=250 -> PWM_OUTPUT 52.5%");
+                   "OUTPUT_VALUE=250 -> PWM_OUTPUT 52.5%");
   TEST_ASSERT_NEAR(ccr_to_duty_pct(ccr_external_max, period), 100.0, 0.1,
-                   "VR 최대, OUTPUT_VALUE=500 -> PWM_OUTPUT 100%");
+                   "OUTPUT_VALUE=500 -> PWM_OUTPUT 100%");
 
-  uint32_t ccr_vr_mid =
-      calc_ccr(period, output_value_to_phase_duty(450U, 500U));
+  /* 통신 중 PB1 이동은 해당 Local Duty를 마지막 지령으로 즉시 채택한다. */
+  uint32_t ccr_vr_mid = calc_ccr(period, 450U);
   TEST_ASSERT_NEAR(ccr_to_duty_pct(ccr_vr_mid, period), 52.5, 0.1,
-                   "VR 중간, OUTPUT_VALUE=500 -> PWM_OUTPUT 52.5%");
+                   "통신 중 PB1 중간 이동 -> PWM_OUTPUT 52.5%");
 }
 
 static void test_frequency_duty_consistency(void) {
@@ -339,7 +336,7 @@ static void test_soft_start_simulation(void) {
 
   uint16_t target_duty = 450; /* 45.0% */
   uint16_t current_duty = 0;
-  uint32_t steps = 500 / 10; /* 500ms / 10ms = 50 단계 */
+  uint32_t steps = 1500 / 10; /* 1500ms / 10ms = 150 단계 */
 
   for (uint32_t i = 1; i <= steps; i++) {
     current_duty = (uint16_t)((uint32_t)target_duty * i / steps);

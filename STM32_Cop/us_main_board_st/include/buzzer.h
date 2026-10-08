@@ -40,6 +40,9 @@ void Buzzer_RequestLongPress(bool active);
 /** @brief 잘못된 버튼 입력을 알리는 빠른 3회음 요청 */
 void Buzzer_RequestInvalidButton(void);
 
+/** @brief 설정 저장/Auto-Tuning 완료를 알리는 2회 확인음 요청 */
+void Buzzer_RequestComplete(void);
+
 #ifdef __cplusplus
 }
 #endif

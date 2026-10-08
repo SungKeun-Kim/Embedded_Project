@@ -17,7 +17,9 @@ extern uint32_t __settings_flash_end__;
 #define SETTINGS_VERSION_LEGACY 1U
 #define SETTINGS_VERSION_V2 2U
 #define SETTINGS_VERSION_V3 3U
-#define SETTINGS_VERSION 4U
+#define SETTINGS_VERSION_V4 4U
+#define SETTINGS_VERSION_V5 5U
+#define SETTINGS_VERSION 6U
 #define SETTINGS_ERASED_WORD 0xFFFFFFFFUL
 
 /** 기존 v1 Record. 현장 보드의 통신 설정을 계속 읽기 위해 유지한다. */
@@ -82,6 +84,46 @@ typedef struct {
   uint32_t crc32;
 } SettingsRecordV4_t;
 
+/** v5 Record: Auto-Tuning의 대역별 10 Hz 정밀도를 보존한다. */
+typedef struct {
+  uint32_t magic;
+  uint32_t sequence;
+  uint8_t version;
+  uint8_t address;
+  uint8_t baud_index;
+  uint8_t parity;
+  uint8_t run_time_value;
+  uint8_t run_time_mode;
+  uint8_t selected_frequency_band;
+  uint8_t power_range_index;
+  uint16_t band_frequency[FREQ_BAND_COUNT];
+  uint8_t rterm_enabled;
+  uint8_t band_frequency_fine_10hz[FREQ_BAND_COUNT];
+  uint8_t reserved[7];
+  uint32_t crc32;
+} SettingsRecordV5_t;
+
+/** v6 Record: Sweep 폭과 속도를 전원 재인가 후에도 보존한다. */
+typedef struct {
+  uint32_t magic;
+  uint32_t sequence;
+  uint8_t version;
+  uint8_t address;
+  uint8_t baud_index;
+  uint8_t parity;
+  uint8_t run_time_value;
+  uint8_t run_time_mode;
+  uint8_t selected_frequency_band;
+  uint8_t power_range_index;
+  uint16_t band_frequency[FREQ_BAND_COUNT];
+  uint16_t sweep_width_hz;
+  uint16_t sweep_rate_hz;
+  uint8_t rterm_enabled;
+  uint8_t band_frequency_fine_10hz[FREQ_BAND_COUNT];
+  uint8_t reserved[3];
+  uint32_t crc32;
+} SettingsRecordV6_t;
+
 _Static_assert(sizeof(SettingsRecordV1_t) == 16U,
                "SettingsRecordV1_t must be exactly 16 bytes");
 _Static_assert(sizeof(SettingsRecordV2_t) == 24U,
@@ -90,12 +132,18 @@ _Static_assert(sizeof(SettingsRecordV3_t) == 32U,
                "SettingsRecordV3_t must be exactly 32 bytes");
 _Static_assert(sizeof(SettingsRecordV4_t) == 32U,
                "SettingsRecordV4_t must be exactly 32 bytes");
+_Static_assert(sizeof(SettingsRecordV5_t) == 40U,
+               "SettingsRecordV5_t must be exactly 40 bytes");
+_Static_assert(sizeof(SettingsRecordV6_t) == 40U,
+               "SettingsRecordV6_t must be exactly 40 bytes");
 
 static uint32_t Crc32(const uint8_t *data, size_t length);
 static bool RecordV1IsValid(const SettingsRecordV1_t *record);
 static bool RecordV2IsValid(const SettingsRecordV2_t *record);
 static bool RecordV3IsValid(const SettingsRecordV3_t *record);
 static bool RecordV4IsValid(const SettingsRecordV4_t *record);
+static bool RecordV5IsValid(const SettingsRecordV5_t *record);
+static bool RecordV6IsValid(const SettingsRecordV6_t *record);
 static bool BandFrequencyIsValid(uint8_t index, uint16_t frequency);
 static uint8_t LegacyBaudIndexToCurrent(uint8_t legacy_index);
 static uintptr_t SettingsStart(void);
@@ -115,6 +163,9 @@ void SettingsStorage_SetDefaults(SettingsStorageData_t *data) {
       .selected_frequency_band = 0U,
       .band_frequency = {FREQ_BAND_28_DEFAULT, FREQ_BAND_40_DEFAULT,
                          FREQ_BAND_68_DEFAULT, FREQ_BAND_80_DEFAULT},
+      .band_frequency_fine_10hz = {0U, 0U, 0U, 0U},
+      .sweep_width_hz = SWEEP_WIDTH_DEFAULT_HZ,
+      .sweep_rate_hz = SWEEP_RATE_DEFAULT_HZ,
       .power_range_index = POWER_RANGE_PERCENT_INDEX,
       .rterm_enabled = 0U,
   };
@@ -188,7 +239,7 @@ bool SettingsStorage_Load(SettingsStorageData_t *data) {
       continue;
     }
 
-    if (base->version == SETTINGS_VERSION &&
+    if (base->version == SETTINGS_VERSION_V4 &&
         (size_t)(end - cursor) >= sizeof(SettingsRecordV4_t)) {
       const SettingsRecordV4_t *record = (const SettingsRecordV4_t *)cursor;
       if (RecordV4IsValid(record) &&
@@ -207,6 +258,58 @@ bool SettingsStorage_Load(SettingsStorageData_t *data) {
         found = true;
       }
       cursor += sizeof(SettingsRecordV4_t);
+      continue;
+    }
+
+    if (base->version == SETTINGS_VERSION_V5 &&
+        (size_t)(end - cursor) >= sizeof(SettingsRecordV5_t)) {
+      const SettingsRecordV5_t *record = (const SettingsRecordV5_t *)cursor;
+      if (RecordV5IsValid(record) &&
+          (!found || record->sequence > latest_sequence)) {
+        latest.address = record->address;
+        latest.baud_index = record->baud_index;
+        latest.parity = record->parity;
+        latest.run_time_value = record->run_time_value;
+        latest.run_time_mode = record->run_time_mode;
+        latest.selected_frequency_band = record->selected_frequency_band;
+        memcpy(latest.band_frequency, record->band_frequency,
+               sizeof(latest.band_frequency));
+        memcpy(latest.band_frequency_fine_10hz,
+               record->band_frequency_fine_10hz,
+               sizeof(latest.band_frequency_fine_10hz));
+        latest.power_range_index = record->power_range_index;
+        latest.rterm_enabled = record->rterm_enabled;
+        latest_sequence = record->sequence;
+        found = true;
+      }
+      cursor += sizeof(SettingsRecordV5_t);
+      continue;
+    }
+
+    if (base->version == SETTINGS_VERSION &&
+        (size_t)(end - cursor) >= sizeof(SettingsRecordV6_t)) {
+      const SettingsRecordV6_t *record = (const SettingsRecordV6_t *)cursor;
+      if (RecordV6IsValid(record) &&
+          (!found || record->sequence > latest_sequence)) {
+        latest.address = record->address;
+        latest.baud_index = record->baud_index;
+        latest.parity = record->parity;
+        latest.run_time_value = record->run_time_value;
+        latest.run_time_mode = record->run_time_mode;
+        latest.selected_frequency_band = record->selected_frequency_band;
+        memcpy(latest.band_frequency, record->band_frequency,
+               sizeof(latest.band_frequency));
+        memcpy(latest.band_frequency_fine_10hz,
+               record->band_frequency_fine_10hz,
+               sizeof(latest.band_frequency_fine_10hz));
+        latest.sweep_width_hz = record->sweep_width_hz;
+        latest.sweep_rate_hz = record->sweep_rate_hz;
+        latest.power_range_index = record->power_range_index;
+        latest.rterm_enabled = record->rterm_enabled;
+        latest_sequence = record->sequence;
+        found = true;
+      }
+      cursor += sizeof(SettingsRecordV6_t);
       continue;
     }
 
@@ -229,12 +332,19 @@ bool SettingsStorage_Save(const SettingsStorageData_t *data) {
       data->run_time_value > RUN_TIME_VALUE_MAX ||
       data->run_time_mode >= RUN_TIME_MODE_COUNT ||
       data->selected_frequency_band >= FREQ_BAND_COUNT ||
+      data->sweep_width_hz < SWEEP_WIDTH_MIN_HZ ||
+      data->sweep_width_hz > SWEEP_WIDTH_MAX_HZ ||
+      data->sweep_rate_hz < SWEEP_RATE_MIN_HZ ||
+      data->sweep_rate_hz > SWEEP_RATE_MAX_HZ ||
       data->power_range_index > POWER_RANGE_INDEX_MAX ||
       data->rterm_enabled > 1U) {
     return false;
   }
   for (uint8_t index = 0U; index < FREQ_BAND_COUNT; index++) {
-    if (!BandFrequencyIsValid(index, data->band_frequency[index])) {
+    if (!BandFrequencyIsValid(index, data->band_frequency[index]) ||
+        data->band_frequency_fine_10hz[index] > 9U ||
+        (data->band_frequency[index] == FREQ_MAX &&
+         data->band_frequency_fine_10hz[index] != 0U)) {
       return false;
     }
   }
@@ -268,13 +378,27 @@ bool SettingsStorage_Save(const SettingsStorageData_t *data) {
         next_sequence = record->sequence + 1U;
       }
       cursor += sizeof(SettingsRecordV3_t);
-    } else if (base->version == SETTINGS_VERSION &&
+    } else if (base->version == SETTINGS_VERSION_V4 &&
                (size_t)(end - cursor) >= sizeof(SettingsRecordV4_t)) {
       const SettingsRecordV4_t *record = (const SettingsRecordV4_t *)cursor;
       if (RecordV4IsValid(record) && record->sequence >= next_sequence) {
         next_sequence = record->sequence + 1U;
       }
       cursor += sizeof(SettingsRecordV4_t);
+    } else if (base->version == SETTINGS_VERSION_V5 &&
+               (size_t)(end - cursor) >= sizeof(SettingsRecordV5_t)) {
+      const SettingsRecordV5_t *record = (const SettingsRecordV5_t *)cursor;
+      if (RecordV5IsValid(record) && record->sequence >= next_sequence) {
+        next_sequence = record->sequence + 1U;
+      }
+      cursor += sizeof(SettingsRecordV5_t);
+    } else if (base->version == SETTINGS_VERSION &&
+               (size_t)(end - cursor) >= sizeof(SettingsRecordV6_t)) {
+      const SettingsRecordV6_t *record = (const SettingsRecordV6_t *)cursor;
+      if (RecordV6IsValid(record) && record->sequence >= next_sequence) {
+        next_sequence = record->sequence + 1U;
+      }
+      cursor += sizeof(SettingsRecordV6_t);
     } else {
       cursor = end;
       break;
@@ -287,7 +411,7 @@ bool SettingsStorage_Save(const SettingsStorageData_t *data) {
 
   bool success = true;
   uintptr_t target = (uintptr_t)cursor;
-  if ((size_t)(end - cursor) < sizeof(SettingsRecordV4_t)) {
+  if ((size_t)(end - cursor) < sizeof(SettingsRecordV6_t)) {
     FLASH_EraseInitTypeDef erase = {0};
     uint32_t page_error = 0U;
     const uint32_t page_address = (uint32_t)SettingsStart();
@@ -304,7 +428,7 @@ bool SettingsStorage_Save(const SettingsStorageData_t *data) {
     }
   }
 
-  SettingsRecordV4_t record = {
+  SettingsRecordV6_t record = {
       .magic = SETTINGS_MAGIC,
       .sequence = next_sequence,
       .version = SETTINGS_VERSION,
@@ -317,12 +441,19 @@ bool SettingsStorage_Save(const SettingsStorageData_t *data) {
       .power_range_index = data->power_range_index,
       .band_frequency = {data->band_frequency[0], data->band_frequency[1],
                          data->band_frequency[2], data->band_frequency[3]},
+      .sweep_width_hz = data->sweep_width_hz,
+      .sweep_rate_hz = data->sweep_rate_hz,
       .rterm_enabled = data->rterm_enabled,
+      .band_frequency_fine_10hz = {
+          data->band_frequency_fine_10hz[0],
+          data->band_frequency_fine_10hz[1],
+          data->band_frequency_fine_10hz[2],
+          data->band_frequency_fine_10hz[3]},
       .reserved = {0U, 0U, 0U},
       .crc32 = 0U,
   };
   record.crc32 = Crc32((const uint8_t *)&record,
-                        offsetof(SettingsRecordV4_t, crc32));
+                        offsetof(SettingsRecordV6_t, crc32));
 
   if (success) {
     const uint8_t *bytes = (const uint8_t *)&record;
@@ -405,7 +536,8 @@ static bool RecordV3IsValid(const SettingsRecordV3_t *record) {
 }
 
 static bool RecordV4IsValid(const SettingsRecordV4_t *record) {
-  if (record->magic != SETTINGS_MAGIC || record->version != SETTINGS_VERSION ||
+  if (record->magic != SETTINGS_MAGIC ||
+      record->version != SETTINGS_VERSION_V4 ||
       record->address < MODBUS_ADDR_MIN ||
       record->address > MODBUS_ADDR_MAX ||
       record->baud_index >= MODBUS_BAUD_INDEX_COUNT || record->parity > 2U ||
@@ -421,6 +553,63 @@ static bool RecordV4IsValid(const SettingsRecordV4_t *record) {
   }
   for (uint8_t index = 0U; index < FREQ_BAND_COUNT; index++) {
     if (!BandFrequencyIsValid(index, record->band_frequency[index])) {
+      return false;
+    }
+  }
+  return true;
+}
+
+static bool RecordV5IsValid(const SettingsRecordV5_t *record) {
+  if (record->magic != SETTINGS_MAGIC ||
+      record->version != SETTINGS_VERSION_V5 ||
+      record->address < MODBUS_ADDR_MIN ||
+      record->address > MODBUS_ADDR_MAX ||
+      record->baud_index >= MODBUS_BAUD_INDEX_COUNT || record->parity > 2U ||
+      record->run_time_value < RUN_TIME_VALUE_MIN ||
+      record->run_time_value > RUN_TIME_VALUE_MAX ||
+      record->run_time_mode >= RUN_TIME_MODE_COUNT ||
+      record->selected_frequency_band >= FREQ_BAND_COUNT ||
+      record->power_range_index > POWER_RANGE_INDEX_MAX ||
+      record->rterm_enabled > 1U ||
+      record->crc32 != Crc32((const uint8_t *)record,
+                             offsetof(SettingsRecordV5_t, crc32))) {
+    return false;
+  }
+  for (uint8_t index = 0U; index < FREQ_BAND_COUNT; index++) {
+    if (!BandFrequencyIsValid(index, record->band_frequency[index]) ||
+        record->band_frequency_fine_10hz[index] > 9U ||
+        (record->band_frequency[index] == FREQ_MAX &&
+         record->band_frequency_fine_10hz[index] != 0U)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+static bool RecordV6IsValid(const SettingsRecordV6_t *record) {
+  if (record->magic != SETTINGS_MAGIC || record->version != SETTINGS_VERSION ||
+      record->address < MODBUS_ADDR_MIN ||
+      record->address > MODBUS_ADDR_MAX ||
+      record->baud_index >= MODBUS_BAUD_INDEX_COUNT || record->parity > 2U ||
+      record->run_time_value < RUN_TIME_VALUE_MIN ||
+      record->run_time_value > RUN_TIME_VALUE_MAX ||
+      record->run_time_mode >= RUN_TIME_MODE_COUNT ||
+      record->selected_frequency_band >= FREQ_BAND_COUNT ||
+      record->sweep_width_hz < SWEEP_WIDTH_MIN_HZ ||
+      record->sweep_width_hz > SWEEP_WIDTH_MAX_HZ ||
+      record->sweep_rate_hz < SWEEP_RATE_MIN_HZ ||
+      record->sweep_rate_hz > SWEEP_RATE_MAX_HZ ||
+      record->power_range_index > POWER_RANGE_INDEX_MAX ||
+      record->rterm_enabled > 1U ||
+      record->crc32 != Crc32((const uint8_t *)record,
+                             offsetof(SettingsRecordV6_t, crc32))) {
+    return false;
+  }
+  for (uint8_t index = 0U; index < FREQ_BAND_COUNT; index++) {
+    if (!BandFrequencyIsValid(index, record->band_frequency[index]) ||
+        record->band_frequency_fine_10hz[index] > 9U ||
+        (record->band_frequency[index] == FREQ_MAX &&
+         record->band_frequency_fine_10hz[index] != 0U)) {
       return false;
     }
   }

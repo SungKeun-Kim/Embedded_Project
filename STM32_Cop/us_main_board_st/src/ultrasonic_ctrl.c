@@ -3,6 +3,7 @@
  * @brief 초음파 발진 상위 제어 — 소프트 스타트, 모드 관리
  */
 #include "ultrasonic_ctrl.h"
+#include "adc_control.h"
 #include "config.h"
 #include "params.h"
 #include "stm32g4xx_hal.h"
@@ -20,12 +21,29 @@ static uint32_t s_end_signal_until_tick;
 static volatile uint32_t s_sweep_phase;
 static volatile uint32_t s_sweep_phase_increment;
 static bool s_sweep_timer_ready;
+static bool s_plc_output_control;
+static uint16_t s_plc_pot_reference_duty;
+static bool s_plc_pot_override_active;
+static uint32_t s_plc_pot_override_counter;
+static bool s_tuning_duty_override;
+static uint16_t s_tuning_duty;
+static uint32_t s_safety_sample_counter;
+static uint16_t s_transducer_low_signal_windows;
+static uint16_t s_overcurrent_windows;
 
 static void StartOutput(bool use_timer);
 static void StopOutput(void);
 static void SweepTimerInit(void);
 static void SweepTimerStart(void);
 static void SweepTimerStop(void);
+static void TripProtection(UltrasonicErrorCode_t error_code);
+static uint16_t OutputDuty01Percent(uint16_t internal_duty);
+
+static uint16_t DutyToOutputCommand(uint16_t duty_01pct) {
+  return (uint16_t)(((uint32_t)duty_01pct * PLC_OUTPUT_MAX +
+                     (DUTY_CLAMP_MAX / 2U)) /
+                    DUTY_CLAMP_MAX);
+}
 
 static uint32_t RunDurationMs(RunTimeMode_t mode, uint8_t value) {
   if (mode == RUN_TIME_SECONDS) {
@@ -38,9 +56,19 @@ static uint32_t RunDurationMs(RunTimeMode_t mode, uint8_t value) {
 }
 
 static uint16_t EffectiveTargetDuty(void) {
-  /* PB1 로컬 Duty limit 안에서 외부 OUTPUT_VALUE(0~500)를 적용한다. */
-  return (uint16_t)((uint32_t)g_us_state.target_duty *
-                    g_us_state.output_command / PLC_OUTPUT_MAX);
+  if (s_tuning_duty_override) {
+    return s_tuning_duty;
+  }
+
+  if (s_plc_output_control) {
+    /* 통신 제어 중에는 OUTPUT_VALUE를 0~90.0% 범위의 절대 지령으로 사용한다. */
+    return (uint16_t)(((uint32_t)g_us_state.output_command * DUTY_CLAMP_MAX +
+                       (PLC_OUTPUT_MAX / 2U)) /
+                      PLC_OUTPUT_MAX);
+  }
+
+  /* Local 제어 중에는 PB1 가변저항 값을 그대로 사용한다. */
+  return g_us_state.target_duty;
 }
 
 void UltrasonicCtrl_Init(void) {
@@ -49,10 +77,13 @@ void UltrasonicCtrl_Init(void) {
   g_us_state.mode = MODE_CONTINUOUS;
   g_us_state.target_freq = FREQ_DEFAULT;
   g_us_state.current_freq = FREQ_DEFAULT;
+  g_us_state.target_freq_hz = (uint32_t)FREQ_DEFAULT * 100U;
+  g_us_state.current_freq_hz = (uint32_t)FREQ_DEFAULT * 100U;
   g_us_state.target_duty = DUTY_DEFAULT;
   g_us_state.current_duty = 0;
   g_us_state.output_command = PLC_OUTPUT_DEFAULT;
   g_us_state.error_active = false;
+  g_us_state.error_code = ULTRASONIC_ERROR_NONE;
   g_us_state.pulse_on_ms = PULSE_ON_DEFAULT;
   g_us_state.pulse_off_ms = PULSE_OFF_DEFAULT;
   g_us_state.sweep_start_freq = SWEEP_START_DEFAULT;
@@ -67,6 +98,15 @@ void UltrasonicCtrl_Init(void) {
   g_us_state.run_duration_ms =
       RunDurationMs(g_us_state.run_time_mode, g_us_state.run_time_value);
   g_us_state.remaining_time_ms = g_us_state.run_duration_ms;
+  s_plc_output_control = false;
+  s_plc_pot_reference_duty = g_us_state.target_duty;
+  s_plc_pot_override_active = false;
+  s_plc_pot_override_counter = 0U;
+  s_tuning_duty_override = false;
+  s_tuning_duty = AUTO_TUNE_DUTY_01PCT;
+  s_safety_sample_counter = 0U;
+  s_transducer_low_signal_windows = 0U;
+  s_overcurrent_windows = 0U;
   s_end_signal_until_tick = 0U;
   s_sweep_phase = 0U;
   s_sweep_phase_increment =
@@ -115,6 +155,8 @@ static void SweepTimerStart(void) {
   UltrasonicPWM_SetFrequencyHzFast(
       (uint32_t)g_us_state.sweep_start_freq * 100U);
   g_us_state.current_freq = g_us_state.sweep_start_freq;
+  g_us_state.current_freq_hz =
+      (uint32_t)g_us_state.sweep_start_freq * 100U;
   (void)HAL_TIM_Base_Start_IT(&htim7_sweep);
 }
 
@@ -127,7 +169,16 @@ static void SweepTimerStop(void) {
 
 void UltrasonicCtrl_Start(void) { StartOutput(true); }
 
-void UltrasonicCtrl_StartUntimed(void) { StartOutput(false); }
+void UltrasonicCtrl_StartUntimed(void) {
+  if (g_us_state.running) {
+    /* Local 타이머 운전 중 PLC/REMOTE가 제어권을 가져가도 시간 만료로 꺼지지 않는다. */
+    g_us_state.timed_run = false;
+    g_us_state.time_over = false;
+    g_us_state.remaining_time_ms = g_us_state.run_duration_ms;
+    return;
+  }
+  StartOutput(false);
+}
 
 static void StartOutput(bool use_timer) {
   if (g_us_state.running || g_us_state.error_active)
@@ -143,6 +194,9 @@ static void StartOutput(bool use_timer) {
   s_mode_tick = HAL_GetTick();
   s_run_timer_tick = HAL_GetTick();
   s_pulse_on_phase = true;
+  s_safety_sample_counter = ADC_Control_GetCurrentSampleCounter();
+  s_transducer_low_signal_windows = 0U;
+  s_overcurrent_windows = 0U;
   g_us_state.remaining_time_ms = g_us_state.run_duration_ms;
   g_us_state.timed_run =
       use_timer && g_us_state.run_time_mode != RUN_TIME_CONTINUOUS;
@@ -151,9 +205,12 @@ static void StartOutput(bool use_timer) {
   if (g_us_state.mode == MODE_SWEEP) {
     UltrasonicPWM_SetFrequency(g_us_state.sweep_start_freq);
     g_us_state.current_freq = g_us_state.sweep_start_freq;
+    g_us_state.current_freq_hz =
+        (uint32_t)g_us_state.sweep_start_freq * 100U;
   } else {
-    UltrasonicPWM_SetFrequency(g_us_state.target_freq);
+    UltrasonicPWM_SetFrequencyHzFast(g_us_state.target_freq_hz);
     g_us_state.current_freq = g_us_state.target_freq;
+    g_us_state.current_freq_hz = g_us_state.target_freq_hz;
   }
   UltrasonicPWM_SetDuty(0);
   UltrasonicPWM_Start();
@@ -183,15 +240,61 @@ static void StopOutput(void) {
 void UltrasonicCtrl_EmergencyStop(void) {
   SweepTimerStop();
   UltrasonicPWM_SetDuty(0);
+  UltrasonicPWM_ForceControlOutputOff();
   UltrasonicPWM_Stop();
   g_us_state.running = false;
   g_us_state.soft_starting = false;
   g_us_state.current_duty = 0;
   g_us_state.error_active = true;
+  if (g_us_state.error_code == ULTRASONIC_ERROR_NONE) {
+    g_us_state.error_code = ULTRASONIC_ERROR_TRANSDUCER;
+  }
   g_us_state.timed_run = false;
   g_us_state.time_over = false;
   g_us_state.remaining_time_ms = g_us_state.run_duration_ms;
   HAL_GPIO_WritePin(GOING_PORT, GOING_PIN, GPIO_PIN_RESET);
+}
+
+void UltrasonicCtrl_SafetyUpdate(void) {
+  if (!g_us_state.running || g_us_state.error_active) {
+    return;
+  }
+
+  const uint32_t sample_counter = ADC_Control_GetCurrentSampleCounter();
+  if (sample_counter != s_safety_sample_counter) {
+    s_safety_sample_counter = sample_counter;
+    /* LCD 표시와 동일한 1초 평균 RMS 전류가 7 A 이상일 때만 누적한다. */
+    if (ADC_Control_GetCurrentCentiAmp() >=
+        CT_OVERCURRENT_LIMIT_CENTIAMP) {
+      if (s_overcurrent_windows < CT_OVERCURRENT_WINDOWS) {
+        s_overcurrent_windows++;
+      }
+    } else {
+      s_overcurrent_windows = 0U;
+    }
+
+    if (s_overcurrent_windows >= CT_OVERCURRENT_WINDOWS) {
+      TripProtection(ULTRASONIC_ERROR_OVER_CURRENT);
+      return;
+    }
+
+    const bool output_above_50_percent =
+        OutputDuty01Percent(g_us_state.current_duty) >=
+        TRANSDUCER_CHECK_OUTPUT_01PCT;
+    if (output_above_50_percent &&
+        ADC_Control_GetCurrentPeakCounts() < TRANSDUCER_MIN_PEAK_COUNTS) {
+      if (s_transducer_low_signal_windows < TRANSDUCER_SIGNAL_LOSS_WINDOWS) {
+        s_transducer_low_signal_windows++;
+      }
+    } else {
+      s_transducer_low_signal_windows = 0U;
+    }
+
+    if (s_transducer_low_signal_windows >= TRANSDUCER_SIGNAL_LOSS_WINDOWS) {
+      TripProtection(ULTRASONIC_ERROR_TRANSDUCER);
+      return;
+    }
+  }
 }
 
 void UltrasonicCtrl_Update(void) {
@@ -255,11 +358,13 @@ void UltrasonicCtrl_Update(void) {
     if ((now - s_mode_tick) >= phase_ms) {
       s_mode_tick = now;
       s_pulse_on_phase = !s_pulse_on_phase;
-      if (s_pulse_on_phase) {
-        g_us_state.current_duty = EffectiveTargetDuty();
-      } else {
-        g_us_state.current_duty = 0;
-      }
+    }
+
+    /* ON 구간에는 PB1/Modbus 출력 변경을 다음 제어 주기에 즉시 반영한다. */
+    const uint16_t pulse_target_duty =
+        s_pulse_on_phase ? EffectiveTargetDuty() : 0U;
+    if (g_us_state.current_duty != pulse_target_duty) {
+      g_us_state.current_duty = pulse_target_duty;
       UltrasonicPWM_SetDuty(g_us_state.current_duty);
     }
     break;
@@ -284,9 +389,11 @@ void UltrasonicCtrl_SetFrequency(uint16_t freq_01khz) {
   if (freq_01khz > FREQ_MAX)
     freq_01khz = FREQ_MAX;
   g_us_state.target_freq = freq_01khz;
+  g_us_state.target_freq_hz = (uint32_t)freq_01khz * 100U;
   UltrasonicPWM_SelectDeadTimeForCenter(freq_01khz);
   if (g_us_state.mode != MODE_SWEEP) {
     g_us_state.current_freq = freq_01khz;
+    g_us_state.current_freq_hz = g_us_state.target_freq_hz;
     /* 정지 중에도 다음 출력값을 HRTIM preload에 미리 반영한다. */
     UltrasonicPWM_SetFrequency(freq_01khz);
   }
@@ -298,12 +405,56 @@ void UltrasonicCtrl_SetDuty(uint16_t duty_01pct) {
   g_us_state.target_duty = duty_01pct;
 
   /*
-   * 정지 상태에서도 PB1 가변저항 변화가 PA7/TIM3_CH2에 즉시 보이게 한다.
-   * 운전 중에는 Update()가 소프트 스타트/모드/PLC 명령을 함께 반영한다.
+   * Local에서는 항상 PB1을 따른다. PLC Lock 중에는 PB1이 기준점에서 약 5%
+   * 움직이면 수동 인계로 판단하고, 그 뒤에는 작은 변화도 연속 반영한다.
+   * PLC Write가 오면 수동 인계를 해제하고 PLC 값이 다시 우선된다.
    */
-  if (!g_us_state.running) {
+  if (!s_plc_output_control) {
+    g_us_state.output_command = DutyToOutputCommand(duty_01pct);
+  } else {
+    const uint16_t movement =
+        (duty_01pct >= s_plc_pot_reference_duty)
+            ? (uint16_t)(duty_01pct - s_plc_pot_reference_duty)
+            : (uint16_t)(s_plc_pot_reference_duty - duty_01pct);
+    if (!s_plc_pot_override_active &&
+        movement >= PLC_POT_OVERRIDE_THRESHOLD) {
+      s_plc_pot_override_active = true;
+    }
+    if (s_plc_pot_override_active) {
+      const uint16_t next_command = DutyToOutputCommand(duty_01pct);
+      if (next_command != g_us_state.output_command) {
+        g_us_state.output_command = next_command;
+        s_plc_pot_override_counter++;
+      }
+      s_plc_pot_reference_duty = duty_01pct;
+    }
+  }
+
+  /* 정지 상태에도 현재 Local/PLC 지령을 PA7/TIM3_CH2에 즉시 반영한다. */
+  if (!g_us_state.running && !g_us_state.error_active) {
     g_us_state.current_duty = EffectiveTargetDuty();
     UltrasonicPWM_SetDuty(g_us_state.current_duty);
+  }
+}
+
+void UltrasonicCtrl_SetFrequencyHz(uint32_t frequency_hz) {
+  const uint32_t minimum_hz = (uint32_t)FREQ_MIN * 100U;
+  const uint32_t maximum_hz = (uint32_t)FREQ_MAX * 100U;
+  if (frequency_hz < minimum_hz) {
+    frequency_hz = minimum_hz;
+  }
+  if (frequency_hz > maximum_hz) {
+    frequency_hz = maximum_hz;
+  }
+
+  const uint16_t rounded_01khz = (uint16_t)((frequency_hz + 50U) / 100U);
+  g_us_state.target_freq = rounded_01khz;
+  g_us_state.target_freq_hz = frequency_hz;
+  UltrasonicPWM_SelectDeadTimeForCenter(rounded_01khz);
+  if (g_us_state.mode != MODE_SWEEP) {
+    g_us_state.current_freq = rounded_01khz;
+    g_us_state.current_freq_hz = frequency_hz;
+    UltrasonicPWM_SetFrequencyHzFast(frequency_hz);
   }
 }
 
@@ -312,10 +463,57 @@ void UltrasonicCtrl_SetOutputCommand(uint16_t output_0_500) {
     output_0_500 = PLC_OUTPUT_MAX;
   }
   g_us_state.output_command = output_0_500;
-  if (!g_us_state.running) {
+  s_plc_pot_override_active = false;
+  s_plc_pot_reference_duty = g_us_state.target_duty;
+  if (!g_us_state.running && !g_us_state.error_active) {
     g_us_state.current_duty = EffectiveTargetDuty();
     UltrasonicPWM_SetDuty(g_us_state.current_duty);
   }
+}
+
+void UltrasonicCtrl_SetTuningDutyOverride(bool enabled, uint16_t duty_01pct) {
+  if (duty_01pct > DUTY_CLAMP_MAX) {
+    duty_01pct = DUTY_CLAMP_MAX;
+  }
+  s_tuning_duty = duty_01pct;
+  s_tuning_duty_override = enabled;
+  if (g_us_state.running && !g_us_state.soft_starting &&
+      !g_us_state.error_active) {
+    g_us_state.current_duty = EffectiveTargetDuty();
+    UltrasonicPWM_SetDuty(g_us_state.current_duty);
+  }
+}
+
+void UltrasonicCtrl_SetPlcOutputControl(bool enabled) {
+  if (s_plc_output_control == enabled) {
+    return;
+  }
+
+  if (enabled) {
+    /* 제어권을 넘기는 순간 출력이 튀지 않도록 현재 PB1 위치를 인계한다. */
+    g_us_state.output_command = DutyToOutputCommand(g_us_state.target_duty);
+    s_plc_pot_reference_duty = g_us_state.target_duty;
+    s_plc_pot_override_active = false;
+    s_plc_output_control = true;
+  } else {
+    s_plc_output_control = false;
+    g_us_state.output_command = DutyToOutputCommand(g_us_state.target_duty);
+    s_plc_pot_reference_duty = g_us_state.target_duty;
+    s_plc_pot_override_active = false;
+  }
+
+  if (!g_us_state.running && !g_us_state.error_active) {
+    g_us_state.current_duty = EffectiveTargetDuty();
+    UltrasonicPWM_SetDuty(g_us_state.current_duty);
+  }
+}
+
+bool UltrasonicCtrl_IsPlcOutputControl(void) {
+  return s_plc_output_control;
+}
+
+uint32_t UltrasonicCtrl_GetPotOverrideCounter(void) {
+  return s_plc_pot_override_counter;
 }
 
 bool UltrasonicCtrl_ResetError(void) {
@@ -323,7 +521,27 @@ bool UltrasonicCtrl_ResetError(void) {
     return false;
   }
   g_us_state.error_active = false;
+  g_us_state.error_code = ULTRASONIC_ERROR_NONE;
+  s_overcurrent_windows = 0U;
+  s_transducer_low_signal_windows = 0U;
+  g_us_state.current_duty = EffectiveTargetDuty();
+  UltrasonicPWM_SetDuty(g_us_state.current_duty);
   return true;
+}
+
+static void TripProtection(UltrasonicErrorCode_t error_code) {
+  g_us_state.error_code = error_code;
+  UltrasonicCtrl_EmergencyStop();
+}
+
+static uint16_t OutputDuty01Percent(uint16_t internal_duty) {
+  if (internal_duty > DUTY_CLAMP_MAX) {
+    internal_duty = DUTY_CLAMP_MAX;
+  }
+  return (uint16_t)(PWM_OUTPUT_DUTY_MIN +
+                    ((uint32_t)internal_duty *
+                     (PWM_OUTPUT_DUTY_MAX - PWM_OUTPUT_DUTY_MIN)) /
+                        DUTY_CLAMP_MAX);
 }
 
 void UltrasonicCtrl_SetMode(OperatingMode_t mode) {
@@ -336,7 +554,8 @@ void UltrasonicCtrl_SetMode(OperatingMode_t mode) {
   s_pulse_on_phase = true;
   if (mode != MODE_SWEEP) {
     g_us_state.current_freq = g_us_state.target_freq;
-    UltrasonicPWM_SetFrequency(g_us_state.target_freq);
+    g_us_state.current_freq_hz = g_us_state.target_freq_hz;
+    UltrasonicPWM_SetFrequencyHzFast(g_us_state.target_freq_hz);
   } else {
     if (g_us_state.running) {
       SweepTimerStart();
@@ -344,6 +563,8 @@ void UltrasonicCtrl_SetMode(OperatingMode_t mode) {
       /* Sweep 입력이 켜진 정지 상태에도 다음 시작점 값을 HRTIM에 준비한다. */
       UltrasonicPWM_SetFrequency(g_us_state.sweep_start_freq);
       g_us_state.current_freq = g_us_state.sweep_start_freq;
+      g_us_state.current_freq_hz =
+          (uint32_t)g_us_state.sweep_start_freq * 100U;
     }
   }
 }
@@ -401,6 +622,8 @@ void UltrasonicCtrl_SetSweepParameters(uint16_t center_freq_01khz,
     /* 정지 상태에는 다음 운전의 Sweep 시작 주파수를 미리 적재한다. */
     UltrasonicPWM_SetFrequency(g_us_state.sweep_start_freq);
     g_us_state.current_freq = g_us_state.sweep_start_freq;
+    g_us_state.current_freq_hz =
+        (uint32_t)g_us_state.sweep_start_freq * 100U;
   }
 }
 
@@ -426,6 +649,7 @@ void UltrasonicCtrl_SweepTimerCallback(void) {
 
   UltrasonicPWM_SetFrequencyHzFast(frequency_hz);
   g_us_state.current_freq = (uint16_t)((frequency_hz + 50U) / 100U);
+  g_us_state.current_freq_hz = frequency_hz;
 }
 
 void UltrasonicCtrl_SetRunTimer(RunTimeMode_t mode, uint8_t value) {

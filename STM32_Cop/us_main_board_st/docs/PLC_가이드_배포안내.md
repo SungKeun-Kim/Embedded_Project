@@ -1,11 +1,13 @@
 # PLC 사용자 가이드 배포 안내
 
-2026-08-19 기준 외부 PLC 사용자에게 다음 두 파일만 배포한다.
+2026-10-08 기준 외부 PLC 사용자에게 다음 두 파일을 배포한다.
 
-- `STM32G474CBT6_Modbus_RTU_PLC_사용자_가이드_v1.2.pdf`
-- `STM32G474CBT6_Modbus_RTU_PLC_사용자_가이드.docx` (문서 내부 Firmware v1.2.0 확인)
+- `STM32G474CBT6_Modbus_RTU_PLC_사용자_가이드_v1.3.pdf`
+- `STM32G474CBT6_Modbus_RTU_PLC_사용자_가이드_v1.3.docx`
 
-파일명이 `STM32G474CBT6_Modbus_RTU_PLC_사용자_가이드.pdf`인 이전 PDF는
-Firmware v1.1.0 사양이므로 배포하지 않는다.
+버전명이 없는 파일은 최신 V1.3 파일의 편의용 복사본이다. V1.2 이하 파일은
+상세 Error 코드와 통신 제어 준비 Register가 없으므로 신규 배포에 사용하지 않는다.
 
-배포 전 실제 보드 Firmware가 v1.2.0인지 LCD INFO 화면에서 확인한다.
+배포 전 실제 보드 Firmware가 v1.2.0인지 LCD INFO 화면에서 확인하고,
+FC03 주소 0, 수량 15 읽기가 정상 응답하는지 확인한다. 주소 12~14의 설정
+중심주파수, Sweep 폭, Sweep 속도가 본체 설정과 일치하는지도 확인한다.

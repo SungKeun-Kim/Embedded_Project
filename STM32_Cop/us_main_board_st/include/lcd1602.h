@@ -11,6 +11,9 @@ extern "C" {
 
 #include <stdint.h>
 
+/** @brief RUN 회전 표시용 사용자 정의 역대각선 문자(CGRAM 1번) */
+#define LCD_CHAR_SPINNER_BACKSLASH 1U
+
 /** @brief LCD 4비트 모드 초기화 */
 void LCD_Init(void);
 

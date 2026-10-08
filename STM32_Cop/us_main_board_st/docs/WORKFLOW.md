@@ -186,7 +186,7 @@ HRTIM TA1/TA2 dead-time은 중심주파수 72.0 kHz 미만에서 1.4 us, 72.0 kH
 바꾸지 않는다. TR1 47:42 및 IRFP460 Gate-Source 부하 상태에서 확인할 것.
 
 그 다음 ultrasonic_ctrl.c를 구현해줘.
-소프트 스타트(500ms), Start/Stop 토글, 비상 정지를 포함할 것.
+소프트 스타트(1500ms), Start/Stop 토글, 비상 정지를 포함할 것.
 ```
 
 **검증:**
@@ -194,7 +194,8 @@ HRTIM TA1/TA2 dead-time은 중심주파수 72.0 kHz 미만에서 1.4 us, 72.0 kH
 - [ ] 오실로스코프로 PA8/PA9 파형 확인 (50%, 180도 역위상)
 - [ ] PA15/SONIC_ON 정지 시 IR2104 SD가 LOW인지 확인
 - [ ] 메뉴에서 주파수 변경 → 실시간 파형 변화
-- [ ] START_STOP → Start/Stop 토글, 장기 누름 → 비상 정지
+- [ ] START_STOP → Timer Start/Stop, Auto-Tuning 화면에서 3초 유지 → 탐색 시작
+- [ ] PA11/RUN_SW 토글 → 출력 정지, Local Lock 해제 및 모드 전환
 - [ ] `python tests/test_logic.py` — HRTIM PER/CT 정규화 계산 32개 테스트 통과
 
 ---
@@ -208,8 +209,9 @@ copilot-instructions.md, docs/ARCHITECTURE.md를 먼저 읽어라.
 adc_control.c를 구현해줘.
 ADC2 PA6/IN3 단일엔드 캘리브레이션 → 이동 평균 필터 → 0~1000 정규화값을 구현할 것.
 CT 값은 전류 측정/보호용이며 LCD PL 또는 PA7 PWM 듀티를 직접 변경하지 않을 것.
-ADC1 PB1/IN12 PWM_VR은 별도 필터링하여 LCD PL 0~100% 표시와
-0~90% 로컬 Duty limit에 함께 사용할 것.
+ADC1 PB1/IN12 PWM_VR은 별도 필터링하여 Local LCD PL 0~100% 표시와
+0~90% Local Duty에 사용할 것. PLC Lock 중에도 PB1 이동이 감지되면
+last-command-wins 방식으로 실제 출력에 반영할 것.
 ```
 
 **검증:**
@@ -235,7 +237,10 @@ Slave ID/Baud/RTERM/PL 범위는 Supervisor에서 저장하고 Parity는 8-E-1�
 
 - [ ] PC에서 Modbus Poll 툴로 레지스터 읽기(FC03) 성공
 - [ ] Frequency/Duty 직접 Write가 0x02로 거부되는지 확인
-- [ ] Local Lock → Output(0~500) → Run → Stop → Unlock 순서 성공
+- [ ] 보드 감지 + RUN_SW OFF + MAIN → Local Lock/485 COMM → Output → Run 성공
+- [ ] 통신 OFF 화면에서 PL/주파수 숨김, ON 화면에서만 표시
+- [ ] RUN OFF 후 Lock/485 COMM 유지, 주소 5 재 ON으로 즉시 재운전
+- [ ] RS485 보드 분리 → 출력 Stop 및 Lock 자동 해제
 - [ ] Boolean 0x0000/0xFF00 이외 값이 0x03으로 거부되는지 확인
 - [ ] 다중 쓰기(FC10) 성공 및 중간 값 오류 시 전체 미적용
 - [ ] 잘못된 주소 → 예외 응답(0x02) 확인
@@ -303,7 +308,7 @@ copilot-instructions.md, docs/SAFETY.md를 먼저 읽어라.
 **검증:**
 
 - [ ] 전원 OFF→ON 후 설정값 유지
-- [ ] Application 126 KB와 Settings 마지막 2 KB page가 Linker map에서 중첩되지 않음
+- [ ] Bank 1 Application 62 KB와 Settings 마지막 2 KB page가 Linker map에서 중첩되지 않음
 - [ ] 의도적 무한루프 → IWDG 리셋 확인
 - [ ] `python tests/test_logic.py` — 전체 테스트 통과
 - [ ] 24시간 연속 동작 이상 무
@@ -319,12 +324,12 @@ copilot-instructions.md, docs/SAFETY.md를 먼저 읽어라.
 | `undefined reference to HAL_xxx` | CubeMX 모드 미감지           | `cmake/stm32cubemx/CMakeLists.txt` 존재 여부 확인 |
 | `multiple definition of`         | CubeMX 생성 파일과 src/ 중복 | CubeMX의 main.c 제거, src/main.c만 사용           |
 | `region FLASH overflowed`        | 코드 크기 초과 (128KB)       | 최적화 -Os 적용, 미사용 HAL 모듈 제거             |
+| `LOAD segment with RWX permissions` | Flash 초기화 배열의 쓰기 플래그 | 링커 스크립트의 Flash 초기화 배열을 `READONLY`로 선언 |
 | `hard fault at startup`          | 스택 오버플로                | 링커 스크립트 \_Min_Stack_Size 증가 (0x800 이상)  |
 
 ### 런타임 에러
 
 | 증상                   | 원인                              | 해결                                                              |
-| `LOAD segment with RWX permissions` | Flash 초기화 배열의 쓰기 플래그 | 링커 스크립트의 Flash 초기화 배열을 `READONLY`로 선언 |
 | ---------------------- | --------------------------------- | ----------------------------------------------------------------- |
 | HRTIM 출력 안 됨       | Timer A 또는 출력 Enable 미설정   | PA8/PA9 AF13, Timer A count, TA1/TA2 output, PA15를 순서대로 확인 |
 | LCD 아무것도 안 보임   | V0 대비 미조절 또는 초기화 타이밍 | 가변저항 조절, 15ms→4.1ms→100µs 준수                              |
@@ -354,8 +359,8 @@ copilot-instructions.md, docs/SAFETY.md를 먼저 읽어라.
 - [ ] 모든 Phase 상태 ✅ (PLANS.md 확인)
 - [ ] `python tests/test_logic.py` — 32개 테스트 전부 통과
 - [ ] SelfTest_RunAll() 200ms 주기 동작 → 불일치 0건
-- [ ] Modbus Poll로 구현 레지스터 `0x0000~0x0008`, `0x0010~0x0012` 검증
-- [ ] 예비 주소 `0x0009~0x000B`가 Exception 0x02인지 확인
+- [ ] Modbus Poll로 구현 레지스터 `0x0000~0x000E`, `0x0010~0x0012` 검증
+- [ ] 상태 전용 주소 `0x0009~0x000B` 쓰기가 Exception 0x02인지 확인
 - [ ] 오실로스코프 파형 캡처 (주파수별 3점: 15kHz, 28kHz, 128kHz)
 - [ ] 24시간 연속 동작 → Fault 0건
 - [ ] SWD(ST-Link) 플래싱 및 NRST 연결 확인

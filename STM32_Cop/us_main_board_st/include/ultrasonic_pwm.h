@@ -47,6 +47,9 @@ void UltrasonicPWM_SetFrequencyHzFast(uint32_t frequency_hz);
  */
 void UltrasonicPWM_SetDuty(uint16_t duty_01pct);
 
+/** @brief 보호 정지 시 PA7 제어 PWM을 실제 0%로 즉시 차단 */
+void UltrasonicPWM_ForceControlOutputOff(void);
+
 /** @brief HRTIM TA1/TA2와 SONIC_ON 출력 시작 */
 void UltrasonicPWM_Start(void);
 

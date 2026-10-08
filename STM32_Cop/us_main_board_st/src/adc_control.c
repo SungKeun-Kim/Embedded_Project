@@ -34,8 +34,15 @@ static uint16_t s_ct_dma_buffer[CT_RMS_WINDOW_SAMPLES * 2U];
 static volatile uint8_t s_ct_ready_mask;
 static uint16_t s_ct_dc_offset;
 static uint16_t s_ct_rms_counts;
+static uint16_t s_ct_current_window_centiamp;
 static uint16_t s_ct_current_centiamp;
 static uint16_t s_ct_current_normalized;
+static uint16_t s_ct_current_history[CT_CURRENT_AVERAGE_WINDOWS];
+static uint32_t s_ct_current_sum;
+static uint8_t s_ct_current_history_index;
+static uint8_t s_ct_current_history_count;
+static uint16_t s_ct_peak_raw;
+static uint16_t s_ct_peak_counts;
 static volatile uint32_t s_ct_sample_counter;
 
 static bool InitPwmVrAdc(void);
@@ -55,8 +62,17 @@ void ADC_Control_Init(void) {
   s_ct_ready_mask = 0U;
   s_ct_dc_offset = 0U;
   s_ct_rms_counts = 0U;
+  s_ct_current_window_centiamp = 0U;
   s_ct_current_centiamp = 0U;
   s_ct_current_normalized = 0U;
+  for (uint8_t i = 0U; i < CT_CURRENT_AVERAGE_WINDOWS; i++) {
+    s_ct_current_history[i] = 0U;
+  }
+  s_ct_current_sum = 0U;
+  s_ct_current_history_index = 0U;
+  s_ct_current_history_count = 0U;
+  s_ct_peak_raw = 0U;
+  s_ct_peak_counts = 0U;
   s_ct_sample_counter = 0U;
 
   /* 170 MHz ADC kernel clock을 DIV4하여 42.5 MHz로 사용한다. */
@@ -101,9 +117,17 @@ uint16_t ADC_Control_GetCurrentCentiAmp(void) {
   return s_ct_current_centiamp;
 }
 
+uint16_t ADC_Control_GetCurrentWindowCentiAmp(void) {
+  return s_ct_current_window_centiamp;
+}
+
 uint32_t ADC_Control_GetCurrentSampleCounter(void) {
   return s_ct_sample_counter;
 }
+
+uint16_t ADC_Control_GetCurrentPeakRaw(void) { return s_ct_peak_raw; }
+
+uint16_t ADC_Control_GetCurrentPeakCounts(void) { return s_ct_peak_counts; }
 
 uint16_t ADC_Control_GetPwmVrRawFiltered(void) {
   return s_pwm_vr_filter.filtered;
@@ -265,18 +289,30 @@ static void ProcessSingleAdc(ADC_HandleTypeDef *hadc, AdcFilter_t *filter) {
 static void ProcessCtWindow(const uint16_t *samples) {
   uint32_t sum = 0U;
   uint64_t sum_square = 0U;
+  uint16_t peak_raw = 0U;
+  uint16_t peak_counts = 0U;
 
   for (uint32_t i = 0U; i < CT_RMS_WINDOW_SAMPLES; i++) {
     sum += samples[i];
+    if (samples[i] > peak_raw) {
+      peak_raw = samples[i];
+    }
   }
   const uint16_t mean = (uint16_t)(sum / CT_RMS_WINDOW_SAMPLES);
 
   for (uint32_t i = 0U; i < CT_RMS_WINDOW_SAMPLES; i++) {
     const int32_t ac = (int32_t)samples[i] - (int32_t)mean;
     sum_square += (uint64_t)(ac * ac);
+    const uint16_t magnitude =
+        (ac < 0) ? (uint16_t)(-ac) : (uint16_t)ac;
+    if (magnitude > peak_counts) {
+      peak_counts = magnitude;
+    }
   }
 
   s_ct_dc_offset = mean;
+  s_ct_peak_raw = peak_raw;
+  s_ct_peak_counts = peak_counts;
   s_ct_rms_counts =
       (uint16_t)IntegerSqrt((uint32_t)(sum_square / CT_RMS_WINDOW_SAMPLES));
 
@@ -288,14 +324,34 @@ static void ProcessCtWindow(const uint16_t *samples) {
   uint32_t centiamp =
       (uint32_t)((current_numerator + current_denominator / 2U) /
                  current_denominator);
+  centiamp =
+      (centiamp * CT_CURRENT_CALIBRATION_PERMILLE + 500U) / 1000U;
   if (centiamp > UINT16_MAX) {
     centiamp = UINT16_MAX;
   }
-  s_ct_current_centiamp = (uint16_t)centiamp;
+  s_ct_current_window_centiamp = (uint16_t)centiamp;
+  /*
+   * 200 ms RMS 결과 5개를 이동평균하여 LCD와 보호회로가 같은 1초 평균
+   * 전류를 사용하게 한다. 짧은 스위칭 spike 한두 개가 과전류 판정을
+   * 만들지 않으면서 60 Hz 입력전류 변화는 충분히 따라간다.
+   */
+  if (s_ct_current_history_count < CT_CURRENT_AVERAGE_WINDOWS) {
+    s_ct_current_history_count++;
+  } else {
+    s_ct_current_sum -= s_ct_current_history[s_ct_current_history_index];
+  }
+  s_ct_current_history[s_ct_current_history_index] = (uint16_t)centiamp;
+  s_ct_current_sum += centiamp;
+  s_ct_current_history_index = (uint8_t)(
+      (s_ct_current_history_index + 1U) % CT_CURRENT_AVERAGE_WINDOWS);
+  s_ct_current_centiamp =
+      (uint16_t)((s_ct_current_sum + s_ct_current_history_count / 2U) /
+                 s_ct_current_history_count);
   s_ct_current_normalized =
-      (centiamp >= CT_CURRENT_RANGE_CENTIAMP)
+      (s_ct_current_centiamp >= CT_CURRENT_RANGE_CENTIAMP)
           ? 1000U
-          : (uint16_t)((centiamp * 1000U) / CT_CURRENT_RANGE_CENTIAMP);
+          : (uint16_t)(((uint32_t)s_ct_current_centiamp * 1000U) /
+                       CT_CURRENT_RANGE_CENTIAMP);
   s_ct_sample_counter++;
 }
 

@@ -153,24 +153,24 @@ target_compile_definitions(... PRIVATE
 
 #### 이번 회로도의 핵심 배정
 
-| 주제            | 현재 핀                      | 간단 설명                                     |
-| --------------- | ---------------------------- | --------------------------------------------- |
-| 초음파 발진     | `PA8/PA9 = HRTIM1_CHA1/CHA2` | 고주파/스윕 발진과 주기경계 동기 갱신        |
-| 위상제어 조광기 | `PA7 = TIM3_CH2(AF2)`        | 3kHz 위상제어 PWM 지령 출력                   |
-| PWM 조정 VR     | `PB1 = ADC1_IN12`             | PA7 출력의 로컬 Duty limit 입력               |
-| LCD1602         | `PB10~PB15`, `PB0=CLK_LCD`   | 74HCT574 D 입력 6개와 CP latch clock          |
-| 시스템 RUN LED | `PA4=RUN_LED`                | 정상 동작 heartbeat, GPIO 주기 토글           |
-| RS485           | `PA2/PA3`, `PB2~PB5`          | 5 V MAX485 옵션보드, U6C TX/U6D RX 레벨 변환 |
-| SWD             | `PA13/PA14`                  | SWDIO/SWCLK, GPIO로 사용 금지                 |
+| 주제            | 현재 핀                      | 간단 설명                                        |
+| --------------- | ---------------------------- | ------------------------------------------------ |
+| 초음파 발진     | `PA8/PA9 = HRTIM1_CHA1/CHA2` | 고주파/스윕 발진과 주기경계 동기 갱신            |
+| 위상제어 조광기 | `PA7 = TIM3_CH2(AF2)`        | 3kHz 위상제어 PWM 지령 출력                      |
+| PWM 조정 VR     | `PB1 = ADC1_IN12`            | PA7 출력의 로컬 Duty limit 입력                  |
+| LCD1602         | `PB10~PB15`, `PB0=CLK_LCD`   | 74HCT574 D 입력 6개와 CP latch clock             |
+| 시스템 RUN LED  | `PA4=RUN_LED`                | 정상 동작 heartbeat, GPIO 주기 토글              |
+| RS485           | `PA2/PA3`, `PB2~PB5`         | 5 V MAX485 옵션보드, U6C TX/U6D RX 레벨 변환     |
+| SWD             | `PA13/PA14`                  | SWDIO/SWCLK, GPIO로 사용 금지                    |
 | SONIC_ON        | `PA15`                       | 두 IR2104 SD 직접 공통 제어, 외부 pull-down 장착 |
-| 공진 위상 입력  | `PA0=COMP_V`, `PA1=COMP_I`   | COMP3/COMP1 zero-cross와 ADC offset/진폭 측정 |
+| 공진 위상 입력  | `PA0=COMP_V`, `PA1=COMP_I`   | COMP3/COMP1 zero-cross와 ADC offset/진폭 측정    |
 
 #### 초음파 발진 (HRTIM1 Timer A / 게이트 드라이버 연동)
 
-| 핀   | 물리핀# | 포트/AF           | 회로도 Net | 기능                          |
-| ---- | ------- | ----------------- | ---------- | ----------------------------- |
-| PA8  | 30      | HRTIM1_CHA1(AF13) | CHA1 / INA | 게이트 드라이버 INA           |
-| PA9  | 31      | HRTIM1_CHA2(AF13) | CHA2 / INB | 게이트 드라이버 INB           |
+| 핀   | 물리핀# | 포트/AF             | 회로도 Net | 기능                          |
+| ---- | ------- | ------------------- | ---------- | ----------------------------- |
+| PA8  | 30      | HRTIM1_CHA1(AF13)   | CHA1 / INA | 게이트 드라이버 INA           |
+| PA9  | 31      | HRTIM1_CHA2(AF13)   | CHA2 / INB | 게이트 드라이버 INB           |
 | PA15 | 39      | GPIO_Output, NOPULL | SONIC_ON   | 발진 Enable / 드라이버 Enable |
 
 > PA9는 `UCPD1_DBCC1` 겸용 핀이므로 USB-C PD를 쓰지 않으면 초기화 초기에 `UCPD1_DBDIS=1` 설정을 넣는다. PA8/PA9는 `GPIO_AF13_HRTIM1`, `GPIO_SPEED_FREQ_VERY_HIGH`, `GPIO_NOPULL` 기준으로 설정한다.
@@ -187,15 +187,15 @@ target_compile_definitions(... PRIVATE
 
 #### LCD1602 (4비트 병렬 모드)
 
-| 핀   | 물리핀# | 포트        | 기능                                      |
-| ---- | ------- | ----------- | ----------------------------------------- |
+| 핀   | 물리핀# | 포트        | 기능                                     |
+| ---- | ------- | ----------- | ---------------------------------------- |
 | PB0  | 16      | GPIO_Output | CLK_LCD, 74HCT574 CP(상승 에지에서 저장) |
-| PB10 | 22      | GPIO_Output | 74HCT574 D 입력 -> LCD RS                 |
-| PB11 | 25      | GPIO_Output | 74HCT574 D 입력 -> LCD E                  |
-| PB12 | 26      | GPIO_Output | 74HCT574 D 입력 -> LCD D4                 |
-| PB13 | 27      | GPIO_Output | 74HCT574 D 입력 -> LCD D5                 |
-| PB14 | 28      | GPIO_Output | 74HCT574 D 입력 -> LCD D6                 |
-| PB15 | 29      | GPIO_Output | 74HCT574 D 입력 -> LCD D7                 |
+| PB10 | 22      | GPIO_Output | 74HCT574 D 입력 -> LCD RS                |
+| PB11 | 25      | GPIO_Output | 74HCT574 D 입력 -> LCD E                 |
+| PB12 | 26      | GPIO_Output | 74HCT574 D 입력 -> LCD D4                |
+| PB13 | 27      | GPIO_Output | 74HCT574 D 입력 -> LCD D5                |
+| PB14 | 28      | GPIO_Output | 74HCT574 D 입력 -> LCD D6                |
+| PB15 | 29      | GPIO_Output | 74HCT574 D 입력 -> LCD D7                |
 
 > RW 핀은 GND에 고정한다. PB10~PB15에 데이터를 먼저 설정한 뒤 PB0/CLK_LCD에 LOW->HIGH 상승 에지를 만들고 다시 LOW로 복귀한다. PB0은 reset 중 오동작 방지를 위해 외부 10 kohm pull-down을 권장하며 CP 직렬 100~330 ohm과 74HCT574 VCC 근처 100 nF를 선택 적용한다. 74HCT574 `/OE`는 정상 동작 중 활성 상태로 고정하고 미사용 D 입력은 GND 또는 정의된 논리에 연결한다. LCD 출력값과 남은 채널 상태는 하나의 shadow byte로 보존한다.
 
@@ -212,13 +212,13 @@ target_compile_definitions(... PRIVATE
 
 #### ADC 및 comparator 입력 (공진/레벨 검출)
 
-| 핀  | 물리핀# | ADC/기능                         | 회로도 Net | 용도                                      |
-| --- | ------- | -------------------------------- | ---------- | ----------------------------------------- |
-| PA0 | 8       | ADC1_IN1 / COMP3_INP             | COMP_V     | 초음파 출력전압 zero-cross, offset/진폭  |
-| PA1 | 9       | ADC1_IN2 / COMP1_INP             | COMP_I     | 초음파 출력전류 zero-cross, offset/진폭  |
-| PA6 | 14      | ADC2_IN3                         | CT_ADC     | 220 VAC 입력 CT RMS 전류 센싱             |
-| PA7 | 15      | TIM3_CH2(AF2)                    | PWM_OUTPUT | 위상제어용 3kHz PWM 출력                  |
-| PB1 | 17      | ADC1_IN12                        | PWM_VR     | PA7 출력의 로컬 Duty limit 가변저항 입력 |
+| 핀  | 물리핀# | ADC/기능             | 회로도 Net | 용도                                     |
+| --- | ------- | -------------------- | ---------- | ---------------------------------------- |
+| PA0 | 8       | ADC1_IN1 / COMP3_INP | COMP_V     | 초음파 출력전압 zero-cross, offset/진폭  |
+| PA1 | 9       | ADC1_IN2 / COMP1_INP | COMP_I     | 초음파 출력전류 zero-cross, offset/진폭  |
+| PA6 | 14      | ADC2_IN3             | CT_ADC     | 220 VAC 입력 CT RMS 전류 센싱            |
+| PA7 | 15      | TIM3_CH2(AF2)        | PWM_OUTPUT | 위상제어용 3kHz PWM 출력                 |
+| PB1 | 17      | ADC1_IN12            | PWM_VR     | PA7 출력의 로컬 Duty limit 가변저항 입력 |
 
 > **핀 기능 주의**: PA0은 `COMP1_INM` 겸용이지만 이 설계에서는 반드시 `COMP3_INP`로 선택한다. PA1은 `COMP1_INP`로 선택한다. PB1은 ADC analog/no-pull로 설정하고, PA7은 PWM 전용이므로 `ADC2_IN4` 또는 `COMP2_INP`로 초기화하지 않는다.
 > CubeMX `.ioc`에서는 PA0/PA1의 대표 기능을 `COMP3_INP/COMP1_INP`로 기록한다. 동일 analog pad의 ADC1_IN1/IN2 offset 측정은 펌웨어에서 `HAL_ADC_ConfigChannel()`로 명시하며, CubeMX 코드 재생성 후에도 USER CODE 구간에 유지한다.
@@ -229,10 +229,10 @@ target_compile_definitions(... PRIVATE
 
 #### 내장 아날로그 블록 할당 (COMP 기준전압 · DAC · OPAMP)
 
-| 블록      | 권장 연결        | 용도                              | 상태 |
-| --------- | ---------------- | --------------------------------- | ---- |
-| COMP3_INP | PA0 / COMP_V     | 전압(V) zero-cross                | 확정 |
-| COMP1_INP | PA1 / COMP_I     | 전류(I) zero-cross                | 확정 |
+| 블록      | 권장 연결        | 용도                               | 상태 |
+| --------- | ---------------- | ---------------------------------- | ---- |
+| COMP3_INP | PA0 / COMP_V     | 전압(V) zero-cross                 | 확정 |
+| COMP1_INP | PA1 / COMP_I     | 전류(I) zero-cross                 | 확정 |
 | DAC3_CH1  | 내부 → COMP3_INM | COMP_V 기준, 계산 초기값 약 1.618V | 확정 |
 | DAC1_CH1  | 내부 → COMP1_INM | COMP_I 기준, 계산 초기값 약 1.623V | 확정 |
 
@@ -242,29 +242,29 @@ target_compile_definitions(... PRIVATE
 
 #### Modbus RTU (RS485, 선택 사양 보드 연동)
 
-| 핀  | 물리핀# | 포트/모드   | 회로도 Net   | 기능                      |
-| --- | ------- | ----------- | ------------ | ------------------------- |
-| PA2 | 10      | USART2_TX   | USART2_TX    | U6C를 거쳐 5 V 보드 TX/DI |
+| 핀  | 물리핀# | 포트/모드   | 회로도 Net   | 기능                         |
+| --- | ------- | ----------- | ------------ | ---------------------------- |
+| PA2 | 10      | USART2_TX   | USART2_TX    | U6C를 거쳐 5 V 보드 TX/DI    |
 | PA3 | 11      | USART2_RX   | USART2_RX    | U6D+R80 4.7k 외부 pull-up RX |
-| PB4 | 41      | GPIO_Output | DE_RS485     | Driver Enable, HIGH=송신  |
-| PB5 | 42      | GPIO_Output | /RE_RS485    | Receiver Enable, LOW=수신 |
-| PB2 | 19      | GPIO_Output | RTERM        | 종단저항 ON/OFF           |
-| PB3 | 40      | GPIO_Input  | 485BD_DETECT | 외부 pull-up, LOW=보드 장착 |
+| PB4 | 41      | GPIO_Output | DE_RS485     | Driver Enable, HIGH=송신     |
+| PB5 | 42      | GPIO_Output | /RE_RS485    | Receiver Enable, LOW=수신    |
+| PB2 | 19      | GPIO_Output | RTERM        | 종단저항 ON/OFF              |
+| PB3 | 40      | GPIO_Input  | 485BD_DETECT | 외부 pull-up, LOW=보드 장착  |
 
 > `PA3`은 `USART2_RX(AF7)`, `GPIO_NOPULL`로 설정한다. MAX485 RO가 LOW이면 U6D가 LOW를 구동하고, RO가 HIGH이면 U6D 출력이 Hi-Z가 되어 R80 4.7 kohm가 PA3을 3.3 V HIGH로 만든다. `PB3/485BD_DETECT`도 MCU 보드의 외부 3.3 V pull-up을 사용하므로 `GPIO_NOPULL`로 설정한다. 옵션보드의 J12 pin 8이 GND이므로 미장착=HIGH, 장착=LOW이며, LOW일 때만 Modbus 메뉴를 활성화한다.
 
 #### 외부 제어 인터페이스 (스위치 입력 및 상태 출력)
 
-| 핀   | 물리핀# | I/O    | 회로도 Net | 기능                             |
-| ---- | ------- | ------ | ---------- | -------------------------------- |
-| PA10 | 32      | Input  | REMOTE     | 외부 리모트 접점 입력            |
-| PA11 | 33      | Input  | RUN_SW     | RUN lock 스위치 입력             |
-| PA12 | 34      | Input  | SWEEP_SW   | Sweep ON/OFF 스위치 입력         |
-| PA15 | 39      | Output | SONIC_ON   | 발진 ON/OFF, IR2104 SD 공통 제어 |
-| PA4  | 12      | Output | RUN_LED    | MCU 정상 동작 heartbeat LED      |
-| PC13 | 2       | Output | GOING      | 초음파 정상 발진 중 ON           |
-| PC14 | 3       | Output | END_BZ     | 내부 타이머 종료 후 2초 ON       |
-| PA5  | 13      | TIM2_CH1(AF1) | BZ_OUT | 수동형 부저 2.7 kHz PWM          |
+| 핀   | 물리핀# | I/O           | 회로도 Net | 기능                             |
+| ---- | ------- | ------------- | ---------- | -------------------------------- |
+| PA10 | 32      | Input         | REMOTE     | 외부 리모트 접점 입력            |
+| PA11 | 33      | Input         | RUN_SW     | RUN lock 스위치 입력             |
+| PA12 | 34      | Input         | SWEEP_SW   | Sweep ON/OFF 스위치 입력         |
+| PA15 | 39      | Output        | SONIC_ON   | 발진 ON/OFF, IR2104 SD 공통 제어 |
+| PA4  | 12      | Output        | RUN_LED    | MCU 정상 동작 heartbeat LED      |
+| PC13 | 2       | Output        | GOING      | 초음파 정상 발진 중 ON           |
+| PC14 | 3       | Output        | END_BZ     | 내부 타이머 종료 후 2초 ON       |
+| PA5  | 13      | TIM2_CH1(AF1) | BZ_OUT     | 수동형 부저 2.7 kHz PWM          |
 
 > PA4/RUN_LED는 push-pull 출력으로 초기화하고 정상 main loop 또는 주기 task에서 `HAL_Delay()` 없이 tick 기준으로 토글한다. 500 ms마다 토글하면 약 1 Hz 점멸이 된다. 기본 문서에서는 `HIGH=ON`으로 간주하되 LED가 3.3 V 쪽에 연결된 sink 구성이면 매크로에서 극성을 반전한다. PA5/BZ_OUT은 내부 발진회로가 없는 수동형 부저이므로 TIM2_CH1의 2.7 kHz PWM으로 구동하며, 직접 구동 전류가 크면 트랜지스터 드라이버를 사용한다. PC13/PC14는 LSE를 사용하지 않을 때 GPIO로 사용하고 PC15는 SPARE 입력이다. PA10은 UCPD1_DBCC2, PA11/PA12는 USB DM/DP 겸용이므로 USB-C/USB 기능을 활성화하지 않는다.
 >
@@ -303,15 +303,15 @@ target_compile_definitions(... PRIVATE
 
 **핀 변경 이력 (기존 대비):**
 
-| 변경 내용    | 이전 핀                   | 현재 핀          | 사유                             |
-| ------------ | ------------------------- | ---------------- | -------------------------------- |
+| 변경 내용    | 이전 핀                   | 현재 핀          | 사유                                    |
+| ------------ | ------------------------- | ---------------- | --------------------------------------- |
 | 초음파 출력  | PA8+PB13 / TIM1           | PA8+PA9 / HRTIM1 | GDT용 1.4/0.8 us 대역별 DT 및 정밀 스윕 |
-| 위상제어 PWM | PC9 / TIM3_CH4            | PA7 / TIM3_CH2   | CBT6 LQFP48 배정                 |
-| LCD          | PB12, PB14, PB15, PC6~PC8 | PB0, PB10~PB15   | 74HCT574 CP 및 데이터 배선       |
-| RUN LED      | PB0/GOING 등 기존 혼용     | PA4/RUN_LED      | MCU heartbeat 전용 출력 분리     |
-| RS485 DE/RE  | PB0/PB1                   | PB4/PB5          | 회로도 기준 분리 제어            |
-| 버튼         | PC0~PC3                   | PB6~PB9          | MODE, DOWN, UP, START/STOP 순서  |
-| SONIC_ON     | PB3                       | PA15             | CBT6 LQFP48 배정                 |
+| 위상제어 PWM | PC9 / TIM3_CH4            | PA7 / TIM3_CH2   | CBT6 LQFP48 배정                        |
+| LCD          | PB12, PB14, PB15, PC6~PC8 | PB0, PB10~PB15   | 74HCT574 CP 및 데이터 배선              |
+| RUN LED      | PB0/GOING 등 기존 혼용    | PA4/RUN_LED      | MCU heartbeat 전용 출력 분리            |
+| RS485 DE/RE  | PB0/PB1                   | PB4/PB5          | 회로도 기준 분리 제어                   |
+| 버튼         | PC0~PC3                   | PB6~PB9          | MODE, DOWN, UP, START/STOP 순서         |
+| SONIC_ON     | PB3                       | PA15             | CBT6 LQFP48 배정                        |
 
 > **PCB 아트웍 핵심 포인트 1**: PA8/PA9 HRTIM 출력은 게이트 드라이버 INA/INB까지 짧고 나란히 배선한다.
 >
@@ -495,14 +495,14 @@ MODE는 다음 화면 이동, MODE 1초는 메인 복귀로 통일한다.
 
 #### 버튼 역할
 
-| 화면 | MODE | UP/DOWN | START_STOP |
-| --- | --- | --- | --- |
-| 메인/정지(RUN SW OFF) | 다음 설정 화면 | 사용 안 함 | REMOTE 운전 사용 |
-| 메인/운전 | 보조 상태 화면 | 사용 안 함 | 짧게=정지, 1초=비상정지 |
-| 일반 설정 | 짧게=다음 화면, 길게=메인 | 값 증감, hold repeat | 화면별 보조 선택 |
-| MANUAL TUNE | 다음 화면/출력 정지 | 주파수 ±100 Hz | 시험 출력 ON/OFF |
-| AUTO TUNE 준비 | 다음 화면 | 사용 안 함 | **3초 유지 시에만 시작** |
-| AUTO TUNE 실행 | 취소 후 다음 화면 | 사용 안 함 | 짧게=중단 및 출력 차단 |
+| 화면                  | MODE                      | UP/DOWN              | START_STOP               |
+| --------------------- | ------------------------- | -------------------- | ------------------------ |
+| 메인/정지(RUN SW OFF) | 다음 설정 화면            | 사용 안 함           | REMOTE 운전 사용         |
+| 메인/운전             | 보조 상태 화면            | 사용 안 함           | 짧게=정지, 1초=비상정지  |
+| 일반 설정             | 짧게=다음 화면, 길게=메인 | 값 증감, hold repeat | 화면별 보조 선택         |
+| MANUAL TUNE           | 다음 화면/출력 정지       | 주파수 ±100 Hz       | 시험 출력 ON/OFF         |
+| AUTO TUNE 준비        | 다음 화면                 | 사용 안 함           | **3초 유지 시에만 시작** |
+| AUTO TUNE 실행        | 취소 후 다음 화면         | 사용 안 함           | 짧게=중단 및 출력 차단   |
 
 `button.c`에는 1초 `BTN_EVT_LONG_PRESS`와 별도로 3초 `BTN_EVT_HOLD_3S`가
 구현되어 있다. START 3초 Auto-Tuning은 반드시 출력이 정지된
@@ -606,8 +606,8 @@ MODE는 다음 화면 이동, MODE 1초는 메인 복귀로 통일한다.
 
 **현재 회로도 버튼 핀:**
 
-| 버튼       | MCU 핀 | 입력 방식             |
-| ---------- | ------ | --------------------- |
+| 버튼       | MCU 핀 | 입력 방식                                 |
+| ---------- | ------ | ----------------------------------------- |
 | MODE       | PB6    | 외부 풀업 실장, Active LOW, `GPIO_NOPULL` |
 | DOWN       | PB7    | 외부 풀업 실장, Active LOW, `GPIO_NOPULL` |
 | UP         | PB8    | 외부 풀업 실장, Active LOW, `GPIO_NOPULL` |
@@ -620,7 +620,7 @@ MODE는 다음 화면 이동, MODE 1초는 메인 복귀로 통일한다.
 | BTN_PRESS      | 눌림 → 놓임 (단일 클릭)                   |
 | BTN_LONG_PRESS | 1초 이상 누름 유지                        |
 | BTN_REPEAT     | 장기 누름 시 200 ms 간격 반복 이벤트 발생 |
-| BTN_HOLD_3S    | START 3초 유지, AUTO TUNE 준비 화면 전용   |
+| BTN_HOLD_3S    | START 3초 유지, AUTO TUNE 준비 화면 전용  |
 
 `BTN_HOLD_3S`는 기존 1초 `BTN_LONG_PRESS` 비상정지와 다른 event로 처리한다.
 
@@ -751,14 +751,18 @@ SPARE1: 옵션보드 RT3 10 kohm로 5 V HIGH 유지, MCU에는 연결하지 않�
 
 `docs/Modbus_레지스터맵.md`를 유일한 상세 기준으로 사용한다. 구현 주소는 다음과 같다.
 
-| 주소 범위 | 접근 | 내용 |
-| --- | --- | --- |
-| `0x0000` | R | 현재 Frequency (×0.1 kHz) |
-| `0x0001` | R/W | 기존 Protocol 출력값 0~500 |
-| `0x0002~0x0003` | R | 표시 범위, Sweep 주파수 |
-| `0x0004~0x0008` | R 또는 R/W | Local Lock, Run, 외부 입력, Sweep, Error |
-| `0x0009~0x000B` | - | 향후 명령용 예비 주소 3개 |
-| `0x0010~0x0012` | R | Slave ID, Baud index, Parity |
+| 주소 범위       | 접근       | 내용                                     |
+| --------------- | ---------- | ---------------------------------------- |
+| `0x0000`        | R          | 현재 Frequency (×0.1 kHz)                |
+| `0x0001`        | R/W        | 기존 Protocol 출력값 0~500               |
+| `0x0002~0x0003` | R          | 표시 범위, Sweep 주파수                  |
+| `0x0004~0x0006` | R 또는 R/W | Local Lock, Run, 외부 입력               |
+| `0x0007`        | R          | 물리 SWEEP_SW 상태                       |
+| `0x0008`        | R/W        | Error 상태/Reset                         |
+| `0x0009`        | R          | Error 원인: 0=None, 1=Transducer, 2=Over current |
+| `0x000A~0x000B` | R          | RUN_SW 상태, 통신 제어 가능 상태         |
+| `0x000C~0x000E` | R          | 설정 중심주파수, Sweep 폭, Sweep 속도    |
+| `0x0010~0x0012` | R          | Slave ID, Baud index, Parity             |
 
 Frequency와 Local Duty limit은 보드에서만 설정한다. PLC에는 직접적인
 `FREQ_SET`, `DUTY_SET`을 추가하지 않는다. PLC 출력은 0~500 정규화값이며
@@ -924,13 +928,13 @@ v3에는 `frequency_band`, `center_frequency_hz`, `sweep_width_hz`,
 
 ## 문서 파일 (한글)
 
-| 파일                        | 내용                       |
-| --------------------------- | -------------------------- |
-| `docs/코드_설명서.md`       | 펌웨어 전체 사양서         |
-| `docs/회로도_설명.md`       | 회로 설계 및 부품 목록     |
-| `docs/Modbus_레지스터맵.md` | Modbus 레지스터 상세 사양  |
-| `docs/PLC_Modbus_RTU_사용자_가이드.md` | PLC 사용자 배포 원본 |
-| `docs/STM32G474CBT6_Modbus_RTU_PLC_사용자_가이드.docx` | PLC 사용자 배포본(DOCX) |
-| `docs/STM32G474CBT6_Modbus_RTU_PLC_사용자_가이드_v1.2.pdf` | PLC 사용자 배포본(PDF) |
-| `docs/메뉴_구조.md`         | 메뉴 트리 및 UI 사양       |
-| `docs/초음파_설계.md`       | 초음파 발진 회로 설계 상세 |
+| 파일                                                       | 내용                       |
+| ---------------------------------------------------------- | -------------------------- |
+| `docs/코드_설명서.md`                                      | 펌웨어 전체 사양서         |
+| `docs/회로도_설명.md`                                      | 회로 설계 및 부품 목록     |
+| `docs/Modbus_레지스터맵.md`                                | Modbus 레지스터 상세 사양  |
+| `docs/PLC_Modbus_RTU_사용자_가이드.md`                     | PLC 사용자 배포 원본       |
+| `docs/STM32G474CBT6_Modbus_RTU_PLC_사용자_가이드.docx`     | PLC 사용자 배포본(DOCX)    |
+| `docs/STM32G474CBT6_Modbus_RTU_PLC_사용자_가이드_v1.2.pdf` | PLC 사용자 배포본(PDF)     |
+| `docs/메뉴_구조.md`                                        | 메뉴 트리 및 UI 사양       |
+| `docs/초음파_설계.md`                                      | 초음파 발진 회로 설계 상세 |

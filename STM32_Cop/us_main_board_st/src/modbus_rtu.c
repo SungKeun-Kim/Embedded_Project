@@ -96,6 +96,12 @@ void Modbus_Process(void) {
     return;
   }
 
+  /* 옵션 RS485 보드가 실제로 감지된 경우에만 요청을 처리한다. */
+  if (HAL_GPIO_ReadPin(MODBUS_DETECT_PORT, MODBUS_DETECT_PIN) !=
+      GPIO_PIN_RESET) {
+    return;
+  }
+
   const uint8_t request_address = s_frame_buf[0];
   if (request_address != g_modbus_cfg.address && request_address != 0U) {
     return;
@@ -179,7 +185,9 @@ void Modbus_ReconfigUART(void) {
 }
 
 bool Modbus_IsCommunicationActive(void) {
-  return s_communication_seen &&
+  return HAL_GPIO_ReadPin(MODBUS_DETECT_PORT, MODBUS_DETECT_PIN) ==
+             GPIO_PIN_RESET &&
+         s_communication_seen &&
          (HAL_GetTick() - s_last_valid_frame_tick) <=
              MODBUS_COMM_DISPLAY_HOLD_MS;
 }

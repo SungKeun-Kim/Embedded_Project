@@ -22,6 +22,10 @@
 
 void LCD_Init(void)
 {
+    static const uint8_t spinner_backslash[8] = {
+        0x10U, 0x08U, 0x08U, 0x04U, 0x04U, 0x02U, 0x02U, 0x01U
+    };
+
     LCD_HW_InitDelay();
 
     /* LCD 전원/콘트라스트가 안정될 때까지 충분히 대기 */
@@ -56,6 +60,9 @@ void LCD_Init(void)
 
     /* Display ON, 커서 OFF, 깜빡임 OFF */
     LCD_HW_WriteByte(LCD_CMD_DISPLAY_ON, 0);
+
+    /* 문자 ROM의 역슬래시가 엔화 기호인 LCD에서도 회전 표시가 되도록 등록한다. */
+    LCD_CreateChar(LCD_CHAR_SPINNER_BACKSLASH, spinner_backslash);
 }
 
 void LCD_Clear(void)

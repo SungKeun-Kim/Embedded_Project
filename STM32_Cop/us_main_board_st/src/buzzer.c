@@ -11,6 +11,7 @@ TIM_HandleTypeDef htim2_buzzer;
 
 static volatile uint16_t s_pending_duration_ms;
 static volatile uint8_t s_pending_invalid;
+static volatile uint8_t s_pending_complete;
 static volatile uint8_t s_long_press_requested;
 static uint32_t s_timed_stop_tick;
 static uint32_t s_pattern_tick;
@@ -20,6 +21,8 @@ static bool s_timed_active;
 static bool s_invalid_active;
 static bool s_pattern_tone_on;
 static uint8_t s_pattern_pulses_remaining;
+static uint16_t s_pattern_on_ms;
+static uint16_t s_pattern_off_ms;
 
 static void ToneStart(void);
 static void ToneStop(void);
@@ -35,9 +38,12 @@ void Buzzer_Init(void) {
   s_pattern_pulses_remaining = 0U;
   s_pending_duration_ms = 0U;
   s_pending_invalid = 0U;
+  s_pending_complete = 0U;
   s_long_press_requested = 0U;
   s_timed_stop_tick = 0U;
   s_pattern_tick = 0U;
+  s_pattern_on_ms = BUZZER_INVALID_ON_MS;
+  s_pattern_off_ms = BUZZER_INVALID_OFF_MS;
 
   __HAL_RCC_TIM2_CLK_ENABLE();
 
@@ -80,6 +86,8 @@ void Buzzer_RequestLongPress(bool active) {
 
 void Buzzer_RequestInvalidButton(void) { s_pending_invalid = 1U; }
 
+void Buzzer_RequestComplete(void) { s_pending_complete = 1U; }
+
 void Buzzer_Play(uint16_t duration_ms) {
   if (!s_ready || duration_ms == 0U) {
     return;
@@ -98,6 +106,7 @@ void Buzzer_Play(uint16_t duration_ms) {
 void Buzzer_Stop(void) {
   s_pending_duration_ms = 0U;
   s_pending_invalid = 0U;
+  s_pending_complete = 0U;
   s_long_press_requested = 0U;
   s_timed_active = false;
   s_invalid_active = false;
@@ -109,6 +118,7 @@ void Buzzer_Stop(void) {
 void Buzzer_Process(void) {
   uint16_t requested_duration;
   uint8_t invalid_requested;
+  uint8_t complete_requested;
   const uint32_t primask = __get_PRIMASK();
 
   __disable_irq();
@@ -116,6 +126,8 @@ void Buzzer_Process(void) {
   s_pending_duration_ms = 0U;
   invalid_requested = s_pending_invalid;
   s_pending_invalid = 0U;
+  complete_requested = s_pending_complete;
+  s_pending_complete = 0U;
   if (primask == 0U) {
     __enable_irq();
   }
@@ -128,7 +140,18 @@ void Buzzer_Process(void) {
     s_invalid_active = true;
     s_pattern_tone_on = true;
     s_pattern_pulses_remaining = BUZZER_INVALID_PULSE_COUNT;
-    s_pattern_tick = now + BUZZER_INVALID_ON_MS;
+    s_pattern_on_ms = BUZZER_INVALID_ON_MS;
+    s_pattern_off_ms = BUZZER_INVALID_OFF_MS;
+    s_pattern_tick = now + s_pattern_on_ms;
+    ToneStart();
+  } else if (complete_requested != 0U) {
+    s_timed_active = false;
+    s_invalid_active = true;
+    s_pattern_tone_on = true;
+    s_pattern_pulses_remaining = BUZZER_COMPLETE_PULSE_COUNT;
+    s_pattern_on_ms = BUZZER_COMPLETE_ON_MS;
+    s_pattern_off_ms = BUZZER_COMPLETE_OFF_MS;
+    s_pattern_tick = now + s_pattern_on_ms;
     ToneStart();
   } else if (requested_duration != 0U) {
     Buzzer_Play(requested_duration);
@@ -149,12 +172,12 @@ void Buzzer_Process(void) {
         if (s_pattern_pulses_remaining == 0U) {
           s_invalid_active = false;
         } else {
-          s_pattern_tick = now + BUZZER_INVALID_OFF_MS;
+          s_pattern_tick = now + s_pattern_off_ms;
         }
       } else {
         ToneStart();
         s_pattern_tone_on = true;
-        s_pattern_tick = now + BUZZER_INVALID_ON_MS;
+        s_pattern_tick = now + s_pattern_on_ms;
       }
     }
     if (s_invalid_active) {

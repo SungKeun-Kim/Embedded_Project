@@ -291,6 +291,10 @@ void UltrasonicPWM_SetDuty(uint16_t duty_01pct) {
   __HAL_TIM_SET_COMPARE(&htim3_phase, TIM_CHANNEL_2, ccr);
 }
 
+void UltrasonicPWM_ForceControlOutputOff(void) {
+  __HAL_TIM_SET_COMPARE(&htim3_phase, TIM_CHANNEL_2, 0U);
+}
+
 void UltrasonicPWM_Start(void) {
   if (!s_ready)
     return;

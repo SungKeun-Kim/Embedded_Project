@@ -92,11 +92,10 @@ def calc_ccr(period: int, duty_01pct: int) -> int:
     ccr = (period * pwm_output_duty) // 1000
     return ccr
 
-def output_value_to_phase_duty(local_duty: int, output_value: int) -> int:
-    """PB1 로컬 상한과 Modbus 출력값을 내부 지령으로 결합"""
-    local_duty = min(local_duty, DUTY_CLAMP_MAX)
+def output_value_to_phase_duty(output_value: int) -> int:
+    """Modbus 0~500 절대 출력값을 내부 0~90% 지령으로 변환"""
     output_value = min(output_value, 500)
-    return local_duty * output_value // 500
+    return (DUTY_CLAMP_MAX * output_value + 250) // 500
 
 def ccr_to_duty_pct(ccr: int, arr: int) -> float:
     """CCR → 실제 듀티비(%) 역산"""
@@ -194,17 +193,21 @@ def test_ccr_calculation():
     test_assert_near(clamped_duty, 100.0, 0.1,
         "클램핑 후 PWM_OUTPUT 실제 듀티 = 100%")
 
-    # PB1 로컬 상한과 Modbus OUTPUT_VALUE 결합
-    for local, command, expected in (
-        (900, 0, 5.0),
-        (900, 250, 52.5),
-        (900, 500, 100.0),
-        (450, 500, 52.5),
+    # Modbus OUTPUT_VALUE는 PA7 전체 범위를 절대 제어
+    for command, expected in (
+        (0, 5.0),
+        (250, 52.5),
+        (500, 100.0),
     ):
-        duty = output_value_to_phase_duty(local, command)
+        duty = output_value_to_phase_duty(command)
         actual = ccr_to_duty_pct(calc_ccr(period, duty), period)
         test_assert_near(actual, expected, 0.1,
-            f"VR={local}, OUTPUT_VALUE={command} PWM 출력")
+            f"OUTPUT_VALUE={command} PWM 출력")
+
+    # 통신 중 PB1을 50%로 움직이면 같은 50% 실제 출력으로 인계
+    manual = ccr_to_duty_pct(calc_ccr(period, 450), period)
+    test_assert_near(manual, 52.5, 0.1,
+        "통신 중 PB1 수동 이동 -> PWM 출력 즉시 반영")
 
 def test_frequency_duty_consistency():
     print("[TEST] 주파수-듀티 교차 일관성 (LCD 표시 검증 시뮬레이션)")
@@ -324,7 +327,9 @@ def test_soft_start_simulation():
 
     target_duty = 450  # 45.0%
     current_duty = 0
-    steps = 500 // 10  # 50 단계
+    soft_start_duration_ms = 1500
+    step_ms = 10
+    steps = soft_start_duration_ms // step_ms  # 150 단계
 
     for i in range(1, steps + 1):
         current_duty = target_duty * i // steps

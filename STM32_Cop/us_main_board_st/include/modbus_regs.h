@@ -22,11 +22,14 @@ extern "C" {
 #define REG_ADDR_LOCAL_INPUT_LOCK    0x0004
 #define REG_ADDR_RUN_STATUS          0x0005
 #define REG_ADDR_EXTERNAL_INPUT      0x0006
-#define REG_ADDR_SWEEP_STATUS        0x0007
+#define REG_ADDR_SWEEP_STATUS        0x0007 /* Read-only: 물리 SWEEP_SW 상태 */
 #define REG_ADDR_ERROR_STATUS_RESET  0x0008
-#define REG_ADDR_RESERVED_1          0x0009
-#define REG_ADDR_RESERVED_2          0x000A
-#define REG_ADDR_RESERVED_3          0x000B
+#define REG_ADDR_ERROR_CODE          0x0009
+#define REG_ADDR_RUN_SWITCH_STATUS   0x000A
+#define REG_ADDR_COMM_CONTROL_READY  0x000B
+#define REG_ADDR_CENTER_FREQUENCY    0x000C /* Read-only: 설정 중심주파수 */
+#define REG_ADDR_SWEEP_WIDTH         0x000D /* Read-only: +/- Sweep 폭(Hz) */
+#define REG_ADDR_SWEEP_SPEED         0x000E /* Read-only: Sweep 속도(Hz) */
 #define REG_ADDR_MODBUS_ADDR        0x0010
 #define REG_ADDR_MODBUS_BAUD        0x0011
 #define REG_ADDR_MODBUS_PARITY      0x0012
@@ -60,8 +63,20 @@ ModbusRegResult_t ModbusRegs_ValidateWrite(uint16_t addr, uint16_t value);
  */
 bool ModbusRegs_Write(uint16_t addr, uint16_t value);
 
+/** @brief RS485 보드 분리 등 통신 제어 안전조건을 주기적으로 확인 */
+void ModbusRegs_Update(void);
+
 /** @brief PLC가 Local 입력을 잠갔는지 반환 */
 bool ModbusRegs_IsLocalInputLocked(void);
+
+/** @brief 현재 RUN이 Modbus 명령으로 시작되었는지 반환 */
+bool ModbusRegs_IsRunControlled(void);
+
+/** @brief START/STOP 등 Local 동작이 RUN 제어권을 가져갔음을 알림 */
+void ModbusRegs_NotifyLocalRunControl(void);
+
+/** @brief 통신 운전을 종료하고 Local 입력/가변저항 제어로 복귀 */
+void ModbusRegs_ReleaseLocalControl(void);
 
 #ifdef __cplusplus
 }

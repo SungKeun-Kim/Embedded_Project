@@ -2,6 +2,7 @@
 
 from pathlib import Path
 import re
+import shutil
 
 from docx import Document
 from docx.enum.section import WD_SECTION
@@ -14,7 +15,8 @@ from docx.shared import Cm, Pt, RGBColor
 
 DOC_DIR = Path(__file__).resolve().parent
 SOURCE = DOC_DIR / "PLC_Modbus_RTU_사용자_가이드.md"
-OUTPUT = DOC_DIR / "STM32G474CBT6_Modbus_RTU_PLC_사용자_가이드.docx"
+OUTPUT = DOC_DIR / "STM32G474CBT6_Modbus_RTU_PLC_사용자_가이드_v1.3.docx"
+CANONICAL_OUTPUT = DOC_DIR / "STM32G474CBT6_Modbus_RTU_PLC_사용자_가이드.docx"
 
 
 def set_run_font(run, name="맑은 고딕", size=None, bold=None, color=None):
@@ -144,7 +146,7 @@ def build_document():
 
     footer = section.footer.paragraphs[0]
     footer.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    set_run_font(footer.add_run("Firmware v1.2.0  |  문서 v1.2  |  "), size=8)
+    set_run_font(footer.add_run("Firmware v1.2.0  |  문서 v1.3  |  "), size=8)
     field = OxmlElement("w:fldSimple")
     field.set(qn("w:instr"), "PAGE")
     footer._p.append(field)
@@ -200,10 +202,14 @@ def build_document():
             i += 1
             continue
 
-        numbered = re.match(r"^\s*\d+\.\s+(.+)$", line)
+        numbered = re.match(r"^\s*(\d+)\.\s+(.+)$", line)
         if numbered:
-            p = document.add_paragraph(style="List Number")
-            add_text(p, numbered.group(1))
+            # Word의 List Number style은 서로 떨어진 목록도 이전 번호에 이어 붙인다.
+            # Markdown에 적힌 번호를 그대로 출력하여 절마다 1부터 다시 시작한다.
+            p = document.add_paragraph()
+            p.paragraph_format.left_indent = Cm(0.4)
+            p.paragraph_format.first_line_indent = Cm(-0.4)
+            add_text(p, f"{numbered.group(1)}. {numbered.group(2)}")
             i += 1
             continue
 
@@ -221,7 +227,9 @@ def build_document():
     document.core_properties.author = "STM32G474CBT6 초음파 제어 보드 개발팀"
     document.core_properties.keywords = "STM32G474CBT6, RS-485, Modbus RTU, PLC"
     document.save(OUTPUT)
+    shutil.copyfile(OUTPUT, CANONICAL_OUTPUT)
     print(OUTPUT)
+    print(CANONICAL_OUTPUT)
 
 
 if __name__ == "__main__":

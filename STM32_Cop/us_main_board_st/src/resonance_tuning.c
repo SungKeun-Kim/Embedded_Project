@@ -1,6 +1,6 @@
 /**
  * @file  resonance_tuning.c
- * @brief 입력 소비전류 최소점과 출력 V/I 위상차를 이용한 2단계 공진 탐색
+ * @brief 입력 소비전류 최저점을 10 Hz 단위로 추적하는 1차 공진 탐색
  */
 #include "resonance_tuning.h"
 
@@ -25,28 +25,26 @@ static uint16_t s_voltage_offset;
 static uint16_t s_current_offset;
 
 static ResonanceTuneState_t s_tune_state;
-static uint16_t s_start_frequency;
-static uint16_t s_scan_frequency;
-static uint16_t s_scan_start;
-static uint16_t s_scan_end;
-static uint16_t s_rough_frequency;
+static uint32_t s_start_frequency_hz;
+static uint32_t s_scan_frequency_hz;
+static uint32_t s_rough_frequency_hz;
+static uint32_t s_rough_min_frequency_hz;
+static uint32_t s_rough_max_frequency_hz;
 static uint16_t s_rough_current;
-static uint16_t s_best_phase_frequency;
-static uint16_t s_best_phase_abs;
 static uint32_t s_measure_baseline;
-static uint32_t s_step_tick;
-static bool s_phase_refined;
+static uint32_t s_tune_start_tick;
+static uint16_t s_previous_current;
+static int8_t s_scan_direction;
+static bool s_have_previous_current;
 
 static bool InitDacThresholds(void);
 static bool InitComparators(void);
 static bool InitHrtimCapture(void);
 static void ProcessPhaseMeasurement(void);
 static void ProcessAutoTune(void);
-static void SetScanFrequency(uint16_t frequency);
-static void BeginFineScan(void);
+static void SetScanFrequencyHz(uint32_t frequency_hz);
 static void FinishTune(void);
-static uint16_t ClampFrequency(int32_t frequency);
-static uint16_t Abs16(int16_t value);
+static uint32_t ClampFrequencyHz(int32_t frequency_hz);
 
 void ResonanceTuning_Init(void) {
   s_ready = false;
@@ -77,8 +75,8 @@ void ResonanceTuning_Process(void) {
   ProcessAutoTune();
 }
 
-bool ResonanceTuning_Start(uint16_t center_freq_01khz) {
-  if (!s_ready || !g_us_state.running || g_us_state.soft_starting ||
+bool ResonanceTuning_Start(uint32_t center_frequency_hz) {
+  if (!g_us_state.running || g_us_state.soft_starting ||
       g_us_state.error_active || g_us_state.mode != MODE_CONTINUOUS ||
       (s_tune_state != RES_TUNE_IDLE &&
        s_tune_state != RES_TUNE_COMPLETE &&
@@ -86,41 +84,55 @@ bool ResonanceTuning_Start(uint16_t center_freq_01khz) {
     return false;
   }
 
-  s_start_frequency = ClampFrequency(center_freq_01khz);
-  s_scan_start = ClampFrequency((int32_t)s_start_frequency -
-                                AUTO_TUNE_ROUGH_HALF_SPAN);
-  s_scan_end = ClampFrequency((int32_t)s_start_frequency +
-                              AUTO_TUNE_ROUGH_HALF_SPAN);
-  s_scan_frequency = s_scan_start;
-  s_rough_frequency = s_scan_start;
+  s_start_frequency_hz = ClampFrequencyHz((int32_t)center_frequency_hz);
+  s_scan_frequency_hz = s_start_frequency_hz;
+  s_rough_frequency_hz = s_start_frequency_hz;
+  s_rough_min_frequency_hz = s_start_frequency_hz;
+  s_rough_max_frequency_hz = s_start_frequency_hz;
   s_rough_current = UINT16_MAX;
-  s_best_phase_frequency = s_start_frequency;
-  s_best_phase_abs = UINT16_MAX;
-  s_phase_refined = false;
+  s_previous_current = 0U;
+  s_scan_direction = -1;
+  s_have_previous_current = false;
   s_tune_state = RES_TUNE_ROUGH;
-  SetScanFrequency(s_scan_frequency);
+  SetScanFrequencyHz(s_scan_frequency_hz);
   s_measure_baseline = ADC_Control_GetCurrentSampleCounter();
+  s_tune_start_tick = HAL_GetTick();
   return true;
 }
 
 void ResonanceTuning_Cancel(void) {
   if (s_tune_state == RES_TUNE_ROUGH || s_tune_state == RES_TUNE_FINE) {
-    UltrasonicCtrl_SetFrequency(s_start_frequency);
+    UltrasonicCtrl_SetFrequencyHz(s_start_frequency_hz);
   }
   s_tune_state = RES_TUNE_IDLE;
-  s_phase_refined = false;
 }
 
 bool ResonanceTuning_IsReady(void) { return s_ready; }
 ResonanceTuneState_t ResonanceTuning_GetState(void) { return s_tune_state; }
-uint16_t ResonanceTuning_GetScanFrequency(void) { return s_scan_frequency; }
+uint16_t ResonanceTuning_GetScanFrequency(void) {
+  return (uint16_t)((s_scan_frequency_hz + 50U) / 100U);
+}
 uint16_t ResonanceTuning_GetResultFrequency(void) {
   return (s_tune_state == RES_TUNE_COMPLETE) ? g_us_state.target_freq : 0U;
+}
+uint32_t ResonanceTuning_GetScanFrequencyHz(void) {
+  return s_scan_frequency_hz;
+}
+uint32_t ResonanceTuning_GetResultFrequencyHz(void) {
+  return (s_tune_state == RES_TUNE_COMPLETE) ? s_scan_frequency_hz : 0U;
+}
+uint32_t ResonanceTuning_GetRemainingMs(void) {
+  if (s_tune_state != RES_TUNE_ROUGH) {
+    return 0U;
+  }
+  const uint32_t elapsed = HAL_GetTick() - s_tune_start_tick;
+  return elapsed >= AUTO_TUNE_DURATION_MS ? 0U
+                                          : AUTO_TUNE_DURATION_MS - elapsed;
 }
 uint16_t ResonanceTuning_GetRoughCurrentCentiAmp(void) {
   return (s_rough_current == UINT16_MAX) ? 0U : s_rough_current;
 }
-bool ResonanceTuning_WasPhaseRefined(void) { return s_phase_refined; }
+bool ResonanceTuning_WasPhaseRefined(void) { return false; }
 int16_t ResonanceTuning_GetPhaseDifference(void) { return s_phase_01deg; }
 bool ResonanceTuning_IsPhaseValid(void) { return s_phase_valid; }
 uint16_t ResonanceTuning_GetVoltageOffset(void) { return s_voltage_offset; }
@@ -270,105 +282,84 @@ static void ProcessPhaseMeasurement(void) {
 }
 
 static void ProcessAutoTune(void) {
-  if (s_tune_state != RES_TUNE_ROUGH && s_tune_state != RES_TUNE_FINE) {
+  if (s_tune_state != RES_TUNE_ROUGH) {
     return;
   }
   if (!g_us_state.running || g_us_state.error_active ||
       g_us_state.mode != MODE_CONTINUOUS) {
     s_tune_state = RES_TUNE_ERROR;
-    UltrasonicCtrl_SetFrequency(s_start_frequency);
+    UltrasonicCtrl_SetFrequencyHz(s_start_frequency_hz);
     return;
   }
 
-  if (s_tune_state == RES_TUNE_ROUGH) {
-    /* 주파수 변경 뒤 완전히 새로 수집된 PA6 200 ms window 두 개를 기다린다. */
-    if ((ADC_Control_GetCurrentSampleCounter() - s_measure_baseline) < 2U) {
-      return;
-    }
-
-    const uint16_t current = ADC_Control_GetCurrentCentiAmp();
-    if (current < s_rough_current) {
-      s_rough_current = current;
-      s_rough_frequency = s_scan_frequency;
-    }
-
-    if (s_scan_frequency >= s_scan_end) {
-      /* 범위 끝점 또는 무전류는 국부 최소 공진점으로 채택하지 않는다. */
-      if (s_rough_current < 5U || s_rough_frequency == s_scan_start ||
-          s_rough_frequency == s_scan_end) {
-        s_tune_state = RES_TUNE_ERROR;
-        UltrasonicCtrl_SetFrequency(s_start_frequency);
-      } else {
-        BeginFineScan();
-      }
-      return;
-    }
-
-    SetScanFrequency((uint16_t)(s_scan_frequency + AUTO_TUNE_STEP));
-    s_measure_baseline = ADC_Control_GetCurrentSampleCounter();
-    return;
-  }
-
-  if ((HAL_GetTick() - s_step_tick) < AUTO_TUNE_PHASE_SETTLE_MS ||
-      !s_phase_valid ||
-      (s_phase_sample_counter - s_measure_baseline) < 4U) {
-    return;
-  }
-
-  const uint16_t phase_abs = Abs16(s_phase_01deg);
-  if (phase_abs < s_best_phase_abs) {
-    s_best_phase_abs = phase_abs;
-    s_best_phase_frequency = s_scan_frequency;
-  }
-
-  if (s_scan_frequency >= s_scan_end) {
+  if ((HAL_GetTick() - s_tune_start_tick) >= AUTO_TUNE_DURATION_MS) {
     FinishTune();
     return;
   }
-  SetScanFrequency((uint16_t)(s_scan_frequency + AUTO_TUNE_STEP));
-  s_step_tick = HAL_GetTick();
-  s_measure_baseline = s_phase_sample_counter;
+
+  /* 주파수별로 완전히 새로 수집된 200 ms 입력전류 RMS를 한 번씩 사용한다. */
+  if (ADC_Control_GetCurrentSampleCounter() == s_measure_baseline) {
+    return;
+  }
+
+  const uint16_t current = ADC_Control_GetCurrentWindowCentiAmp();
+  if (current < s_rough_current) {
+    s_rough_current = current;
+    s_rough_frequency_hz = s_scan_frequency_hz;
+    s_rough_min_frequency_hz = s_scan_frequency_hz;
+    s_rough_max_frequency_hz = s_scan_frequency_hz;
+  } else if (current == s_rough_current) {
+    if (s_scan_frequency_hz < s_rough_min_frequency_hz) {
+      s_rough_min_frequency_hz = s_scan_frequency_hz;
+    }
+    if (s_scan_frequency_hz > s_rough_max_frequency_hz) {
+      s_rough_max_frequency_hz = s_scan_frequency_hz;
+    }
+    s_rough_frequency_hz =
+        (s_rough_min_frequency_hz + s_rough_max_frequency_hz) / 2U;
+  }
+
+  if (s_have_previous_current &&
+      current > (uint16_t)(s_previous_current +
+                           AUTO_TUNE_CURRENT_HYST_CENTIAMP)) {
+    s_scan_direction = (int8_t)-s_scan_direction;
+  }
+  s_previous_current = current;
+  s_have_previous_current = true;
+
+  const int32_t next_frequency =
+      (int32_t)s_scan_frequency_hz +
+      (int32_t)s_scan_direction * (int32_t)AUTO_TUNE_STEP_HZ;
+  SetScanFrequencyHz(ClampFrequencyHz(next_frequency));
+  s_measure_baseline = ADC_Control_GetCurrentSampleCounter();
 }
 
-static void SetScanFrequency(uint16_t frequency) {
-  s_scan_frequency = ClampFrequency(frequency);
-  UltrasonicCtrl_SetFrequency(s_scan_frequency);
-}
-
-static void BeginFineScan(void) {
-  s_tune_state = RES_TUNE_FINE;
-  s_scan_start = ClampFrequency((int32_t)s_rough_frequency -
-                                AUTO_TUNE_FINE_HALF_SPAN);
-  s_scan_end = ClampFrequency((int32_t)s_rough_frequency +
-                              AUTO_TUNE_FINE_HALF_SPAN);
-  s_best_phase_abs = UINT16_MAX;
-  s_best_phase_frequency = s_rough_frequency;
-  SetScanFrequency(s_scan_start);
-  s_step_tick = HAL_GetTick();
-  s_measure_baseline = s_phase_sample_counter;
+static void SetScanFrequencyHz(uint32_t frequency_hz) {
+  s_scan_frequency_hz = ClampFrequencyHz((int32_t)frequency_hz);
+  UltrasonicCtrl_SetFrequencyHz(s_scan_frequency_hz);
 }
 
 static void FinishTune(void) {
-  uint16_t result = s_rough_frequency;
-  if (s_best_phase_abs <= AUTO_TUNE_PHASE_MAX_ABS_01DEG) {
-    result = s_best_phase_frequency;
-    s_phase_refined = true;
+  if (!s_have_previous_current || s_rough_current < 5U) {
+    s_tune_state = RES_TUNE_ERROR;
+    UltrasonicCtrl_SetFrequencyHz(s_start_frequency_hz);
+    return;
   }
-  UltrasonicCtrl_SetFrequency(result);
-  s_scan_frequency = result;
+
+  s_scan_frequency_hz = ClampFrequencyHz(
+      (int32_t)s_rough_frequency_hz + (int32_t)AUTO_TUNE_RESULT_OFFSET_HZ);
+  UltrasonicCtrl_SetFrequencyHz(s_scan_frequency_hz);
   s_tune_state = RES_TUNE_COMPLETE;
 }
 
-static uint16_t ClampFrequency(int32_t frequency) {
-  if (frequency < (int32_t)FREQ_MIN) {
-    return FREQ_MIN;
+static uint32_t ClampFrequencyHz(int32_t frequency_hz) {
+  const int32_t minimum_hz = (int32_t)FREQ_MIN * 100;
+  const int32_t maximum_hz = (int32_t)FREQ_MAX * 100;
+  if (frequency_hz < minimum_hz) {
+    return (uint32_t)minimum_hz;
   }
-  if (frequency > (int32_t)FREQ_MAX) {
-    return FREQ_MAX;
+  if (frequency_hz > maximum_hz) {
+    return (uint32_t)maximum_hz;
   }
-  return (uint16_t)frequency;
-}
-
-static uint16_t Abs16(int16_t value) {
-  return (value < 0) ? (uint16_t)(-(int32_t)value) : (uint16_t)value;
+  return (uint32_t)frequency_hz;
 }

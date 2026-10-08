@@ -18,7 +18,7 @@
 │  1. ADC_Control_Process()                                        │
 │     ├→ PB1/ADC1_IN12 PWM_VR 이동평균 및 0~1000 정규화           │
 │     ├→ PA6/ADC2_IN3 4kSPS DMA, offset 제거 200ms RMS/0.01A      │
-│     └→ PB1 값을 로컬 Duty limit(0~900)으로 제어 모듈에 전달     │
+│     └→ PB1 값을 Local Duty(0~900)와 PLC 인계값으로 전달          │
 │                                                                  │
 │  2. ResonanceTuning_Process()                                    │
 │     ├→ PA0(COMP3 전압)/PA1(COMP1 전류) HRTIM capture 위상차     │
@@ -138,13 +138,19 @@ menu_screen이 읽는 데이터:
   g_us_state.mode           — 모드 표시
   g_us_state.remaining_time_ms — 운전 중 남은 시간 표시
 
-MODE 순환 화면:
-  MAIN → TIME → FREQUENCY → TUNE SELECT → 선택 TUNE →
-  SWEEP WIDTH → SWEEP SPEED → OUTPUT MODE → [CURRENT SET] → MAIN
+일반 MODE 화면:
+  MAIN → TIME → MAIN
+
+RUN_SW OFF + MODE+UP 2초 보호 설정 화면:
+  FREQUENCY → SWEEP WIDTH → SWEEP SPEED → TUNE SELECT → 선택 TUNE →
+  OUTPUT MODE → [CURRENT SET] → FREQUENCY 순환
+
+보호 설정은 MODE+UP을 다시 2초 유지할 때만 MAIN으로 복귀한다.
 
 Flash settings v3는 기존 통신/타이머 설정과 함께 선택 Band 및 네 Band별
 중심주파수를 저장한다. v1/v2 Record도 읽으며 새 필드는 기본값으로 migration한다.
-Manual Tune에서 MODE로 다음 화면을 이동하거나 시험출력을 STOP하면 저장하고,
+Manual Tune에서 MODE로 다음 화면을 이동하거나 시험출력을 STOP하면 저장한다.
+시험출력에는 보호 메뉴에서 선택한 Sweep 폭과 속도를 강제로 적용하고,
 Auto Tune 완료 결과도 현재 Band 중심주파수로 저장한다.
 ```
 
@@ -154,10 +160,11 @@ Auto Tune 완료 결과도 현재 Band 중심주파수로 저장한다.
 호출 방향: modbus_regs → ultrasonic_ctrl (단방향)
 
 ModbusRegs_Write() 내부에서:
-  REG 0x0001 쓰기 → Local Duty limit 안에서 Output 0~500 설정
-  REG 0x0004 쓰기 → Local 입력 Lock/Unlock
-  REG 0x0005 쓰기 → Run/Stop
-  REG 0x0007 쓰기 → Sweep/Continuous 선택
+  REG 0x0001 쓰기 → 통신 절대 Output 0~500 설정
+  REG 0x0004 True  → 보드 감지+RUN_SW OFF+MAIN 검증, 기존 출력 Stop 후 통신 준비
+  REG 0x0004 False → PLC 쓰기 허가 및 PA10 REMOTE 선택 차단 해제
+  REG 0x0005 쓰기 → Remote와 같은 무시간 Run, Stop 시 Local 자동 복귀
+  REG 0x0007 읽기 → 물리 SWEEP_SW 선택 상태(정지 중에도 확인)
   REG 0x0008 True 쓰기 → Stop 상태에서 Error Reset
 
 ModbusRegs_Read() 내부에서:
@@ -165,10 +172,12 @@ ModbusRegs_Read() 내부에서:
   REG 0x0001 읽기 → Output command 0~500 반환
   REG 0x0002 읽기 → 표시 출력 범위 100 반환
   REG 0x0003~0x0008 읽기 → Sweep/Local/Run/외부입력/Error 상태
+  REG 0x000C~0x000E 읽기 → 설정 중심주파수/Sweep 폭/Sweep 속도
   REG 0x0010~0x0012 읽기 → 현재 Slave ID/Baud index/고정 Even 반환
 
-Frequency와 Duty limit은 Local 메뉴에서만 설정한다. PLC는 직접 쓰지 않는다.
-실제 목표 Duty = Local Duty limit × PLC Output / 500이다.
+Frequency는 Local 메뉴에서만 설정하며 PLC는 직접 쓰지 않는다. Local 출력은
+PB1 Duty를 사용한다. Lock ON 순간 PB1 비율을 PLC Output에 인계하고 이후
+PLC Write 또는 PB1 이동 중 마지막 입력값을 실제 출력으로 적용한다.
 통신 설정 Register 0x0010~0x0012는 PLC Read-only다. 원격 Write는
 Illegal Data Address(0x02)이며 변경은 보드 메뉴에서만 수행한다.
 ```
@@ -187,8 +196,9 @@ Illegal Data Address(0x02)이며 변경은 보드 메뉴에서만 수행한다.
   저장 실패 → 기존 통신 설정 유지, LCD에 STOP/SAVE ERR 표시
 
 Flash 배치:
-  Application FLASH = 0x08000000~0x0801F7FF (126 KB)
-  SETTINGS          = 0x0801F800~0x0801FFFF (마지막 2 KB page)
+  Application FLASH = 0x08000000~0x0800F7FF (Bank 1, 62 KB)
+  SETTINGS          = 0x0800F800~0x0800FFFF (Bank 1 마지막 2 KB page)
+  128 KB dual-bank의 Bank 2는 0x08040000부터 시작하므로 연속 영역으로 보지 않는다.
   v3 32-byte CRC Record를 순차 기록하고 page가 찬 경우에만 erase
   (기존 v1 16-byte, v2 24-byte Record 읽기 호환)
 ```
@@ -202,7 +212,7 @@ Flash 배치:
 데이터 흐름:
   PB1/ADC1_IN12 PWM_VR
     → ADC_Control_GetPwmVrNormalized()
-    → menu_screen.c의 PL 0~100% 표시
+    → menu_screen.c의 실제 PA7 기준 PL 5~100% 표시
 
   PB1/ADC1_IN12 PWM_VR
     → ADC_Control_GetPwmVrDutyLimit()
@@ -210,7 +220,20 @@ Flash 배치:
     → UltrasonicCtrl_SetDuty()
 
   실제 내부 지령
-    = PB1 로컬 Duty limit × Modbus OUTPUT_VALUE / 500
+    Local = PB1 Duty
+    PLC   = 안전 Duty 상한 × Modbus OUTPUT_VALUE / 500
+
+  제어권 전환
+    사전 조건 → PB3 보드 감지, PA11 RUN_SW OFF, MAIN 화면
+    Lock ON  → 기존 출력 Stop, 현재 PB1 비율 인계, 485 COMM 표시
+    기본 RUN → 주소 1 쓰기를 생략하면 인계한 PB1 볼륨값으로 ON/OFF
+    PLC 출력 → 필요할 때만 주소 1을 쓰고 RUN, PB1 5% 이동 시 Local 수동 인계
+    통신 중  → PLC Write와 PB1 이동 중 마지막 입력값을 출력에 적용
+    입력 정책 → PA10 REMOTE만 무시, PB1/설정 버튼은 유지
+    Local 조작 → PA11 RUN_SW 상태 변경 시 Lock 해제 및 Local 전환
+    Lock OFF → 운전 중에도 허용, 최신 PB1 Duty와 전체 Local 입력으로 전환
+    RUN OFF  → 출력만 Stop, Lock과 485 COMM 준비 상태 유지
+    보드 분리 → 출력 Stop 및 Lock 자동 해제
 
   PA6/ADC2_IN3 CT
     → TIM6 TRGO 4kSPS + DMA1_Channel1 circular
@@ -297,7 +320,7 @@ AUTO TUNE 화면에서 START 3초를 유지하면 메뉴가 제한된 시험출�
 | V4  | Modbus 0x0000 = g_us_state.current_freq  | regs ↔ ctrl   | ✅ 호스트 테스트    |
 | V5  | 듀티 ≤ DUTY_CLAMP_MAX 항상 성립          | pwm + regs    | ✅ 단위 테스트      |
 | V6  | FREQ_MIN ≤ 주파수 ≤ FREQ_MAX             | pwm + regs    | ✅ 단위 테스트      |
-| V7  | 소프트 스타트 완료 시간 ≈ 500ms          | ctrl          | ✅ 시뮬레이션       |
+| V7  | 소프트 스타트 완료 시간 ≈ 1500ms         | ctrl          | ✅ 시뮬레이션       |
 | V8  | CRC-16 알려진 벡터 일치                  | crc           | ✅ 단위 테스트      |
 | V9  | 비상 정지 후 MOE=0, CCR1=0               | pwm + ctrl    | ✅ 런타임 자기검증  |
 | V10 | 기본 통신값=ID 1/9600/Even               | rtu + params  | ✅ 정적 계약 테스트 |

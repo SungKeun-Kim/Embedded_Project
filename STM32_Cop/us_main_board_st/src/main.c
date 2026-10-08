@@ -12,6 +12,7 @@
 #include "adc_control.h"
 #include "menu.h"
 #include "menu_screen.h"
+#include "modbus_regs.h"
 #include "modbus_rtu.h"
 #include "selftest.h"
 #include "config.h"
@@ -65,11 +66,13 @@ int main(void)
 
         /* PB1 PWM_VR 및 PA6 CT ADC 읽기 */
         ADC_Control_Process();
+        UltrasonicCtrl_SafetyUpdate();
         ResonanceTuning_Process();
         UltrasonicCtrl_SetDuty(ADC_Control_GetPwmVrDutyLimit());
 
         /* 메뉴 상태 갱신 (버튼 이벤트 소비) */
         Menu_Update();
+        ModbusRegs_Update();
 
         /* PA5 수동형 부저의 비차단 재생/정지 처리 */
         Buzzer_Process();
