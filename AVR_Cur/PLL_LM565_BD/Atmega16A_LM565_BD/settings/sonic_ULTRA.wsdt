@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<Workspace>
+  <ConfigDictionary>
+    
+  <CurrentConfigs><Project>sonic/Release</Project></CurrentConfigs></ConfigDictionary>
+  <Desktop>
+    <Static>
+      <Workspace>
+        <ColumnWidths>
+          
+          
+          
+          
+        <Column0>250</Column0><Column1>15</Column1><Column2>11</Column2><Column3>14677140</Column3></ColumnWidths>
+      </Workspace>
+      <Build>
+        
+        
+        
+        
+      <ColumnWidth0>20</ColumnWidth0><ColumnWidth1>1396</ColumnWidth1><ColumnWidth2>372</ColumnWidth2><ColumnWidth3>93</ColumnWidth3></Build>
+    <Find-in-Files><ColumnWidth0>664</ColumnWidth0><ColumnWidth1>94</ColumnWidth1><ColumnWidth2>1138</ColumnWidth2></Find-in-Files><SourceBrowser/></Static>
+    <Windows>
+      
+      
+    <Wnd0>
+        <Tabs>
+          <Tab>
+            <Identity>TabID-14023-24772</Identity>
+            <TabName>Workspace</TabName>
+            <Factory>Workspace</Factory>
+            <Session>
+              
+            <NodeDict><ExpandedNode>sonic</ExpandedNode><ExpandedNode>sonic/Output</ExpandedNode><ExpandedNode>sonic/eepm16.c</ExpandedNode><ExpandedNode>sonic/main.c</ExpandedNode><ExpandedNode>sonic/tim16.c</ExpandedNode></NodeDict></Session>
+          </Tab>
+        <Tab><Identity>TabID-15224-32449</Identity><TabName>Source Browser</TabName><Factory>SourceBrowser</Factory><Session><TypeFilter>2147483647</TypeFilter><FileFilter>1</FileFilter></Session></Tab></Tabs>
+        
+      <SelectedTab>0</SelectedTab></Wnd0><Wnd1>
+        <Tabs>
+          <Tab>
+            <Identity>TabID-30188-25901</Identity>
+            <TabName>Build</TabName>
+            <Factory>Build</Factory>
+            <Session/>
+          </Tab>
+        <Tab><Identity>TabID-3946-15902</Identity><TabName>Find in Files</TabName><Factory>Find-in-Files</Factory><Session/></Tab><Tab><Identity>TabID-12088-32508</Identity><TabName>Breakpoints</TabName><Factory>Breakpoints</Factory></Tab></Tabs>
+        
+      <SelectedTab>0</SelectedTab></Wnd1></Windows>
+    <Editor>
+      
+      
+      
+      
+    <Pane><Tab><Factory>TextEditor</Factory><Filename>\\MASTER\1_AllData\06_Micom\Welder_PWM\TSO_16A\eepm16.c</Filename><XPos>0</XPos><YPos>24</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>\\MASTER\1_AllData\06_Micom\Welder_PWM\TSO_16A\main.c</Filename><XPos>0</XPos><YPos>87</YPos><SelStart>708</SelStart><SelEnd>708</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>\\MASTER\1_AllData\06_Micom\Welder_PWM\TSO_16A\key.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>\\MASTER\1_AllData\06_Micom\Welder_PWM\TSO_16A\init_time.c</Filename><XPos>0</XPos><YPos>60</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>\\MASTER\1_AllData\06_Micom\Welder_PWM\TSO_16A\init_disp.c</Filename><XPos>0</XPos><YPos>450</YPos><SelStart>1090</SelStart><SelEnd>1090</SelEnd></Tab><ActiveTab>4</ActiveTab><Tab><Factory>TextEditor</Factory><Filename>\\MASTER\1_AllData\06_Micom\Welder_PWM\TSO_16A\init_adc.c</Filename><XPos>0</XPos><YPos>66</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>\\MASTER\1_AllData\06_Micom\Welder_PWM\TSO_16A\error.c</Filename><XPos>0</XPos><YPos>9</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd></Tab></Pane><ActivePane>0</ActivePane><Sizes><Pane><X>1000000</X><Y>1000000</Y></Pane></Sizes><SplitMode>1</SplitMode></Editor>
+    <Positions>
+      
+      
+      
+      
+      
+    <Top><Row0><Sizes><Toolbar-00e39670><key>iaridepm.enu1</key></Toolbar-00e39670></Sizes></Row0></Top><Left><Row0><Sizes><Wnd0><Rect><Top>-2</Top><Left>-2</Left><Bottom>667</Bottom><Right>296</Right><x>-2</x><y>-2</y><xscreen>279</xscreen><yscreen>294</yscreen><sizeHorzCX>168275</sizeHorzCX><sizeHorzCY>346698</sizeHorzCY><sizeVertCX>179735</sizeVertCX><sizeVertCY>788915</sizeVertCY></Rect></Wnd0></Sizes></Row0></Left><Right><Row0><Sizes/></Row0></Right><Bottom><Row0><Sizes><Wnd1><Rect><Top>-2</Top><Left>-2</Left><Bottom>136</Bottom><Right>1660</Right><x>-2</x><y>-2</y><xscreen>1662</xscreen><yscreen>138</yscreen><sizeHorzCX>1002413</sizeHorzCX><sizeHorzCY>162736</sizeHorzCY><sizeVertCX>168275</sizeVertCX><sizeVertCY>346698</sizeVertCY></Rect></Wnd1></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
+  </Desktop>
+</Workspace>
+
+

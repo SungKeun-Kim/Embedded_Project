@@ -1,0 +1,908 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<project>
+  <fileVersion>2</fileVersion>
+  <fileChecksum>2815363923</fileChecksum>
+  <configuration>
+    <name>Debug</name>
+    <outputs>
+      <file>$TOOLKIT_DIR$\inc\intrinsics.h</file>
+      <file>$PROJ_DIR$\tim16.c</file>
+      <file>$TOOLKIT_DIR$\inc\clib\sysmac.h</file>
+      <file>$PROJ_DIR$\eepm16.c</file>
+      <file>$PROJ_DIR$\main.c</file>
+      <file>$TOOLKIT_DIR$\inc\clib\string.h</file>
+      <file>$PROJ_DIR$\error.c</file>
+      <file>$PROJ_DIR$\Debug\Obj\main.pbi</file>
+      <file>$PROJ_DIR$\tim16.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\sonic.pbd</file>
+      <file>$PROJ_DIR$\Debug\Obj\tim16.r90</file>
+      <file>$PROJ_DIR$\Debug\Obj\tim16.pbi</file>
+      <file>$PROJ_DIR$\init_time.c</file>
+      <file>$PROJ_DIR$\Debug\Obj\main.r90</file>
+      <file>$PROJ_DIR$\Debug\Obj\eepm16.r90</file>
+      <file>$PROJ_DIR$\key.c</file>
+      <file>$TOOLKIT_DIR$\inc\iomacro.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\eepm16.pbi</file>
+      <file>$PROJ_DIR$\init_disp.c</file>
+      <file>$TOOLKIT_DIR$\inc\iom16.h</file>
+      <file>$PROJ_DIR$\init_adc.c</file>
+    </outputs>
+    <file>
+      <name>$PROJ_DIR$\tim16.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 11</file>
+        </tool>
+        <tool>
+          <name>ICCAVR</name>
+          <file> 10</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 19 16 8</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\eepm16.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 17</file>
+        </tool>
+        <tool>
+          <name>ICCAVR</name>
+          <file> 14</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 19 16</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\main.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 7</file>
+        </tool>
+        <tool>
+          <name>ICCAVR</name>
+          <file> 13</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 18 19 16 0 8 20 15 6 5 2 12</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Debug\Obj\sonic.pbd</name>
+      <inputs>
+        <tool>
+          <name>BILINK</name>
+          <file> 17 7 11</file>
+        </tool>
+      </inputs>
+    </file>
+    <forcedrebuild>
+      <name>[MULTI_TOOL]</name>
+      <tool>XLINK</tool>
+    </forcedrebuild>
+  </configuration>
+  <configuration>
+    <name>Release</name>
+    <outputs>
+      <file>$TOOLKIT_DIR$\inc\intrinsics.h</file>
+      <file>$PROJ_DIR$\tim16.c</file>
+      <file>$TOOLKIT_DIR$\inc\clib\sysmac.h</file>
+      <file>$PROJ_DIR$\eepm16.c</file>
+      <file>$PROJ_DIR$\main.c</file>
+      <file>$TOOLKIT_DIR$\inc\clib\string.h</file>
+      <file>$PROJ_DIR$\error.c</file>
+      <file>$PROJ_DIR$\tim16.h</file>
+      <file>$PROJ_DIR$\init_time.c</file>
+      <file>$PROJ_DIR$\key.c</file>
+      <file>$TOOLKIT_DIR$\inc\iomacro.h</file>
+      <file>$PROJ_DIR$\init_disp.c</file>
+      <file>$TOOLKIT_DIR$\inc\iom16.h</file>
+      <file>$PROJ_DIR$\init_adc.c</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202007_16.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202008_16c.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202008_16j.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202008_16e.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202009_16L1.92.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202008_16L1.4.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202009_16L1.90.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202009_16L2.11.hex</file>
+      <file>$PROJ_DIR$\Release\List\main.lst</file>
+      <file>$PROJ_DIR$\Release\Obj\main.r90</file>
+      <file>$PROJ_DIR$\Release\Obj\tim16.r90</file>
+      <file>$TOOLKIT_DIR$\lib\clib\cl3s-ec_mul-sf.r90</file>
+      <file>$PROJ_DIR$\tim8535.h</file>
+      <file>$PROJ_DIR$\Release\Exe\SSsonic_welder1.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\kichen_art_150121.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202008_16i.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202008_16L1.3.hex</file>
+      <file>$PROJ_DIR$\Release\Obj\eepm16.r90</file>
+      <file>$PROJ_DIR$\tim8535.c</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202008_16L.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202008_16ktest.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic.hex</file>
+      <file>$TOOLKIT_DIR$\inc\iom8535.h</file>
+      <file>$PROJ_DIR$\Release\Obj\sonic.pbd</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202008_16L1.1.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\HanKuk_WELDER_170620.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\Ksonic_welder.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\ELsonic_welder.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202008_16L1.0.hex</file>
+      <file>$PROJ_DIR$\remotekey.c</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202008_16L0.1.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202008_16.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202004.hex</file>
+      <file>$PROJ_DIR$\eepm8535.c</file>
+      <file>$PROJ_DIR$\Release\Exe\SSsonic_welder.hex</file>
+      <file>$PROJ_DIR$\Release\Obj\eepm16.pbi</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202009_16L1.93.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202009_16L1.91.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202009_16L2.0.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202009_16L1.94.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202009_16L2.1.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\FULLOUTPUT_161226.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202008_16hh.hex</file>
+      <file>$PROJ_DIR$\Release\Obj\main.pbi</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202008_16f.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202007.hex</file>
+      <file>$PROJ_DIR$\Release\Obj\tim8535.r90</file>
+      <file>$PROJ_DIR$\Release\Exe\DAELIM_170224.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202008_16jtest.hex</file>
+      <file>$TOOLKIT_DIR$\src\template\cfg1soim.xcl</file>
+      <file>$PROJ_DIR$\Release\Obj\eepm8535.r90</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202011_16L2.27.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202011_16L2.23.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202011_16L2.22.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202011_16L2.21.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202011_16L2.25.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202011_16L2.24.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202008_16a.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202008_16h.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202008_16k.hex</file>
+      <file>$PROJ_DIR$\Release\List\eepm16.lst</file>
+      <file>$PROJ_DIR$\Release\Exe\hankuk_welder.hex</file>
+      <file>$PROJ_DIR$\Release\List\tim16.lst</file>
+      <file>$PROJ_DIR$\Release\Exe\kichen_art_150114.hex</file>
+      <file>$PROJ_DIR$\Release\Obj\remotekey.r90</file>
+      <file>$PROJ_DIR$\Release\Obj\eepm8535.pbi</file>
+      <file>$TOOLKIT_DIR$\src\template\cfg3soim.xcl</file>
+      <file>$PROJ_DIR$\Release\Exe\pwm_time.hex</file>
+      <file>$TOOLKIT_DIR$\src\template\cfgm8535.xcl</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202008_16g.hex</file>
+      <file>$PROJ_DIR$\Release\Obj\remotekey.pbi</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202009_16L1.4.hex</file>
+      <file>$PROJ_DIR$\Release\List\remotekey.lst</file>
+      <file>$TOOLKIT_DIR$\src\template\cfgm16.xcl</file>
+      <file>$TOOLKIT_DIR$\lib\clib\cl1s-ec_mul.r90</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202009_16L1.5.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic.a90</file>
+      <file>$PROJ_DIR$\Release\Exe\daelim_welder.hex</file>
+      <file>$PROJ_DIR$\Release\Obj\tim8535.pbi</file>
+      <file>$PROJ_DIR$\Release\Obj\tim16.pbi</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202009_16L1.7.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202009_16L1.6.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202009_16L1.9.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202009_16L1.8.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\ULTRA_150430.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202011_16L2.26.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\HANKUK_150121.hex</file>
+      <file>$PROJ_DIR$\init_disp.h</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic_202011_16L2.20.hex</file>
+    </outputs>
+    <file>
+      <name>$PROJ_DIR$\tim16.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 93</file>
+        </tool>
+        <tool>
+          <name>ICCAVR</name>
+          <file> 24 76</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 12 10 7</file>
+        </tool>
+        <tool>
+          <name>ICCAVR</name>
+          <file> 12 10 7</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\eepm16.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 49</file>
+        </tool>
+        <tool>
+          <name>ICCAVR</name>
+          <file> 31 74</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 12 10</file>
+        </tool>
+        <tool>
+          <name>ICCAVR</name>
+          <file> 12 10</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\main.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 57</file>
+        </tool>
+        <tool>
+          <name>ICCAVR</name>
+          <file> 23 22</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 12 10 11 0 7 101 13 9 6 5 2 8 43</file>
+        </tool>
+        <tool>
+          <name>ICCAVR</name>
+          <file> 12 10 11 0 7 101 13 9 6 5 2 8 43</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202007_16.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202008_16c.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202008_16j.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202008_16e.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>[ROOT_NODE]</name>
+      <outputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 65</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202009_16L1.92.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202008_16L1.4.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202009_16L1.90.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202009_16L2.11.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\SSsonic_welder1.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\kichen_art_150121.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202008_16i.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202008_16L1.3.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\tim8535.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 92</file>
+        </tool>
+        <tool>
+          <name>ICCAVR</name>
+          <file> 60</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 36 10 26</file>
+        </tool>
+        <tool>
+          <name>ICCAVR</name>
+          <file> 36 10</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202008_16L.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202008_16ktest.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Obj\sonic.pbd</name>
+      <inputs>
+        <tool>
+          <name>BILINK</name>
+          <file> 49 57 93</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202008_16L1.1.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\HanKuk_WELDER_170620.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\Ksonic_welder.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\ELsonic_welder.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202008_16L1.0.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\remotekey.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 84</file>
+        </tool>
+        <tool>
+          <name>ICCAVR</name>
+          <file> 78 86</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 12 10</file>
+        </tool>
+        <tool>
+          <name>ICCAVR</name>
+          <file> 12 10</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202008_16L0.1.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202008_16.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202004.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\eepm8535.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 79</file>
+        </tool>
+        <tool>
+          <name>ICCAVR</name>
+          <file> 64</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 36 10</file>
+        </tool>
+        <tool>
+          <name>ICCAVR</name>
+          <file> 36 10</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\SSsonic_welder.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202009_16L1.93.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202009_16L1.91.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202009_16L2.0.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202009_16L1.94.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202009_16L2.1.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\FULLOUTPUT_161226.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202008_16hh.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202008_16f.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202007.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\DAELIM_170224.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202008_16jtest.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202011_16L2.27.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202011_16L2.23.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202011_16L2.22.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202011_16L2.21.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202011_16L2.25.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202011_16L2.24.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202008_16a.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202008_16h.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202008_16k.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\hankuk_welder.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\kichen_art_150114.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\pwm_time.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202008_16g.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202009_16L1.4.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202009_16L1.5.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic.a90</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 82 63 23 88</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\daelim_welder.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202009_16L1.7.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202009_16L1.6.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202009_16L1.9.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202009_16L1.8.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\ULTRA_150430.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202011_16L2.26.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\HANKUK_150121.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic_202011_16L2.20.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 87 80 31 23 24 25</file>
+        </tool>
+      </inputs>
+    </file>
+  </configuration>
+</project>
+
+
