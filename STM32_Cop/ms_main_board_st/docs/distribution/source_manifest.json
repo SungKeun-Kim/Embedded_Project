@@ -1,0 +1,121 @@
+{
+  "document": "Megasonic_RS485_Protocol_KR_v1.0",
+  "date": "2026-10-16",
+  "firmware_version_macro": "1.0.0",
+  "source_set_sha256": "122a97ff3d9e8b3d00e744554f240f02ffcfef2c0d0628ab391b10bc02b9fdc3",
+  "source_sha256": {
+    "include/modbus_regs.h": "2949757436f596e337eb6467da8bcbc32e1174c12cb3a128be5072646a6640a8",
+    "include/modbus_rtu.h": "f452a0b449d0af78f7e62dc6e27d21aa0ee68eed04deab2aaf2f7f5a97f5e918",
+    "include/params.h": "cedca9d33c555d5735a47bd5d354f43eca8a67998ab65f8af44fe36b0f42354f",
+    "include/board_runtime_config.h": "734064d862181ce19f2627d08d1962c7a4faf67a32eeb99baa2c7ae06b4d6801",
+    "include/config.h": "fe6a996fe5bd34e16353fe5c5590b093671752ade25719ce3700bd62af7602f9",
+    "include/menu.h": "93ed222d54ada5bba8da50dbf2feba3d0974766e9f7012fdc0e596c09974db00",
+    "src/modbus_regs.c": "ba1f3a38a8743944d0d890de0d8a4472ed2bb7e490bcf0f2f79df5d2c4f2d585",
+    "src/modbus_rtu.c": "4fd3a658919b74ca31d1bc81a1e13f7800d2c8e84f41d06e88c4b3cdfe24c46a",
+    "src/modbus_crc.c": "bfae789c97f8cc7495498bea979ab3799b7d2b6324621f74ca09a7e42b7b3c43",
+    "src/megasonic_ctrl.c": "6545b07f7d2f3b36f0d1fc1442d2187a805fb95730c9fabc22eedbafdb6d34ff",
+    "src/menu.c": "db5d5288475cd9714f57c6f13904392a47e354c98b2d301e2c1da45066849a95",
+    "src/menu_screen.c": "1256f86fed9eddbf72c0fd33b954e147609f65e21b8c45ed074f03f872e6ce72",
+    "src/adc_control.c": "adc8793ea92e64769e6f47655a71951c6a2f0574f518ea357d5750b07420b3dd",
+    "src/settings_store.c": "edc171868555058520987a4017cb1ef621154534abf6d36ffc5c8dc89ceffd1a",
+    "src/system_clock.c": "7d08823b5a9f006459d769d56831fa974264f17e688518c2ef39b96fcd502805",
+    "src/stm32g4xx_it.c": "ab33aa1d173891694ba1c59934239d27994a1f050ea784586dba172fbdd1dcd4",
+    "src/main.c": "47fbad11753e88790fd50fa415f89a82d69e2d7486f0b2024e744fa0f4d13be8"
+  },
+  "register_addresses_checked": 23,
+  "examples": [
+    {
+      "payload": "01 03 00 00 00 06",
+      "frame": "01 03 00 00 00 06 C5 C8",
+      "crc_verified": true
+    },
+    {
+      "payload": "01 03 00 05 00 01",
+      "frame": "01 03 00 05 00 01 94 0B",
+      "crc_verified": true
+    },
+    {
+      "payload": "01 03 02 00 00",
+      "frame": "01 03 02 00 00 B8 44",
+      "crc_verified": true
+    },
+    {
+      "payload": "01 03 00 10 00 03",
+      "frame": "01 03 00 10 00 03 04 0E",
+      "crc_verified": true
+    },
+    {
+      "payload": "01 03 06 00 01 00 00 00 00",
+      "frame": "01 03 06 00 01 00 00 00 00 1C B5",
+      "crc_verified": true
+    },
+    {
+      "payload": "01 03 00 13 00 07",
+      "frame": "01 03 00 13 00 07 F5 CD",
+      "crc_verified": true
+    },
+    {
+      "payload": "01 06 00 00 00 00",
+      "frame": "01 06 00 00 00 00 89 CA",
+      "crc_verified": true
+    },
+    {
+      "payload": "01 06 00 00 00 01",
+      "frame": "01 06 00 00 00 01 48 0A",
+      "crc_verified": true
+    },
+    {
+      "payload": "01 06 00 01 0F A0",
+      "frame": "01 06 00 01 0F A0 DD 82",
+      "crc_verified": true
+    },
+    {
+      "payload": "01 10 00 07 00 02 04 03 E8 03 E8",
+      "frame": "01 10 00 07 00 02 04 03 E8 03 E8 32 87",
+      "crc_verified": true
+    },
+    {
+      "payload": "01 10 00 07 00 02",
+      "frame": "01 10 00 07 00 02 F0 09",
+      "crc_verified": true
+    },
+    {
+      "payload": "01 03 00 0C 00 01",
+      "frame": "01 03 00 0C 00 01 44 09",
+      "crc_verified": true
+    },
+    {
+      "payload": "01 83 02",
+      "frame": "01 83 02 C0 F1",
+      "crc_verified": true
+    },
+    {
+      "payload": "01 06 00 02 03 E9",
+      "frame": "01 06 00 02 03 E9 E9 74",
+      "crc_verified": true
+    },
+    {
+      "payload": "01 86 02",
+      "frame": "01 86 02 C3 A1",
+      "crc_verified": true
+    },
+    {
+      "payload": "01 03 00 00 00 00",
+      "frame": "01 03 00 00 00 00 45 CA",
+      "crc_verified": true
+    },
+    {
+      "payload": "01 83 03",
+      "frame": "01 83 03 01 31",
+      "crc_verified": true
+    }
+  ],
+  "pdf_pages": 10,
+  "text_blocks_checked_in_both_formats": 360,
+  "pdf_renderer": "Microsoft Word",
+  "artifact_sha256": {
+    "Megasonic_RS485_Protocol_KR_v1.0.docx": "04e5d39c63bb71c56f54b34e369d7f6ada80d6824827e905aaff52821217ae73",
+    "Megasonic_RS485_Protocol_KR_v1.0.pdf": "03fd8a7ef1ad797430f5630b6c6150d1b6788346600f28e44e3251acfefbe639"
+  },
+  "validation_scope": "소스 대조 및 CRC 교차 검증. 실제 보드 통신·출력 시험은 포함하지 않음."
+}

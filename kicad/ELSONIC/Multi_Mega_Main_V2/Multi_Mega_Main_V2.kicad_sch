@@ -41867,7 +41867,7 @@
 				)
 			)
 		)
-		(property "Value" "0805FR-07100K"
+		(property "Value" "10K"
 			(at 302.006 91.186 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -42042,7 +42042,7 @@
 				)
 			)
 		)
-		(property "LCSC" "C96346"
+		(property "LCSC" "C17414"
 			(at 303.53 96.52 0)
 			(hide yes)
 			(show_name no)

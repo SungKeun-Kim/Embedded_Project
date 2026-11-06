@@ -1,0 +1,29 @@
+{
+  "document": "CSF_JET_LCD_User_Manual_KR_v5.0",
+  "date": "2026-10-16",
+  "pages": 14,
+  "reference_file": "docs\\MANUAL_CSF_JET_LCD_Panel_v1.docx",
+  "reference_sha256": "c786cedcdca4d408f8ae374b541eae8da8328f5ab95963612e47fccec442774b",
+  "source_sha256": {
+    "include/params.h": "cedca9d33c555d5735a47bd5d354f43eca8a67998ab65f8af44fe36b0f42354f",
+    "include/board_runtime_config.h": "734064d862181ce19f2627d08d1962c7a4faf67a32eeb99baa2c7ae06b4d6801",
+    "include/config.h": "fe6a996fe5bd34e16353fe5c5590b093671752ade25719ce3700bd62af7602f9",
+    "include/menu.h": "93ed222d54ada5bba8da50dbf2feba3d0974766e9f7012fdc0e596c09974db00",
+    "src/menu.c": "db5d5288475cd9714f57c6f13904392a47e354c98b2d301e2c1da45066849a95",
+    "src/menu_screen.c": "1256f86fed9eddbf72c0fd33b954e147609f65e21b8c45ed074f03f872e6ce72",
+    "src/button.c": "b823bb6895abd14bcb89b9f3fea7e67f6d438a93958097ecf36640a9ed26b902",
+    "src/megasonic_ctrl.c": "6545b07f7d2f3b36f0d1fc1442d2187a805fb95730c9fabc22eedbafdb6d34ff",
+    "src/adc_control.c": "adc8793ea92e64769e6f47655a71951c6a2f0574f518ea357d5750b07420b3dd",
+    "src/gpio_init.c": "101f10f2e33e027f42f109b6139307ea016424984c0990591f732c2889dab929",
+    "src/settings_store.c": "edc171868555058520987a4017cb1ef621154534abf6d36ffc5c8dc89ceffd1a",
+    "src/modbus_regs.c": "ba1f3a38a8743944d0d890de0d8a4472ed2bb7e490bcf0f2f79df5d2c4f2d585",
+    "src/modbus_rtu.c": "4fd3a658919b74ca31d1bc81a1e13f7800d2c8e84f41d06e88c4b3cdfe24c46a"
+  },
+  "text_blocks_checked": 676,
+  "renderer": "Microsoft Word",
+  "hardware_tested": false,
+  "artifact_sha256": {
+    "CSF_JET_LCD_User_Manual_KR_v5.0.docx": "412c6babdbcce02318269fa8fb3be271610517807a621af749b217f7157bd0f8",
+    "CSF_JET_LCD_User_Manual_KR_v5.0.pdf": "ab0a4228c14820b6dbac3f91cb680d5fb4bb38fc00495730af214feb280da944"
+  }
+}

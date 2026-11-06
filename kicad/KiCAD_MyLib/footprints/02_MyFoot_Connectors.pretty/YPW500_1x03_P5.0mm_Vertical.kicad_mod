@@ -1,0 +1,205 @@
+(footprint "YPW500_1x03_P5.0mm_Vertical"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "Molex SPOX Connector System, 5267-06A, 6 Pins per row (http://www.molex.com/pdm_docs/sd/022035035_sd.pdf)")
+	(tags "connector Molex SPOX vertical")
+	(property "Reference" "REF**"
+		(at 0.001 -4.633 0)
+		(layer "F.SilkS")
+		(uuid "1875ad0b-eb85-496b-94e3-b72ccf0fb5d2")
+		(effects
+			(font
+				(size 1.1 1.1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "YPW500_1x03_P5.0mm_Vertical"
+		(at 0.851 5.15 0)
+		(layer "F.Fab")
+		(uuid "6f19ed47-2c64-40ac-bf85-9549f26d30d3")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "02ee777f-40a3-45f1-a287-5e1ff83bb91c")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "c4ac3b8e-a8e3-4c4c-8927-e7c7862d26f6")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "KiLib_Generator" "connector/Molex"
+		(at 0 0 0)
+		(layer "F.SilkS")
+		(hide yes)
+		(uuid "5379bc52-fb0e-4467-a6f1-c0c46ea09e9b")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr through_hole)
+	(duplicate_pad_numbers_are_jumpers no)
+	(fp_line
+		(start -10.2 -3.8)
+		(end -10.2 3.1)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "00c0d906-08c5-4a30-a2cd-fb4c79e3f69e")
+	)
+	(fp_line
+		(start -10.2 2.4)
+		(end 10.2 2.4)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "48c8e9f7-1f8c-4afa-885b-61c1e2959aec")
+	)
+	(fp_line
+		(start -10.2 3.1)
+		(end 10.2 3.1)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "49995254-5afd-486c-83f6-1d591d7e4241")
+	)
+	(fp_line
+		(start -6.879 4.004553)
+		(end -6.379 3.297446)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "6b5a33bb-bcd1-44c4-b78b-a7939265dc1e")
+	)
+	(fp_line
+		(start -6.879 4.004553)
+		(end -5.879 4.004553)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "66de4977-1b42-4c0b-8bbe-7b560ced6ca7")
+	)
+	(fp_line
+		(start -6.379 3.297446)
+		(end -5.879 4.004553)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "db835943-b8ab-44ab-89cd-10f8c1e18405")
+	)
+	(fp_line
+		(start 10.2 -3.8)
+		(end -10.2 -3.8)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "e3cbbda4-dd1f-4660-bcf7-d8e3706e80b8")
+	)
+	(fp_line
+		(start 10.2 3.1)
+		(end 10.2 -3.8)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "4b1d5b08-0c0c-4f9a-a464-5f47aeefe19b")
+	)
+	(fp_rect
+		(start -10.307 -3.905)
+		(end 10.328 3.229)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "db40c030-8272-4ec1-a5f8-32769fb1d398")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 -2.4 0)
+		(layer "F.Fab")
+		(uuid "2515aafe-8359-40fb-ba15-d50b6af93981")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" thru_hole roundrect
+		(at -6.25 0)
+		(size 3.4 3.4)
+		(drill 1.65)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(roundrect_rratio 0.147059)
+		(uuid "dcb1fcba-a5d4-4cc4-8cd4-ae155845e28f")
+	)
+	(pad "2" thru_hole oval
+		(at 1.25 0)
+		(size 3.4 3.4)
+		(drill 1.65)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "44c73d31-6c8e-4b5c-b59b-474092fab1da")
+	)
+	(pad "3" thru_hole oval
+		(at 6.25 0)
+		(size 3.4 3.4)
+		(drill 1.65)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "f4ce437f-e186-4318-800d-267a8c9268b2")
+	)
+	(embedded_fonts no)
+	(model "${KICAD10_3DMODEL_DIR}/Connector_Molex.3dshapes/Molex_SPOX_5267-06A_1x06_P2.50mm_Vertical.step"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)

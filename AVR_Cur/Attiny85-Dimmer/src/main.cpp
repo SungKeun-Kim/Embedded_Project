@@ -1,450 +1,336 @@
 #include <Arduino.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <avr/power.h>
+#include <util/atomic.h>
 
-// ========================================
-// AC 조광기 (AC Dimmer) 제어 코드
-// ATtiny85 전용 - 저항 + AC-input 옵토커플러 방식 제로크로스 검출
-// 50Hz/60Hz 자동 감지 지원 (ISR 내부 기반)
-// 25μs 고분해능 타이머 (v3.1)
-// ========================================
-//
-// 하드웨어 요구사항:
-//
-// 1. MCU: ATtiny85 (DIP-8)
-//    - 내부 8MHz 클럭 사용 (외부 크리스탈 불필요)
-//    - 퓨즈 설정: LFUSE=0xE2, HFUSE=0xDF, EFUSE=0xFF
-//
-// 2. 제로크로스 검출부:
-//    - AC 220V → 22kΩ/2W + 22kΩ/2W → EL354N AC-input 옵토커플러
-//    - EL354N 출력 → 4.7kΩ 풀업/D9/R30/C8 → ATtiny85 PB2 (7번 핀)
-//    - ※ INT0 미사용 - Timer1 ISR 내에서 25μs 폴링으로 엣지 검출
-//
-// 3. 위상 제어부:
-//    - ATtiny85 PB0 (5번 핀) → 220Ω → MOC3021 → 트라이악
-//
-// 4. 조광 입력:
-//    - PB3 (2번 핀, ADC3) 입력 전압 범위: 0.2V ~ 4.3V
-//    - 4.3V → 트라이액 게이트 ~10%, 0.2V → 트라이액 게이트 ~96%
-//    - 5V (START 버튼 누르기 전, PWM 없음) → 트라이액 OFF
-//
-// 5. 디버그:
-//    - PB1 (6번 핀) - 디버그 LED
-//      캘리브레이션 중: ON → 완료 후: ZC마다 토글 (정상시 ~30Hz 점멸)
-//      LED 상시 ON = 캘리브레이션 멈춤 (ZC 미검출)
-//
-// 핀 배치 (DIP-8):
-//    1: RESET/PB5       - 리셋 (ISP)
-//    2: PB3 (ADC3)      - 아날로그 입력 ✅
-//    3: PB4 (ADC2)      - 미사용 (향후 SG3525 제어용 예약)
-//    4: GND             - 그라운드
-//    5: PB0             - 트라이악 제어 출력 ✅
-//    6: PB1             - 디버그 LED ✅
-//    7: PB2             - 제로크로스 입력 (폴링) ✅
-//    8: VCC             - 5V 전원
-//
-// 동작 원리:
-//    - Timer1 ISR이 25μs마다 PB2를 폴링하여 상승 엣지 검출
-//    - 최소 주기 가드: 마지막 ZC 후 7ms 이내 엣지는 무시
-//      → EMI 노이즈(트라이악 발화시)를 시간 기반으로 원천 차단
-//      → 실제 ZC(8.3ms 주기)만 통과, 디바운스 불필요
-//    - INT0 미사용으로 인터럽트 설정 관련 문제 완전 제거
-//    - 저항 방식의 ZC 보정: 50μs 시험값 (EL354N 에지 시점 편차 여유)
-//    - 트리거 펄스 폭: 500μs (20 × 25μs)
-//
-// Timer1 설정 (ATtiny85):
-//    - CTC 모드, 프리스케일러 8
-//    - OCR1C = 24 → 25μs 주기 @ 8MHz (40kHz ISR)
-// ========================================
+// AC 조광기 v4.5: 기존 저출력 위상 범위/ON 임계 복원, 낮은 출력에서 게이트 폭 제한.
+// ATtiny85, 내부 RC 8MHz, 저항 + EL354N 제로크로스 검출
+// PB0(5번): MOC3021, PB1(6번): 디버그, PB2(7번): ZC, PB3(2번): ADC3
+// 퓨즈: E2/DF/FF. DF는 BOD 비활성화이며 2.7V BOD 설정이 아니다.
+// Timer1 25us 폴링 유지. INT0 미사용. ZC 신호는 MCU 입력에서 충분한 HIGH 폭 필요.
+// 50/60Hz를 고정 경계로 분류하지 않고 측정 반주기 대비 같은 위상을 사용한다.
+// RC 클럭 오차와 실제 전원 주파수를 단일 RC 시간축만으로 분리할 수는 없다.
 
-// ---- 핀 정의 ----
-const uint8_t TRIAC_PIN = 0;                 // PB0 (5번 핀) - 트라이악 제어
-const uint8_t DEBUG_PIN = 1;                 // PB1 (6번 핀) - 디버그 LED
-const uint8_t ZC_PIN    = 2;                 // PB2 (7번 핀) - 제로크로스 입력 (폴링)
-const uint8_t POT_PIN   = 3;                 // PB3 (2번 핀) - 아날로그 입력 (ADC3)
+const uint8_t TRIAC_PIN = 0;
+const uint8_t DEBUG_PIN = 1;
+const uint8_t ZC_PIN = 2;
+const uint8_t POT_PIN = 3;
 
-// ---- 타이밍 상수 (25μs 틱 단위) ----
-// 60Hz 반주기 = 8.33ms = 333틱, 50Hz = 10ms = 400틱
-const uint8_t TRIGGER_PULSE_WIDTH = 20;      // 트리거 펄스 폭 (20 × 25μs = 500μs)
-// ZVC 상승엣지는 실제 AC 0V보다 먼저 발생하므로 그 차이를 보정한다.
-// 다운 트랜스 방식의 16틱(400μs)은 저항 방식에 그대로 적용하지 않는다.
-// 2틱(50μs)을 시험값으로 사용하며, ZVC 펄스 누락 방지가 아닌 검출 후 시점 보정값이다.
-const uint8_t ZC_OFFSET = 2;                // 저항 방식 ZC 오프셋 시험값 (2 × 25μs = 50μs)
-const uint16_t SAFETY_TIMEOUT = 420;         // 10.5ms (50Hz 대응, ZC 미검출시 타임아웃)
-const uint16_t MIN_ZC_PERIOD = 280;          // 7ms (노이즈 필터)
-const uint16_t MAX_ZC_PERIOD = 450;          // ZC 주기 유효 상한 (50Hz + 빠른칩 대응 여유)
-const uint16_t ZC_PERIOD_REF = 332;          // 기준 주기 (60Hz @ 8MHz, 25μs 단위)
-// minDim: ZC 이후 최소 지연(틱). 작을수록 더 밝음.
-// 응용은 초음파 세척기 전력 제어(트라이악 위상 → 브릿지 정류 등 비선형 부하). ZC 직후 점화가
-// 부품·칩 편차에 걸리면 최대 출력에서 파형이 떨릴 수 있어, 128틱 기준으로 소폭 여유를 둠.
-// 최대출력 손실은 반주기 대비 약 0.25~0.3%/틱 수준으로 미미한 편.
-const uint16_t MIN_DIM_DEFAULT = 128;        // 부팅·비율 기준 (332틱 대비 128틱 ≈ 38.6%)
-const uint16_t MIN_DIM_BASE = 128;           // 캘리브/런타임 minDim = avgPeriod × 이값 / ZC_PERIOD_REF
-const uint8_t MAX_DIM_GUARD = 2;             // 제로크로스 경계 넘김 방지용 추가 가드(2틱)
-const uint16_t MAX_DIM_DEFAULT = ZC_PERIOD_REF - ZC_OFFSET
-                              - TRIGGER_PULSE_WIDTH - MAX_DIM_GUARD;
-                                             // 332 - 2 - 20 - 2 = 308틱
-const uint16_t MAX_DIM_MAX = 391;            // maxDim 상한 (50Hz 대응)
-const uint16_t MIN_DIM_MIN = 115;            // minDim 하한 (경험적 안정 래치 한계)
-const uint16_t MIN_DIM_MAX = 161;            // minDim 상한 (50Hz 대응)
+// 25us는 명목값이다. 예: RC ±15%, 전원 47~63Hz이면 약 270~489틱.
+// 이 범위는 동작 허용 창이며 MCU 오실레이터의 정확도 보증을 뜻하지 않는다.
+const uint16_t MIN_ZC_PERIOD = 250;
+const uint16_t MAX_ZC_PERIOD = 500;
+const uint16_t ZC_AGE_LIMIT = MAX_ZC_PERIOD + MAX_ZC_PERIOD / 32 + 3;
+const uint8_t LOCK_SAMPLES = 8;             // 연속으로 일관된 반주기 8회 확인
+const uint8_t ZC_WIDTH_DIVISOR = 4;         // ZC HIGH 허용 상한: 실측 반주기의 1/4
 
-// ZC_OFFSET을 시험 조정하더라도 최소 유효 주기 안에 위상 지연과 게이트 펄스가 들어가야 한다.
-static_assert((uint16_t)ZC_OFFSET + TRIGGER_PULSE_WIDTH + MAX_DIM_GUARD + MIN_DIM_MAX
-              <= MIN_ZC_PERIOD,
-              "ZC_OFFSET is too large for the valid half-cycle range");
+// 기존 60Hz 실측 설정에서 최대/최소 출력 경계에 추가 여유를 둔다. 작은 지연 = 큰 출력.
+// offset, 게이트 폭, 경계 여유까지 모두 측정 반주기에 비례한다.
+const uint16_t ZC_PERIOD_REF = 332;
+const uint16_t MIN_DIM_BASE = 133;          // 최대 출력: v4.3의136에서 3틱 단축, 최초128보다 5틱 여유
+const uint8_t ZC_OFFSET_BASE = 2;           // 기존 50us 시험 보정에 해당
+const uint8_t TRIGGER_PULSE_BASE = 20;      // 기본 폭: 60Hz 약500us, 50Hz 약600us. 낮은 출력에서는 단축
+const uint8_t END_GUARD_BASE = 16;          // 종료 여유: 60Hz 약400us / 50Hz 약480us (최초2보다 확보)
+const uint16_t MAX_DIM_BASE = 308;          // 기존 최저출력 위상 복원. 기본 게이트 폭과 분리
+const uint8_t MIN_PULSE_BASE = ZC_PERIOD_REF - ZC_OFFSET_BASE
+                             - MAX_DIM_BASE - END_GUARD_BASE; // 최저출력 펄스 여유: 6기준틱
+const uint16_t DIM_OFF = 0xffff;            // 시간 지연값으로 사용하지 않는 OFF 표식
+const uint16_t MAX_DIM_STEP = 10;           // 유효 반주기마다 위상 기준값 최대 10씩 출력 증가
+const uint16_t INPUT_INTERVAL = 400;        // 명목 10ms, Arduino delay() 미사용
+const uint16_t POWER_SETTLE_TICKS = 40000;  // 부팅 후 명목1초 동안 주기 보정/출력 금지
+const int ADC_MIN = 61;                     // 0.3V 이하: 최대 출력 요구
+const int ADC_MAX = 880;                    // 약 4.3V: 최소 출력 요구
+const int ADC_OFF = 900;                    // 약 4.4V 이상: OFF
+const int ADC_ON = ADC_OFF - 1;             // 기존처럼900 미만에서 ON. 추가한890 진입 문턱 제거
 
-// ---- ADC 보정 상수 ----
-// PB3 입력 전압 범위: 0.3V ~ 4.3V (동작 범위), 5V = OFF
-const int ADC_MIN = 61;                      // 입력 최소값 (0.3V: 0.3/5.0 * 1023 ≈ 61)
-const int ADC_MAX = 880;                     // 입력 최대값 (4.3V)
-const int ADC_OFF = 900;                     // OFF 임계값 (4.4V 이상 → OFF)
-const uint16_t DIM_OFF = 500;               // OFF 값 (> SAFETY_TIMEOUT → 타임아웃으로 트리거 안됨)
-const uint16_t MAX_DIM_STEP = 10;           // 출력 증가 최대 속도 (10틱/50ms, 노이즈 과출력 방지)
-const uint8_t QUIET_START_CYCLES = 50;      // 조용한 시작 (50 × 50ms = 2.5s, SG3525 VCO 안정화 대기)
-const uint8_t SOFT_START_CYCLES = 10;       // 소프트 스타트 (10 × 50ms = 500ms, maxDim 고정)
+static_assert(MIN_DIM_BASE < MAX_DIM_BASE, "Invalid phase limits");
+static_assert(MAX_DIM_BASE + ZC_OFFSET_BASE + END_GUARD_BASE < ZC_PERIOD_REF,
+              "No room for low-output gate pulse");
+static_assert(MIN_PULSE_BASE >= 6, "Low-output gate pulse is too short");
+static_assert(MAX_ZC_PERIOD < 0x8000, "Period must fit wrap-safe arithmetic");
+static_assert(POWER_SETTLE_TICKS > 0 && POWER_SETTLE_TICKS < 0xffff,
+              "Power settling delay must fit the boot timer");
+// 기준 여유의 하한 확인. 정수 반올림 경계의 추가 여유는 endGuardTicks()에서 보장한다.
+static_assert(MIN_ZC_PERIOD * END_GUARD_BASE / ZC_PERIOD_REF
+              > MIN_ZC_PERIOD / 32 + 4, "Insufficient end guard for period jitter");
+static_assert(MAX_ZC_PERIOD / ZC_WIDTH_DIVISOR < 256, "Pulse width must fit uint8_t");
+static_assert(MIN_DIM_BASE > ZC_PERIOD_REF / ZC_WIDTH_DIVISOR,
+              "Trigger must follow pulse validation");
 
-// ---- 상태 머신 정의 ----
-#define S_IDLE      0                         // 대기: 다음 제로크로스 대기 중
-#define S_ZC_OFFSET 1                         // ZC 오프셋: 실제 ZC까지 보정 시간 대기
-#define S_DELAY     2                         // 지연: 위상 지연 카운트 중
-#define S_TRIGGER   3                         // 트리거: 게이트 펄스 출력 중 (500μs)
+#define S_IDLE 0
+#define S_DELAY 1
+#define S_TRIGGER 2
+#define P_NONE 0
+#define P_HIGH 1
+#define P_VALID 2
+#define P_BAD 3
 
-// ---- 전역 변수 (ISR용) ----
-volatile uint8_t state = S_IDLE;             // 상태 머신 현재 상태
-volatile uint16_t counter = 0;               // 범용 카운터 (DELAY: 위상지연, TRIGGER: 펄스폭)
-volatile uint16_t dimValue = DIM_OFF;        // 조광 값 - OFF 상태로 시작 (START 전 5V)
-volatile bool calibMode = true;              // 캘리브레이션 모드 플래그
-volatile uint16_t calibCounter = 0;          // 캘리브레이션용 틱 카운터
-volatile uint16_t minDim = MIN_DIM_DEFAULT;  // 동적 최소 지연값 (자동 보정)
-volatile uint16_t maxDim = MAX_DIM_DEFAULT;  // 동적 최대 지연값 (자동 보정)
-volatile uint16_t lastZcPeriod = 0;          // 마지막 ZC 주기 틱 수 (ISR→loop 전달)
-volatile bool newZcReady = false;            // 새 ZC 주기 측정 완료 플래그
-int potValue;                                // ADC 읽기 값
+// ISR 공유 상태. 복잡한 산술은 loop()에서만 수행한다.
+volatile uint16_t timerTicks = 0;           // 1.6384초마다 순환, 차이로만 시간 계산
+volatile uint16_t zcAge = ZC_AGE_LIMIT;     // 최대 주기의 타임아웃보다 크게 포화
+volatile uint16_t edgePeriod = 0;
+volatile uint8_t edgeSequence = 0;
+volatile uint16_t edgeBlanking = MIN_ZC_PERIOD;
+volatile uint16_t fireAt = 0;
+volatile uint16_t stopAt = 0;
+volatile uint8_t state = S_IDLE;
+volatile uint8_t zcPulseState = P_NONE;
+volatile uint8_t zcPulseWidth = 0;
+volatile uint8_t zcPulseLimit = MAX_ZC_PERIOD / ZC_WIDTH_DIVISOR;
+uint8_t lastPin = 0;                        // ISR 전용
 
-// 다음 ZC 전에 게이트 펄스가 끝나도록 maxDim을 계산한다.
-// 검출 에지부터의 전체 시간 = ZC_OFFSET + maxDim + TRIGGER_PULSE_WIDTH + GUARD
-static uint16_t calculateMaxDim(uint16_t period) {
-  int16_t value = (int16_t)period
-                - (int16_t)ZC_OFFSET
-                - (int16_t)TRIGGER_PULSE_WIDTH
-                - (int16_t)MAX_DIM_GUARD;
+// 아래 변수들은 loop() 전용: 인터럽트와 나눗셈/평균 계산을 공유하지 않는다.
+bool synchronized = false;
+uint8_t lockCount = 0;
+uint16_t periodSum = 0;
+uint16_t trackedPeriod = 0;
+uint16_t periodQ3 = 0;                      // 1/8틱 고정소수점 IIR
+uint8_t consumedSequence = 0;
+uint16_t outputPhase = DIM_OFF;
+uint16_t targetPhase = DIM_OFF;             // ADC 요구값. 실제 점화 위상은 반주기 경계에서 갱신
+bool inputOff = true;
+uint16_t lastInputTick = 0;
+bool powerSettled = false;                  // 고정 대기 완료. 실제 VCC 측정 결과는 아님
+bool haveSettledEdge = false;               // 대기 종료 이후 첫 엣지는 기준점으로만 사용
 
-  // 정상 유효 주기에서는 static_assert에 의해 MIN_DIM_MAX 이상이 보장된다.
-  if (value < (int16_t)MIN_DIM_MAX) value = MIN_DIM_MAX;
-  if (value > (int16_t)MAX_DIM_MAX) value = MAX_DIM_MAX;
-  return (uint16_t)value;
+static uint16_t periodTolerance(uint16_t period) {
+  return period / 32 + 2;                  // 약 ±3.1% + 폴링 양자화 2틱
+}
+
+static uint16_t scalePhase(uint16_t period, uint16_t phase) {
+  return ((uint32_t)period * phase + ZC_PERIOD_REF / 2) / ZC_PERIOD_REF;
+}
+
+static uint16_t endGuardTicks(uint16_t period) {
+  uint16_t guard = scalePhase(period, END_GUARD_BASE);
+  // 허용 주기 단축 + 폴링 지터2틱 뒤에도 최소1틱 여유. 반올림 경계도 포함한다.
+  uint16_t minimum = periodTolerance(period) + 3;
+  return guard < minimum ? minimum : guard;
+}
+
+static void stopOutput() {
+  outputPhase = DIM_OFF;
+  targetPhase = DIM_OFF;
+  ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+    state = S_IDLE;
+    PORTB &= ~(1 << TRIAC_PIN);
+  }
+}
+
+static void loseSync() {
+  synchronized = false;
+  lockCount = 0;
+  periodSum = 0;
+  trackedPeriod = 0;
+  periodQ3 = 0;
+  stopOutput();
+  ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+    edgeBlanking = MIN_ZC_PERIOD;
+    zcPulseLimit = MAX_ZC_PERIOD / ZC_WIDTH_DIVISOR;
+    PORTB |= (1 << DEBUG_PIN);              // 상시 ON: 신호 없음/동기화 대기
+  }
 }
 
 void setup() {
-  // ==========================================
-  // 0단계: 클럭 8MHz 강제 설정
-  // 퓨즈 CKDIV8 상태와 무관하게 8MHz 보장
-  // ==========================================
   cli();
-  CLKPR = (1 << CLKPCE);                       // 클럭 프리스케일러 변경 허용
-  CLKPR = 0;                                   // 프리스케일러 1 (8MHz)
-  sei();
-
-  // ==========================================
-  // 1단계: 핀 설정
-  // ==========================================
-  DDRB |= (1 << TRIAC_PIN) | (1 << DEBUG_PIN); // PB0, PB1 출력
-  DDRB &= ~(1 << ZC_PIN);                      // PB2 입력
-  PORTB &= ~((1 << TRIAC_PIN) | (1 << DEBUG_PIN) | (1 << ZC_PIN)); // 모두 LOW, 풀업 없음
-  DIDR0 |= (1 << ADC3D);                        // PB3 디지털 입력 비활성화 (ADC 노이즈 감소)
-
-  // 디버그 LED ON → 캘리브레이션 진행 중 표시
+  // 분주만 해제한다. 내부 RC 자체를 정확한 8MHz로 보정하는 기능은 아니다.
+  clock_prescale_set(clock_div_1);
+  PORTB &= ~((1 << TRIAC_PIN) | (1 << DEBUG_PIN) | (1 << ZC_PIN));
+  DDRB |= (1 << TRIAC_PIN) | (1 << DEBUG_PIN);
+  DDRB &= ~((1 << ZC_PIN) | (1 << POT_PIN));
+  DIDR0 |= (1 << ADC3D);
   PORTB |= (1 << DEBUG_PIN);
+  lastPin = PINB & (1 << ZC_PIN);            // 부팅 시 HIGH를 가짜 상승엣지로 취급하지 않음
 
-  // ==========================================
-  // 2단계: Timer1 설정 (25μs 주기) - 캘리브레이션 모드로 시작
-  // ==========================================
-  cli();
-  calibMode = true;                            // 캘리브레이션 모드 활성화
-  calibCounter = 0;
-
-  GTCCR = 0;                                   // 타이머 동기화 해제
-  TCCR1 = 0;                                   // Timer1 정지
-  TCNT1 = 0;                                   // 카운터 클리어
-  TCCR1 = (1 << CTC1) | (1 << CS12);           // CTC 모드 + 프리스케일러 8
-  OCR1C = 24;                                  // TOP = 24 (25μs @ 8MHz)
-  OCR1A = 24;                                  // 비교 매치 A
-
-  TIMSK = (1 << OCIE1A);        // Timer1 비교 매치 A 인터럽트만 활성화 (25μs 주기)
+  // Arduino Timer0 인터럽트는 사용하지 않는다. millis/micros/delay 사용 금지.
+  // 25us ISR 지연을 줄이고, 모든 제어 시각은 같은 Timer1 시간축에서 계산한다.
+  TIMSK = 0;
+  TCCR0B = 0;
+  TCCR1 = 0;
+  GTCCR = 0;
+  PLLCSR &= ~(1 << PCKE);                  // Timer1도 CPU RC 클럭 사용
+  TCNT1 = 0;
+  OCR1C = 24;
+  OCR1A = 24;
+  TIFR = (1 << OCF1A) | (1 << TOV1);        // 이전 플래그는 1을 써서 삭제
+  TCCR1 = (1 << CTC1) | (1 << CS12);        // CPU/8, 25카운트 = 명목 25us
+  TIMSK = (1 << OCIE1A);
   sei();
-
-  // ==========================================
-  // 3단계: ZC 주기 측정 (Timer1 틱 기반, 트라이악 OFF 상태)
-  // 8회 측정하여 avgPeriod 계산 → minDim/maxDim 설정
-  // ==========================================
-  {
-    uint16_t periodSum = 0;
-    uint8_t samples = 0;
-    
-    // 첫 상승 엣지 대기 (동기화)
-    while ((PINB >> ZC_PIN) & 1);              // HIGH→LOW 대기
-    while (!((PINB >> ZC_PIN) & 1));           // LOW→HIGH 대기 (상승 엣지)
-    
-    // calibCounter 리셋
-    cli();
-    calibCounter = 0;
-    sei();
-    
-    // 8회 측정 (상승 엣지 → 상승 엣지)
-    while (samples < 8) {
-      // 다음 상승 엣지 대기
-      while ((PINB >> ZC_PIN) & 1);            // HIGH→LOW 대기
-      while (!((PINB >> ZC_PIN) & 1));         // LOW→HIGH 대기 (상승 엣지)
-      
-      // 틱 수 읽기
-      cli();
-      uint16_t ticks = calibCounter;
-      calibCounter = 0;
-      sei();
-      
-      // 유효한 주기만 합산 (280~450 범위)
-      if (ticks >= MIN_ZC_PERIOD && ticks <= MAX_ZC_PERIOD) {
-        periodSum += ticks;
-        samples++;
-      }
-    }
-    
-    // avgPeriod 계산
-    uint16_t avgPeriod = periodSum / 8;
-    
-    // maxDim 계산: offset과 게이트 펄스를 포함해 다음 ZC 전 종료
-    maxDim = calculateMaxDim(avgPeriod);
-    
-    // minDim 계산 (비율 기반: avgPeriod × MIN_DIM_BASE / 332)
-    int16_t calcMin = (int16_t)((int32_t)avgPeriod * MIN_DIM_BASE / ZC_PERIOD_REF);
-    if (calcMin < (int16_t)MIN_DIM_MIN) calcMin = MIN_DIM_MIN;
-    if (calcMin > (int16_t)MIN_DIM_MAX) calcMin = MIN_DIM_MAX;
-    minDim = (uint16_t)calcMin;
-  }
-
-  // ==========================================
-  // 4단계: 캘리브레이션 완료 → 정상 모드 전환
-  // ==========================================
-  cli();
-  calibMode = false;                           // 정상 모드로 전환
-  sei();
-
-  // 디버그 LED OFF → 캘리브레이션 완료 표시 (이후 ISR에서 ZC마다 토글)
-  PORTB &= ~(1 << DEBUG_PIN);
+  // 부팅 시 ZC를 무한 대기하지 않는다. loop()에서 안정화 대기 후 OFF로 동기화한다.
 }
 
-// ==========================================
-// Timer1 비교 매치 A 인터럽트 (25μs마다 호출, 40kHz)
-// - 캘리브레이션 모드: calibCounter++ 만 수행
-// - 정상 모드: PB2 폴링으로 제로크로스 검출 + 트라이악 제어
-//
-// ★★★ 핵심 설계 원칙 ★★★
-// 1. ZC 엣지 검출은 IDLE 상태에서만 수행
-// 2. ZC_OFFSET: 상승엣지 후 설정 시간 대기 → 실제 ZC 시점 보정
-// 3. 최소 주기 가드: 마지막 ZC 후 7ms(280틱) 이내는 무시
-//    → 트라이악 EMI 노이즈 완전 차단
-// ==========================================
 ISR(TIMER1_COMPA_vect) {
-  // ---- 캘리브레이션 모드: 틱 카운트만 수행 ----
-  if (calibMode) {
-    calibCounter++;
+  ++timerTicks;
+  uint8_t pin = PINB & (1 << ZC_PIN);
+  uint8_t rising = pin && !lastPin;
+  lastPin = pin;
+  uint16_t age = zcAge;
+  if (age < ZC_AGE_LIMIT) ++age;
+  zcAge = age;
+
+  // OFF/지연/게이트 출력 중에도 항상 ZC를 검출한다.
+  // 예상 시점보다 이른 노이즈는 무시하고, 수용한 새 엣지는 이전 펄스를 취소한다.
+  if (rising && age >= edgeBlanking) {
+    PORTB &= ~(1 << TRIAC_PIN);
+    state = S_IDLE;
+    edgePeriod = age;
+    zcAge = 0;
+    zcPulseState = P_HIGH;                   // 상승엣지는 후보. LOW 복귀 확인 전에는 점화 금지
+    ++edgeSequence;
     return;
   }
 
-  // ---- PB2 상승 엣지 검출 (단순 2샘플 비교) ----
-  static uint16_t localDim = DIM_OFF;        // S_DELAY용 dimValue 스냅샷 (레이스 방지)
-  static uint8_t lastPin = 0;
-  uint8_t curPin = (PINB >> ZC_PIN) & 1;     // PB2: 0 또는 1
-  uint8_t rising = curPin & ~lastPin;         // LOW→HIGH = 1
-  lastPin = curPin;
-
-  // ---- 최소 주기 타이머 (포화 카운터) ----
-  // 마지막 ZC 이후 경과 틱 수. 500에서 포화(12.5ms).
-  static uint16_t zcTimer = 500;              // 초기값 500 → 첫 ZC 즉시 검출
-  if (zcTimer < 500) zcTimer++;
-
-  // ---- 4단계 상태 머신 ----
-  switch (state) {
-
-    case S_IDLE:
-      // 제로크로스 상승 엣지 + 최소 주기 경과 확인
-      if (rising && zcTimer > MIN_ZC_PERIOD) {
-        lastZcPeriod = zcTimer;                // 주기 캡처 (런타임 보정용)
-        newZcReady = true;
-        zcTimer = 0;                           // 주기 타이머 리셋
-        counter = 0;
-        state = S_ZC_OFFSET;                   // 오프셋 대기로 전환
-        PORTB ^= (1 << DEBUG_PIN);            // 디버그 LED 토글 (ZC 확인)
-      }
-      break;
-
-    case S_ZC_OFFSET: {
-      counter++;
-      if (counter >= ZC_OFFSET) {
-        counter = 0;
-        uint16_t newDim = dimValue;
-        // ★ ISR-level 레이트 리미터 (최종 방어선)
-        // loop()와 독립적으로 동작 → loop 타이밍 무관하게 과출력 원천 차단
-        if (newDim != DIM_OFF) {
-          if (localDim == DIM_OFF || localDim >= SAFETY_TIMEOUT) {
-            newDim = maxDim;             // OFF→ON: maxDim(최소 출력) 강제
-          } else if (newDim < localDim) {
-            if ((localDim - newDim) > MAX_DIM_STEP) {
-              newDim = localDim - MAX_DIM_STEP;  // 반주기당 증가폭 제한
-            }
-          }
-        }
-        localDim = newDim;
-        state = S_DELAY;
-      }
-      break;
-    }
-
-    case S_DELAY:
-      // 위상 지연 카운트 (localDim × 25μs, 실제 ZC 기준)
-      // ★ 스냅샷 사용 → loop()가 dimValue를 변경해도 이 반주기는 안전
-      counter++;
-      if (counter >= localDim) {
-        PORTB |= (1 << TRIAC_PIN);
-        counter = 0;
-        state = S_TRIGGER;
-      }
-      else if (counter >= SAFETY_TIMEOUT) {
-        PORTB &= ~(1 << TRIAC_PIN);
-        state = S_IDLE;
-      }
-      break;
-
-    case S_TRIGGER:
-      // 트리거 펄스 출력 (TRIGGER_PULSE_WIDTH × 25μs = 500μs)
-      counter++;
-      if (counter >= TRIGGER_PULSE_WIDTH) {
-        // 펄스 완료 → 게이트 OFF, 다음 ZC 대기
-        PORTB &= ~(1 << TRIAC_PIN);
-        state = S_IDLE;
-      }
-      break;
-
-    default:
-      // 비정상 상태 복구
-      PORTB &= ~(1 << TRIAC_PIN);
+  if (zcPulseState == P_HIGH) {
+    if (age > zcPulseLimit) {
+      zcPulseState = P_BAD;                 // 폭 과다/HIGH 고착: 이전 예약도 즉시 취소
       state = S_IDLE;
-      break;
+      PORTB &= ~(1 << TRIAC_PIN);
+    } else if (!pin) {
+      zcPulseWidth = (uint8_t)age;
+      zcPulseState = P_VALID;
+    }
+  }
+
+  // 한 엣지당 한 번만 점화. 신호가 끊겨도 예측 주기로 반복 점화하지 않는다.
+  // loop()가 멈춰도 이미 예약한 펄스는 stopAt에서 반드시 끝난다.
+  if (state == S_DELAY) {
+    if (age >= fireAt) {
+      if (zcPulseState == P_VALID && !pin) {
+        PORTB |= (1 << TRIAC_PIN);
+        state = S_TRIGGER;
+      } else {
+        state = S_IDLE;                    // 점화 순간에도 HIGH이면 이 반주기는 비점화
+      }
+    }
+  } else if (state == S_TRIGGER && age >= stopAt) {
+    PORTB &= ~(1 << TRIAC_PIN);
+    state = S_IDLE;
   }
 }
 
-void loop() {
-  // ---- 런타임 ZC 주기 추적 → minDim/maxDim 자동 재보정 ----
-  // 매 ZC마다 ISR이 캡처한 주기를 16회 누적 평균하여 재계산.
-  // 내부 RC 클럭 드리프트(온도/전압 변화)에 실시간 대응.
-  {
-    static uint16_t periodAccum = 0;
-    static uint8_t  periodCount = 0;
-
-    cli();
-    bool     ready  = newZcReady;
-    uint16_t period = lastZcPeriod;
-    if (ready) newZcReady = false;
-    sei();
-
-    if (ready && period >= MIN_ZC_PERIOD && period <= MAX_ZC_PERIOD) {
-      periodAccum += period;
-      periodCount++;
-
-      if (periodCount >= 16) {
-        uint16_t avg = periodAccum / 16;
-
-        uint16_t calcMax = calculateMaxDim(avg);
-
-        int16_t calcMin = (int16_t)((int32_t)avg * MIN_DIM_BASE / ZC_PERIOD_REF);
-        if (calcMin < (int16_t)MIN_DIM_MIN) calcMin = MIN_DIM_MIN;
-        if (calcMin > (int16_t)MIN_DIM_MAX) calcMin = MIN_DIM_MAX;
-
-        cli();
-        maxDim = calcMax;
-        minDim = (uint16_t)calcMin;
-        sei();
-
-        periodAccum = 0;
-        periodCount = 0;
-      }
+static void processEdge(uint8_t sequence, uint16_t period, uint8_t width) {
+  if (period < MIN_ZC_PERIOD || period > MAX_ZC_PERIOD
+      || !width || width > period / ZC_WIDTH_DIVISOR) {
+    loseSync();                             // 첫 엣지/누락/실측 주기에 비해 너무 긴 펄스
+    return;
+  }
+  if (lockCount) {
+    uint16_t tolerance = periodTolerance(trackedPeriod);
+    if (period + tolerance < trackedPeriod || period > trackedPeriod + tolerance) {
+      loseSync();                           // 갑작스러운 주기 변경: OFF 후 다시 8회 검증
     }
   }
-
-  // ADC 읽기 (PB3/ADC3)
-  potValue = analogRead(POT_PIN);
-
-  uint16_t tempDimValue;
-
-  // 5V 상태 (START 버튼 안 누름, PWM 미입력) → OFF
-  if (potValue >= ADC_OFF) {
-    tempDimValue = DIM_OFF;
-  }
-  // 정상 동작 범위 (0.2V ~ 4.3V) → 위상 제어
-  else {
-    int potScaled;
-    if (potValue <= ADC_MIN) {
-      potScaled = 0;
-    } else if (potValue >= ADC_MAX) {
-      potScaled = 1023;
-    } else {
-      potScaled = (long)(potValue - ADC_MIN) * 1023 / (ADC_MAX - ADC_MIN);
-    }
-    cli();
-    uint16_t currentMinDim = minDim;
-    uint16_t currentMaxDim = maxDim;
-    sei();
-    tempDimValue = (uint16_t)map(potScaled, 0, 1023, currentMinDim, currentMaxDim);
-  }
-
-  // ---- 4단계 보호: 조용한 시작 + 소프트 스타트 + 레이트 리미터 ----
-  // 1단계: ISR localDim 스냅샷 (반주기 중간 변경 방지)
-  // 2단계: 조용한 시작 (250ms TRIAC 완전 비점화, 초기 과도 안정화)
-  // 3단계: 소프트 스타트 (500ms maxDim 고정)
-  // 4단계: 레이트 리미터 (노이즈/EMI 과출력 방지)
-  static bool wasOff = true;
-  static uint8_t quietRemain = 0;
-  static uint8_t softStartRemain = 0;
-
-  cli();
-  uint16_t currentDim = dimValue;
-  sei();
-
-  if (tempDimValue == DIM_OFF) {
-    wasOff = true;
-    quietRemain = 0;
-    softStartRemain = 0;
+  if (!synchronized) {
+    periodSum += period;
+    ++lockCount;
+    trackedPeriod = periodSum / lockCount;
+    if (lockCount < LOCK_SAMPLES) return;
+    periodQ3 = trackedPeriod * 8;
+    synchronized = true;
   } else {
-    if (wasOff) {
-      quietRemain = QUIET_START_CYCLES;
-      softStartRemain = SOFT_START_CYCLES;
-      wasOff = false;
-    }
+    // 매 반주기를 처리한다. ADC 갱신 간격(10ms) 때문에 주기 샘플을 버리지 않는다.
+    periodQ3 = periodQ3 - trackedPeriod + period;
+    trackedPeriod = (periodQ3 + 4) / 8;
+  }
 
-    if (quietRemain > 0) {
-      tempDimValue = DIM_OFF;
-      quietRemain--;
-    } else if (softStartRemain > 0) {
-      cli();
-      tempDimValue = maxDim;
-      sei();
-      softStartRemain--;
-    } else if (currentDim == DIM_OFF) {
-      cli();
-      tempDimValue = maxDim;
-      sei();
-    } else if (tempDimValue < currentDim) {
-      if ((currentDim - tempDimValue) > MAX_DIM_STEP) {
-        tempDimValue = currentDim - MAX_DIM_STEP;
-      }
+  // 평균보다 짧아진 반주기는 즉시 반영하여 다음 ZC 침범을 줄인다.
+  uint16_t safePeriod = period < trackedPeriod ? period : trackedPeriod;
+  uint16_t blanking = trackedPeriod - periodTolerance(trackedPeriod);
+  ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+    edgeBlanking = blanking;
+    zcPulseLimit = safePeriod / ZC_WIDTH_DIVISOR;
+    PORTB ^= (1 << DEBUG_PIN);              // 동기화 후 50/60Hz 사각파 (육안 판정용 아님)
+  }
+  if (targetPhase == DIM_OFF) return;
+
+  // SG3525 대기/최소출력 시간 유지는 없다. 첫 반주기만 최소출력으로 점화한다.
+  // 실제 예약이 성공한 반주기마다 상승을 제한하므로 loop 속도에 좌우되지 않는다.
+  uint16_t phase = targetPhase;
+  if (outputPhase == DIM_OFF) phase = MAX_DIM_BASE;
+  else if (phase < outputPhase && outputPhase - phase > MAX_DIM_STEP)
+    phase = outputPhase - MAX_DIM_STEP;
+
+  uint16_t start = scalePhase(safePeriod, phase + ZC_OFFSET_BASE);
+  uint16_t end = start + scalePhase(safePeriod, TRIGGER_PULSE_BASE);
+  uint16_t deadline = safePeriod - endGuardTicks(safePeriod);
+  // 점화 시작 위상은 유지하고 낮은 출력에서만 폭을 줄여 다음 ZC와 여유를 둔다.
+  // 예: 반주기333틱/위상308이면 start311, end317, 폭6틱. 실제 부하 래치는 시험 필요.
+  if (end > deadline) end = deadline;
+  if (end <= start) return;
+
+  ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+    // 계산 중 다음 엣지가 왔거나 예정 시각을 이미 지나쳤으면 이 반주기는 건너뛴다.
+    if (edgeSequence == sequence && zcAge < start) {
+      fireAt = start;
+      stopAt = end;
+      state = S_DELAY;
+      outputPhase = phase;
+    }
+  }
+}
+
+static void updateInput(int potValue) {
+  if (potValue >= ADC_OFF) inputOff = true;
+  else if (potValue <= ADC_ON) inputOff = false;
+  if (inputOff || !synchronized) {
+    stopOutput();
+    return;
+  }
+
+  if (potValue <= ADC_MIN) targetPhase = MIN_DIM_BASE;
+  else if (potValue >= ADC_MAX) targetPhase = MAX_DIM_BASE;
+  else targetPhase = MIN_DIM_BASE + (uint32_t)(potValue - ADC_MIN)
+                * (MAX_DIM_BASE - MIN_DIM_BASE) / (ADC_MAX - ADC_MIN);
+}
+
+void loop() {
+  uint8_t sequence, pulseState, width;
+  uint16_t period, bootTick;
+  ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+    sequence = edgeSequence;
+    period = edgePeriod;
+    bootTick = timerTicks;
+    pulseState = zcPulseState;
+    width = zcPulseWidth;
+  }
+  if (!powerSettled) {
+    // ISR의 부팅 중 후보는 보정에 사용하지 않는다. Timer1은 setup에서 0부터 시작한다.
+    // loop를 막지 않는 1회성 대기이며, 동기화 손실 때마다 이 부팅 대기를 반복하지 않는다.
+    consumedSequence = sequence;
+    if (bootTick >= POWER_SETTLE_TICKS) {
+      powerSettled = true;
+      lastInputTick = bootTick;
+    }
+    return;
+  }
+  if (sequence != consumedSequence && (pulseState == P_VALID || pulseState == P_BAD)) {
+    if ((uint8_t)(sequence - consumedSequence) != 1) loseSync();
+    consumedSequence = sequence;
+    if (pulseState == P_BAD) {
+      loseSync();
+      haveSettledEdge = false;
+    } else if (!haveSettledEdge) {
+      // 전원 안정화 전후에 걸친 측정값도 제외한다. 다음 엣지부터 온전한 반주기이다.
+      haveSettledEdge = true;
+    } else {
+      processEdge(sequence, period, width);
     }
   }
 
-  cli();
-  dimValue = tempDimValue;
-  sei();
+  uint16_t age, now;
+  ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+    age = zcAge;
+    now = timerTicks;
+  }
+  if (lockCount && age > trackedPeriod + periodTolerance(trackedPeriod)) loseSync();
 
-  delay(50);
+  // 무대기 루프: ZC 처리는 계속하고 ADC만 10ms 간격으로 갱신한다.
+  // 16비트 타이머가 순환해도 unsigned 차이는 올바르다.
+  if ((uint16_t)(now - lastInputTick) >= INPUT_INTERVAL) {
+    lastInputTick = now;
+    updateInput(analogRead(POT_PIN));
+  }
 }
 
 // ATtiny 프레임워크용 main()

@@ -20375,7 +20375,7 @@
 				)
 			)
 		)
-		(property "Value" "ARM_SWD_10"
+		(property "Value" "AVR_SPI_10"
 			(at 367.03 104.14 0)
 			(show_name no)
 			(do_not_autoplace no)

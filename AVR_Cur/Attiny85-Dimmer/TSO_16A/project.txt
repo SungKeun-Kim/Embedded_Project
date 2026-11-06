@@ -1,0 +1,12 @@
+TARGET: Debug
+  Options:
+    ICCAVR: -v0 -mt -o D:\proj2007\kimproj\Debug\Obj\ -I $TOOLKIT_DIR$\INC\ -e --initializers_in_flash -z3 --no_cse --no_inline --no_code_motion --no_cross_call --no_clustering --debug 
+    AAVR: -v0 -OD:\proj2007\kimproj\Debug\Obj\ -s+ -w+ -r -I$TOOLKIT_DIR$\INC\ -M<> 
+    XLINK: $TOOLKIT_DIR$\lib\cl0t.r90 -o D:\proj2007\kimproj\Debug\Exe\sonic.d90 -rt -I$TOOLKIT_DIR$\LIB\ -f $TOOLKIT_DIR$\src\template\lnk0t.xcl
+
+TARGET: Release
+  Options:
+    ICCAVR: --cpu=m8535 -mt -o D:\proj2007\kimproj\Release\Obj\ -I $TOOLKIT_DIR$\SRC\CLIB\INC\ -e --initializers_in_flash -z9 --cross_call_passes=2 
+    AAVR: -v1 -OD:\proj2007\kimproj\Release\Obj\ -s+ -w+ -I$TOOLKIT_DIR$\SRC\CLIB\INC\ -M<> -u_enhancedCore 
+    XLINK: $TOOLKIT_DIR$\lib\cl1t-ec.r90 -o D:\proj2007\kimproj\Release\Exe\sonic.hex -Fintel-standard -I$TOOLKIT_DIR$\LIB\ -f $TOOLKIT_DIR$\src\template\cfgm8535.xcl -D_..X_HEAP_SIZE=10 -D_..X_CSTACK_SIZE=20 -D_..X_RSTACK_SIZE=20 -e_small_write=_formatted_write -e_medium_read=_formatted_read -f $TOOLKIT_DIR$\src\template\cfg1t.xcl -D_..X_FLASH_BASE=_..X_INTVEC_SIZE -H1895 -h(CODE)0-(_..X_INTVEC_SIZE-1)
+

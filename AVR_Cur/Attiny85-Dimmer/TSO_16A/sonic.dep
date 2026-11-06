@@ -1,0 +1,410 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<project>
+  <fileVersion>2</fileVersion>
+  <fileChecksum>2435062242</fileChecksum>
+  <configuration>
+    <name>Debug</name>
+    <outputs>
+      <file>$PROJ_DIR$\tim16.c</file>
+      <file>$TOOLKIT_DIR$\inc\intrinsics.h</file>
+      <file>$TOOLKIT_DIR$\inc\iom16.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\tim16.pbi</file>
+      <file>$PROJ_DIR$\eepm16.c</file>
+      <file>$PROJ_DIR$\main.c</file>
+      <file>$PROJ_DIR$\Debug\Obj\main.r90</file>
+      <file>$PROJ_DIR$\init_time.c</file>
+      <file>$PROJ_DIR$\Debug\Exe\sonic.d90</file>
+      <file>$TOOLKIT_DIR$\inc\clib\sysmac.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\tim16.r90</file>
+      <file>$PROJ_DIR$\key.c</file>
+      <file>$PROJ_DIR$\Debug\Obj\eepm16.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\sonic.pbd</file>
+      <file>$PROJ_DIR$\error.c</file>
+      <file>$TOOLKIT_DIR$\inc\clib\string.h</file>
+      <file>$PROJ_DIR$\init_disp.c</file>
+      <file>$TOOLKIT_DIR$\inc\iomacro.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\main.pbi</file>
+      <file>$PROJ_DIR$\tim16.h</file>
+      <file>$PROJ_DIR$\init_adc.c</file>
+      <file>$PROJ_DIR$\Debug\Obj\eepm16.r90</file>
+    </outputs>
+    <file>
+      <name>$PROJ_DIR$\tim16.c</name>
+      <outputs>
+        <tool>
+          <name>ICCAVR</name>
+          <file> 10</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 3</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 2 17 19</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\eepm16.c</name>
+      <outputs>
+        <tool>
+          <name>ICCAVR</name>
+          <file> 21</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 12</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 2 17</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\main.c</name>
+      <outputs>
+        <tool>
+          <name>ICCAVR</name>
+          <file> 6</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 18</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 16 2 17 1 19 20 11 14 15 9 7</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>[ROOT_NODE]</name>
+      <outputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 8</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Debug\Obj\sonic.pbd</name>
+      <inputs>
+        <tool>
+          <name>BILINK</name>
+          <file> 12 18 3</file>
+        </tool>
+      </inputs>
+    </file>
+    <forcedrebuild>
+      <name>[MULTI_TOOL]</name>
+      <tool>XLINK</tool>
+    </forcedrebuild>
+  </configuration>
+  <configuration>
+    <name>Release</name>
+    <outputs>
+      <file>$PROJ_DIR$\tim16.c</file>
+      <file>$TOOLKIT_DIR$\inc\intrinsics.h</file>
+      <file>$TOOLKIT_DIR$\inc\iom16.h</file>
+      <file>$PROJ_DIR$\Release\Exe\kichen_art_150114.hex</file>
+      <file>$PROJ_DIR$\eepm16.c</file>
+      <file>$PROJ_DIR$\main.c</file>
+      <file>$TOOLKIT_DIR$\lib\clib\cl1s-ec_mul.r90</file>
+      <file>$PROJ_DIR$\Release\Obj\eepm16.pbi</file>
+      <file>$PROJ_DIR$\Release\Obj\sonic.pbd</file>
+      <file>$PROJ_DIR$\Release\Obj\eepm8535.r90</file>
+      <file>$PROJ_DIR$\Release\Exe\pwm_time_SSSONIC.hex</file>
+      <file>$TOOLKIT_DIR$\src\template\cfg1soim.xcl</file>
+      <file>$PROJ_DIR$\Release\Obj\main.r90</file>
+      <file>$TOOLKIT_DIR$\inc\iom8535.h</file>
+      <file>$PROJ_DIR$\Release\Exe\HanKuk_WELDER_170620.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\kichen_art_150121.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\pwm_time.hex</file>
+      <file>$TOOLKIT_DIR$\src\template\cfgm8535.xcl</file>
+      <file>$PROJ_DIR$\Release\List\tim16.lst</file>
+      <file>$PROJ_DIR$\Release\Obj\eepm8535.pbi</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic.a90</file>
+      <file>$PROJ_DIR$\tim8535.h</file>
+      <file>$PROJ_DIR$\Release\List\main.lst</file>
+      <file>$PROJ_DIR$\Release\Exe\HANKUK_150121.hex</file>
+      <file>$PROJ_DIR$\init_time.c</file>
+      <file>$TOOLKIT_DIR$\lib\clib\cl3s-ec_mul-sf.r90</file>
+      <file>$PROJ_DIR$\tim8535.c</file>
+      <file>$TOOLKIT_DIR$\inc\clib\sysmac.h</file>
+      <file>$PROJ_DIR$\key.c</file>
+      <file>$PROJ_DIR$\error.c</file>
+      <file>$TOOLKIT_DIR$\inc\clib\string.h</file>
+      <file>$PROJ_DIR$\init_disp.c</file>
+      <file>$TOOLKIT_DIR$\inc\iomacro.h</file>
+      <file>$PROJ_DIR$\tim16.h</file>
+      <file>$PROJ_DIR$\init_adc.c</file>
+      <file>$PROJ_DIR$\Release\Exe\ULTRA_150430.hex</file>
+      <file>$PROJ_DIR$\Release\Obj\eepm16.r90</file>
+      <file>$PROJ_DIR$\Release\Exe\FULLOUTPUT_161226.hex</file>
+      <file>$TOOLKIT_DIR$\src\template\cfg3soim.xcl</file>
+      <file>$PROJ_DIR$\Release\Obj\tim8535.r90</file>
+      <file>$PROJ_DIR$\Release\Exe\DAELIM_170224.hex</file>
+      <file>$PROJ_DIR$\Release\Obj\tim16.r90</file>
+      <file>$PROJ_DIR$\eepm8535.c</file>
+      <file>$PROJ_DIR$\Release\List\eepm16.lst</file>
+      <file>$PROJ_DIR$\Release\Obj\tim16.pbi</file>
+      <file>$PROJ_DIR$\Release\Obj\tim8535.pbi</file>
+      <file>$PROJ_DIR$\Release\Exe\sonic.hex</file>
+      <file>$PROJ_DIR$\Release\Exe\pwm_time_ELSONIC.hex</file>
+      <file>$PROJ_DIR$\Release\Obj\main.pbi</file>
+      <file>$TOOLKIT_DIR$\src\template\cfgm16.xcl</file>
+    </outputs>
+    <file>
+      <name>$PROJ_DIR$\tim16.c</name>
+      <outputs>
+        <tool>
+          <name>ICCAVR</name>
+          <file> 41 18</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 44</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCAVR</name>
+          <file> 2 32 33</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 2 32 33</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\kichen_art_150114.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 49 38 36 12 41 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\eepm16.c</name>
+      <outputs>
+        <tool>
+          <name>ICCAVR</name>
+          <file> 36 43</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 7</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCAVR</name>
+          <file> 2 32</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 2 32</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\main.c</name>
+      <outputs>
+        <tool>
+          <name>ICCAVR</name>
+          <file> 12 22</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 48</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCAVR</name>
+          <file> 31 2 32 1 33 34 28 29 30 27 24</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 31 2 32 1 33 34 28 29 30 27 24</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>[ROOT_NODE]</name>
+      <outputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 10</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Obj\sonic.pbd</name>
+      <inputs>
+        <tool>
+          <name>BILINK</name>
+          <file> 7 48 44</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\pwm_time_SSSONIC.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 49 38 36 12 41 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\HanKuk_WELDER_170620.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 49 38 36 12 41 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\kichen_art_150121.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 49 38 36 12 41 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\pwm_time.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 49 38 36 12 41 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic.a90</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 17 11 12 6</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\HANKUK_150121.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 49 38 36 12 41 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\tim8535.c</name>
+      <outputs>
+        <tool>
+          <name>ICCAVR</name>
+          <file> 39</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 45</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCAVR</name>
+          <file> 13 32</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 13 32 21</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\ULTRA_150430.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 49 38 36 12 41 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\FULLOUTPUT_161226.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 49 38 36 12 41 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\DAELIM_170224.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 49 38 36 12 41 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\eepm8535.c</name>
+      <outputs>
+        <tool>
+          <name>ICCAVR</name>
+          <file> 9</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 19</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCAVR</name>
+          <file> 13 32</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 13 32</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\sonic.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 49 38 36 12 41 25</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Release\Exe\pwm_time_ELSONIC.hex</name>
+      <inputs>
+        <tool>
+          <name>XLINK</name>
+          <file> 49 38 36 12 41 25</file>
+        </tool>
+      </inputs>
+    </file>
+  </configuration>
+</project>
+
+

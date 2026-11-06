@@ -1,0 +1,40 @@
+
+This file describes fuse settings for ULTRASONIC controller
+
+Fuse High Byte: NEVER TOUCH THIS BYTE
+
+Bit Name  Bit No  Description                      Default                    Setting
+S8535C      7     Select AT90S8535 compatibility   1 (unprogrammed)           1 (unprogrammed)
+                  mode
+WDTON       6     WDT always on                    1 (unprogrammed,           1 (unprogrammed)
+                                                     WDT enabled by WDTCR)
+SPIEN(1)    5     Enable Serial Program and Data   0 (programmed, SPI prog.   0 (programmed
+                  Downloading                        enabled)
+CKOPT(2)    4     Oscillator options               1 (unprogrammed)           1 (unprogrammed)
+EESAVE      3     EEPROM memory is preserved       1 (unprogrammed,           1 (unprogrammed)
+                  through the Chip Erase             EEPROM not preserved)
+BOOTSZ1     2     Select Boot Size (see Table 93   0 (programmed)(3)          0 (programmed)(3)
+                  for details)
+BOOTSZ0     1     Select Boot Size (see Table 93   0 (programmed)(3)          0 (programmed)(3)
+                  for details)
+BOOTRST     0     Select Reset Vector              1 (unprogrammed)           1 (unprogrammed)
+
+Fuse High Byte:
+
+Bit Name  Bit No  Description                      Default                    Setting
+BODLEVEL    7     Brown out detector trigger       1 (unprogrammed)           1 (unprogrammed)
+                  level
+BODEN       6     Brown out detector enable        1 (unprogrammed, BOD       1 (unprogrammed)
+                                                     disabled)
+SUT1        5     Select start-up time             1 (unprogrammed)(1)
+SUT0        4     Select start-up time             0 (programmed)(1)
+CKSEL3      3     Select Clock source              0 (programmed)(2)
+CKSEL2      2     Select Clock source              0 (programmed)(2)
+CKSEL1      1     Select Clock source              0 (programmed)(2)
+CKSEL0      0     Select Clock source              1 (unprogrammed)(2)
+
+-- BODLEVEL: 1=2.7V, 0=4.0V --> 0으로 프로그램 하시오.
+-- BODEN                    --> 0으로 프로그램 하시오.
+
+SUT[1:0], CKSEL[3:0] --> 전부 1로 프로그램 하시오.
+
