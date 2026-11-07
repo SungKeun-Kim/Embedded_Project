@@ -67,7 +67,7 @@
 
 
 extern unsigned char Timer0_Value;
-extern unsigned char ucFreqNew,ucFreqOld;
+extern unsigned short ucFreqNew,ucFreqOld;
 
 
 typedef struct tagFlags{
@@ -89,4 +89,4 @@ typedef struct tagFlags{
 //extern ungIntrruptFlags;
 
 extern void frequency();
-extern void funInit_ext1();
+extern void funInit_ext1(void);

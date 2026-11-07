@@ -12,7 +12,7 @@ BURDEN_OHM = 120
 SAMPLE_RATE = 4000
 WINDOW = 800
 CURRENT_AVERAGE_WINDOWS = 5
-OVERCURRENT_LIMIT_CENTIAMP = 700
+OVERCURRENT_LIMIT_CENTIAMP = 800
 OVERCURRENT_HOLD_WINDOWS = 25
 
 
@@ -76,8 +76,40 @@ def test_overcurrent_uses_filtered_rms() -> None:
     noisy_normal = [1200 if i % 5 == 0 else 176 for i in range(100)]
     assert not overcurrent_trips(noisy_normal)
 
-    # 1초 평균값이 7 A 이상인 상태가 5초 지속되면 반드시 Trip한다.
+    # 1초 평균값이 8 A 이상인 상태가 5초 지속되면 반드시 Trip한다.
     assert overcurrent_trips([176] * 10 + [800] * 35)
+
+    # 경계값: 7.99 A는 정지하지 않고, 8.00 A도 5초 미만이면 정지하지 않는다.
+    assert not overcurrent_trips([799] * 100)
+    assert not overcurrent_trips([800] * 24)
+    assert overcurrent_trips([800] * 25)
+    # 이전 7 A 상한은 해제하고, 평균값이 상한 아래로 떨어지면 누적을 초기화한다.
+    assert not overcurrent_trips([700] * 100)
+    assert not overcurrent_trips([800] * 24 + [700] * 5 + [800] * 24)
+
+
+
+def test_transducer_detection_time() -> None:
+    # 2.5초 설정을 200 ms 주기로 올림: 2.4초에는 유지, 2.6초에 정지한다.
+    def trips(samples: list[tuple[int, int]]) -> bool:
+        consecutive = 0
+        for output_01pct, peak_counts in samples:
+            if output_01pct >= 500 and peak_counts < 50:
+                consecutive += 1
+            else:
+                consecutive = 0
+            if consecutive >= 13:
+                return True
+        return False
+
+    assert not trips([(500, 49)] * 12)
+    assert trips([(500, 49)] * 13)
+    assert not trips([(499, 0)] * 20)  # 출력 50% 미만
+    assert not trips([(500, 50)] * 20)  # 신호 기준값 이상
+    assert not trips([(500, 0)] * 12 + [(500, 50)] + [(500, 0)] * 12)
+    assert not trips([(500, 0)] * 12 + [(499, 0)] + [(500, 0)] * 12)
+    # START 후 Soft Start의 50% 미만 구간은 무신호 시간에 포함하지 않는다.
+    assert not trips([(0, 0), (200, 0), (400, 0)] + [(500, 0)] * 12)
 
 
 def test_phase_wrap() -> None:
@@ -132,6 +164,12 @@ def test_source_wiring_and_safety_guards() -> None:
     assert "AUTO_TUNE_OUTPUT_01PCT 480U" in params
     assert "CT_CURRENT_CALIBRATION_PERMILLE 1000U" in params
     assert "CT_CURRENT_AVERAGE_WINDOWS 5U" in params
+    assert "CT_ADC_SAMPLE_RATE_HZ 4000U" in params
+    assert "CT_RMS_WINDOW_SAMPLES 800U" in params
+    assert "TRANSDUCER_SIGNAL_LOSS_HOLD_MS 2500U" in params
+    assert "CT_ADC_SAMPLE_RATE_HZ) - 1U)" in params  # 정수 나눗셈 올림
+    assert "CT_OVERCURRENT_LIMIT_CENTIAMP 800U" in params
+    assert "CT_OVERCURRENT_HOLD_MS 5000U" in params
     assert "ADC_Control_GetCurrentWindowCentiAmp()" in tune
     assert "s_scan_direction = (int8_t)-s_scan_direction" in tune
     assert "ADC_Control_GetCurrentCentiAmp() >=" in ctrl
@@ -149,6 +187,7 @@ def test_source_wiring_and_safety_guards() -> None:
 if __name__ == "__main__":
     test_rms_and_current_conversion()
     test_overcurrent_uses_filtered_rms()
+    test_transducer_detection_time()
     test_phase_wrap()
     test_direction_search_reaches_parabola_minimum()
     test_source_wiring_and_safety_guards()

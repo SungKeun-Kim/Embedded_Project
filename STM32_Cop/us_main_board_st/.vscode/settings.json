@@ -1,12 +1,22 @@
 {
   "cmake.cmakePath": "cube-cmake",
-  "cmake.configurePreset": "vscode-debug",
-  "cmake.buildPreset": "vscode-debug",
-  "cmake.configureOnOpen": true,
-  "cmake.preferredGenerators": ["Ninja"],
+  "cmake.generator": "Ninja",
+  "cmake.buildDirectory": "${workspaceFolder}\\build",
+  "cmake.configureOnOpen": false,
+  "cmake.environment": {
+    "ARM_TOOLCHAIN_PATH": "C:\\ST\\STM32CubeIDE_2.2.0\\STM32CubeIDE\\plugins\\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740\\tools",
+    "PATH": "C:\\ST\\STM32CubeIDE_2.2.0\\STM32CubeIDE\\plugins\\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740\\tools\\bin;C:\\ST\\STM32CubeIDE_2.2.0\\STM32CubeIDE\\plugins\\com.st.stm32cube.ide.mcu.externaltools.ninja.win32_1.1.200.202606260906\\tools\\bin;${env:PATH}"
+  },
+  "cmake.configureSettings": {
+    "CMAKE_BUILD_TYPE": "Debug",
+    "CUBE_G4_FIRMWARE_DIR": "C:\\Users\\user\\STM32Cube\\Repository\\STM32Cube_FW_G4_V1.6.2",
+    "PYTHON_EXE": "C:\\Users\\user\\AppData\\Local\\Programs\\Python\\Python314\\python.exe"
+  },
+  "C_Cpp.default.compilerPath": "C:\\ST\\STM32CubeIDE_2.2.0\\STM32CubeIDE\\plugins\\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740\\tools\\bin\\arm-none-eabi-gcc.exe",
+  "C_Cpp.default.compileCommands": "${workspaceFolder}\\build\\compile_commands.json",
   "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
-  "C_Cpp.default.compileCommands": "${workspaceFolder}/build/vscode-debug/compile_commands.json",
   "cmake.configureArgs": ["-DCMAKE_COMMAND=cube-cmake"],
+  "cmake.preferredGenerators": ["Ninja"],
   "stm32cube-ide-clangd.path": "cube",
   "stm32cube-ide-clangd.arguments": [
     "starm-clangd",

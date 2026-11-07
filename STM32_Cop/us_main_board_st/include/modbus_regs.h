@@ -17,8 +17,8 @@ extern "C" {
    ================================================================ */
 #define REG_ADDR_FREQUENCY_VALUE     0x0000
 #define REG_ADDR_OUTPUT_VALUE        0x0001
-#define REG_ADDR_DISPLAY_RANGE       0x0002
-#define REG_ADDR_SWEEP_FREQUENCY     0x0003
+#define REG_ADDR_DISPLAY_OUTPUT      0x0002 /* Read-only: LCD 표시 숫자, W 또는 % */
+#define REG_ADDR_MEASURED_CURRENT    0x0003 /* Read-only: CT 실측 전류, 0.01 A */
 #define REG_ADDR_LOCAL_INPUT_LOCK    0x0004
 #define REG_ADDR_RUN_STATUS          0x0005
 #define REG_ADDR_EXTERNAL_INPUT      0x0006

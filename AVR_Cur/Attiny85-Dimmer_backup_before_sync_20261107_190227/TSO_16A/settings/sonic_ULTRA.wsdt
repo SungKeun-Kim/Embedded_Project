@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<Workspace>
+  <ConfigDictionary>
+    
+  <CurrentConfigs><Project>sonic/Release</Project></CurrentConfigs></ConfigDictionary>
+  <Desktop>
+    <Static>
+      <Workspace>
+        <ColumnWidths>
+          
+          
+          
+          
+        <Column0>270</Column0><Column1>15</Column1><Column2>11</Column2><Column3>14677140</Column3></ColumnWidths>
+      </Workspace>
+      <Build>
+        
+        
+        
+        
+      <ColumnWidth0>20</ColumnWidth0><ColumnWidth1>1396</ColumnWidth1><ColumnWidth2>372</ColumnWidth2><ColumnWidth3>93</ColumnWidth3></Build>
+    <Find-in-Files><ColumnWidth0>664</ColumnWidth0><ColumnWidth1>94</ColumnWidth1><ColumnWidth2>1138</ColumnWidth2></Find-in-Files><SourceBrowser/></Static>
+    <Windows>
+      
+      
+    <Wnd0>
+        <Tabs>
+          <Tab>
+            <Identity>TabID-14023-24772</Identity>
+            <TabName>Workspace</TabName>
+            <Factory>Workspace</Factory>
+            <Session>
+              
+            <NodeDict><ExpandedNode>sonic</ExpandedNode><ExpandedNode>sonic/eepm16.c</ExpandedNode><ExpandedNode>sonic/eepm16.c/Output</ExpandedNode><ExpandedNode>sonic/main.c</ExpandedNode><ExpandedNode>sonic/tim16.c</ExpandedNode></NodeDict></Session>
+          </Tab>
+        <Tab><Identity>TabID-15224-32449</Identity><TabName>Source Browser</TabName><Factory>SourceBrowser</Factory><Session><TypeFilter>2147483647</TypeFilter><FileFilter>1</FileFilter></Session></Tab></Tabs>
+        
+      <SelectedTab>0</SelectedTab></Wnd0><Wnd1>
+        <Tabs>
+          <Tab>
+            <Identity>TabID-30188-25901</Identity>
+            <TabName>Build</TabName>
+            <Factory>Build</Factory>
+            <Session/>
+          </Tab>
+        <Tab><Identity>TabID-3946-15902</Identity><TabName>Find in Files</TabName><Factory>Find-in-Files</Factory><Session/></Tab><Tab><Identity>TabID-12088-32508</Identity><TabName>Breakpoints</TabName><Factory>Breakpoints</Factory></Tab></Tabs>
+        
+      <SelectedTab>1</SelectedTab></Wnd1></Windows>
+    <Editor>
+      
+      
+      
+      
+    <Pane><Tab><Factory>TextEditor</Factory><Filename>E:\01_AllData\06_Micom\2_AVR\TSO_16A\main.c</Filename><XPos>0</XPos><YPos>275</YPos><SelStart>731</SelStart><SelEnd>731</SelEnd></Tab><ActiveTab>0</ActiveTab><Tab><Factory>TextEditor</Factory><Filename>C:\Program Files (x86)\IAR Systems\Embedded Workbench 5.0 Evaluation\avr\inc\iom16.h</Filename><XPos>0</XPos><YPos>5</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>E:\01_AllData\06_Micom\2_AVR\TSO_16A\init_time.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>227</SelStart><SelEnd>227</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>C:\Program Files (x86)\IAR Systems\Embedded Workbench 5.0 Evaluation\avr\inc\intrinsics.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>E:\01_AllData\06_Micom\2_AVR\TSO_16A\tim16.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>E:\01_AllData\06_Micom\2_AVR\TSO_16A\tim16.h</Filename><XPos>0</XPos><YPos>145</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>C:\Program Files (x86)\IAR Systems\Embedded Workbench 5.0 Evaluation\avr\inc\clib\sysmac.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>C:\Program Files (x86)\IAR Systems\Embedded Workbench 5.0 Evaluation\avr\inc\clib\string.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>C:\Program Files (x86)\IAR Systems\Embedded Workbench 5.0 Evaluation\avr\inc\iomacro.h</Filename><XPos>0</XPos><YPos>645</YPos><SelStart>55537</SelStart><SelEnd>55537</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>E:\01_AllData\06_Micom\2_AVR\TSO_16A\key.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>E:\01_AllData\06_Micom\2_AVR\TSO_16A\error.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>E:\01_AllData\06_Micom\2_AVR\TSO_16A\init_adc.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>596</SelStart><SelEnd>596</SelEnd></Tab></Pane><ActivePane>0</ActivePane><Sizes><Pane><X>1000000</X><Y>1000000</Y></Pane></Sizes><SplitMode>1</SplitMode></Editor>
+    <Positions>
+      
+      
+      
+      
+      
+    <Top><Row0><Sizes><Toolbar-046804a8><key>iaridepm.enu1</key></Toolbar-046804a8></Sizes></Row0></Top><Left><Row0><Sizes><Wnd0><Rect><Top>-2</Top><Left>-2</Left><Bottom>732</Bottom><Right>316</Right><x>-2</x><y>-2</y><xscreen>297</xscreen><yscreen>316</yscreen><sizeHorzCX>167986</sizeHorzCX><sizeHorzCY>342362</sizeHorzCY><sizeVertCX>179864</sizeVertCX><sizeVertCY>795233</sizeVertCY></Rect></Wnd0></Sizes></Row0></Left><Right><Row0><Sizes/></Row0></Right><Bottom><Row0><Sizes><Wnd1><Rect><Top>-2</Top><Left>-2</Left><Bottom>146</Bottom><Right>1770</Right><x>-2</x><y>-2</y><xscreen>1772</xscreen><yscreen>148</yscreen><sizeHorzCX>1002262</sizeHorzCX><sizeHorzCY>160347</sizeHorzCY><sizeVertCX>167986</sizeVertCX><sizeVertCY>342362</sizeVertCY></Rect></Wnd1></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
+  </Desktop>
+</Workspace>
+
+

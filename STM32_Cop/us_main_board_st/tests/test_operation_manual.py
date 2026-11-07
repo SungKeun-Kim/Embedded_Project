@@ -3,6 +3,7 @@
 
 from pathlib import Path
 import sys
+import re
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -152,6 +153,23 @@ check("s_pwm_vr_sample_tick" in adc and
 check("GetStablePowerPercent" in screen and
       "PL_DISPLAY_HYSTERESIS_01PCT" in screen,
       "LCD PL 표시 히스테리시스 누락")
+# PLC가 자주 읽어도 LCD 표시 필터가 더 빨리 갱신되면 안 된다.
+display_getter = re.search(
+    r"uint16_t MenuScreen_GetDisplayedOutput\(void\)\s*\{([^}]+)\}", screen
+)
+check(display_getter is not None and
+      display_getter[1].strip() == "return s_displayed_output;",
+      "PLC 읽기가 표시 필터/화면 갱신을 변경하거나 현재 표시값을 반환하지 않음")
+check('s_displayed_output = power;' in screen and
+      's_displayed_output = watts;' in screen and
+      's_displayed_output = s_power_display_percent;' in screen,
+      "W/%/VR 미리보기 중 LCD에 출력한 숫자와 PLC 값의 연결 누락")
+refresh = screen.split("void MenuScreen_Refresh(void)", 1)[1].split(
+    "static void RenderMain(void)", 1)[0]
+check("s_displayed_output = 0U;" in refresh and
+      refresh.index("s_displayed_output = 0U;") <
+      refresh.index("if (g_us_state.error_active)"),
+      "대기/설정/오류 화면에 이전 운전 표시값이 남을 수 있음")
 check("MapCommandToOutputPercent" in screen and
       "PWM_OUTPUT_DUTY_MIN" in screen and
       "PWM_OUTPUT_DUTY_MAX" in screen,
@@ -163,9 +181,10 @@ check("g_us_state.running ? g_us_state.target_freq : 0U" in screen,
 check("effective_duty * elapsed" in ctrl and
       "SOFT_START_DURATION_MS" in ctrl,
       "볼륨 목표값까지 선형 소프트 스타트 처리 누락")
-check("if (!g_us_state.running)" in ctrl and
-      "g_us_state.current_duty = EffectiveTargetDuty();" in ctrl,
-      "정지 상태 Local/PLC 출력의 PA7 즉시 반영 누락")
+# 정지 상태의 설정 변경은 목표값만 저장한다. PA7 재출력은 별도 차단 시험에서 검증.
+check("정지 상태에도 현재 Local/PLC 지령을 PA7" not in ctrl and
+      "대기 중에는 다음 Start의 목표값만 보관" in ctrl,
+      "정지 중 출력 지령 저장/실제 출력 차단 계약 불일치")
 check('status = "485 ON"' in screen,
       "Modbus RUN 중 485 ON 표시 누락")
 check('"RDY/SWP 485 COMM" : "RDY/    485 COMM"' in screen,

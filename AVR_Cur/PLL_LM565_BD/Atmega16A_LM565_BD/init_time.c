@@ -1,9 +1,10 @@
 
 
-char tick;
-unsigned delay_int;
-char delay_done;
-unsigned char error_count,ucFreqcnt,ucRxDATA;
+volatile unsigned char tick;
+volatile unsigned delay_int;
+volatile char delay_done;
+unsigned char error_count,ucFreqcnt;
+volatile unsigned char ucRxDATA;
 
 
 //=====================================================================
@@ -11,9 +12,7 @@ unsigned char error_count,ucFreqcnt,ucRxDATA;
 __interrupt void int0_interrupt(void)
 {
 
-   __disable_interrupt();
    f_data++;         //주파수 저장   //
-   __enable_interrupt();
 }
 //====================================
 void init_ext0()
@@ -52,12 +51,11 @@ __interrupt void TIMER0_COMP_interrupt(void)
    if(f_cnt>=100){      // frequency count //
       tick = 1;
       ready_notice_tick();
+      tuning_key_tick(!autotunkeyTest, auto_tun_flag && !ucPortdFlag && RemoteKeyTest && !ErrorFlag);
       f_cnt=0;
       t0_cnt++;
-      __disable_interrupt();
       f_data2 = f_data;
      f_data=0;
-      __enable_interrupt();
    }
 
    // delay_ms() function interface
@@ -128,18 +126,11 @@ void funPutString(unsigned char *st)
 #pragma vector=USART_RXC_vect
 __interrupt void USART_RX_Complet(void)
 {
-    unsigned char status, data;
-    __disable_interrupt();
-
-    status = UCSRA;
-    data = UDR;
-    if (!(status & ((1 << FE) | (1 << DOR) | (1 << PE))) &&
-        (data == ATMEGA8_BOOT_NOTICE || data == ATMEGA8_STATUS_REPLY ||
-         data == ATMEGA8_UPLOAD_NOTICE)) {
-       ready_notice_receive(data);
-    } else {
-       ucRxDATA = data;
-    }
-
-    __enable_interrupt();
+   unsigned char status = UCSRA;
+   unsigned char data = UDR;
+   if (status & ((1 << FE) | (1 << DOR) | (1 << PE))) return;
+   if (data == ATMEGA8_BOOT_NOTICE || data == ATMEGA8_STATUS_REPLY || data == ATMEGA8_UPLOAD_NOTICE)
+      ready_notice_receive(data);
+   else if (data == 0x12 || data == ATMEGA8_CONTROL_FAULT ||
+            (ucRxDATA != 0x12 && ucRxDATA != ATMEGA8_CONTROL_FAULT)) ucRxDATA = data;
 }

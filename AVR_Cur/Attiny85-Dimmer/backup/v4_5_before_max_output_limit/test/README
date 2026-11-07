@@ -1,0 +1,88 @@
+v4.5 검증 재실행 안내
+==================
+
+2026-10-16 노트북 이전 점검:
+  프로젝트 루트에서 powershell -NoProfile -ExecutionPolicy Bypass -File .\build-field.ps1 -Clean
+  명령으로 빌드와 새 ELF의 ISR 시간 검사를 재실행할 수 있다.
+  아래 MSYS2/simavr 경로는 이전 PC 기준이다. 노트북의 도구 누락 및 시험 범위는
+  ../노트북_이전점검_20261016.md를 참고한다. 기존 test_timing.exe는 소스 변경을 반영하지 않는다.
+
+1. 펌웨어 빌드
+
+프로젝트 루트에서:
+  pio run
+
+이번 환경은 설치된 PlatformIO 폴더의 쓰기가 제한되어 필요한 패키지를
+프로젝트 .pio/core에 복사하여 빌드했다. 이 경우 PowerShell에서:
+  $env:PLATFORMIO_CORE_DIR = "$PWD\.pio\core"
+  & C:\Users\USER\.platformio\penv\Scripts\python.exe -m platformio run
+
+라이브러리/툴체인 설치나 보드 업로드는 시험의 일부가 아니다.
+
+2. 실제 소스 기반 호스트 회귀 시험
+
+C++17 지원 g++가 필요하다. 이번 PC의 PowerShell 명령:
+  $env:PATH = 'C:\msys64\ucrt64\bin;' + $env:PATH
+  g++ -std=c++17 -O2 -Wall -Wextra -Werror -Itest/host test/test_timing.cpp -o .pio/test_timing.exe
+  .pio/test_timing.exe
+
+test/host는 AVR 레지스터/Arduino 함수의 시험용 대역이다.
+src/main.cpp를 직접 포함하여 논리를 실행하며, 전기적 특성이나 명령 시간을 모사하지 않는다.
+전원 안정화 전/경계의 샘플 제외, 8회 동기화, 단축된 반주기의 종료 여유,
+타이밍, 노이즈, OFF, 주기 변경, 타이머 순환 등을 검증한다.
+
+3. AVR 명령 시간 확인
+
+avr-objdump 및 Python 3이 필요하다. 이번 PC의 PowerShell 명령:
+  $avrTools = '.pio/core/packages/toolchain-atmelavr/bin'
+  & "$avrTools/avr-objdump.exe" -d .pio/build/attiny85/firmware.elf | Set-Content -Encoding utf8 .pio/build/attiny85/firmware.disasm
+  python test/check_avr_timing.py .pio/build/attiny85/firmware.disasm
+
+ISR 분기와 원자 구간의 최장 경로를 계산한다.
+지원하지 않는 명령/루프/호출이 추가되면 실패하여 수동 검토를 요구한다.
+코드가 바뀐 뒤 이전 disasm 파일로 검사하지 않도록 반드시 다시 생성한다.
+
+4. AVR 바이너리 통합 시험 (선택: simavr 라이브러리 필요)
+
+이번 PC에는 PlatformIO tool-simavr 1.10700.0이 설치되어 있다.
+PowerShell 명령:
+  $simavrPath = 'C:/Users/USER/.platformio/packages/tool-simavr'
+  & "$avrTools/avr-objcopy.exe" -O binary .pio/build/attiny85/firmware.elf .pio/build/attiny85/firmware.bin
+  g++ -std=c++17 -O2 -Wall -Wextra -Werror "-I$simavrPath/include/simavr" test/simavr_timing.cpp "-L$simavrPath/lib" -lsimavr -lws2_32 -o .pio/simavr_timing.exe
+  .pio/simavr_timing.exe .pio/build/attiny85/firmware.bin
+
+50/60Hz × CPU6.8/8.0/9.2MHz × 최대/최소 출력 × 검출폭3종의36조합을 실행한다.
+검출폭은50us/100us/긴 펄스이며 긴 펄스는60Hz=2ms,50Hz=2.4ms다.
+호스트 시험에도 폭/주기/출력60조합과 과도한 폭/고착/복구를 추가했다.
+OFF 상태로 부팅 후2초 시점에 START,4초에 STOP,4.1초에 재START한다.
+각 START에서 첫 게이트35ms 미만/요구 위상 도달220ms 미만을 확인한다.
+호스트 시험도24가지 START 시점/주파수/클럭에서 볼륨 변경과 OFF 응답을 확인한다.
+펌웨어를 실제 AVR명령으로 실행하며, 각7초 모사 후
+마지막1초의 펄스 개수, 점화 위상과 펄스 폭을 확인한다.
+
+중요한 시뮬레이터 제한:
+- 배포된 simavr의 tiny85 Timer1 모델에는 CTC1/OCR1C 모드가 누락되어 있다.
+  그대로 실행하면200클럭 대신2048클럭 주기로 잘못 모사한다.
+- 시험 코드에서 OCR1A=OCR1C인 현재 설정에 한해 CTC TOP을OCR1A로 연결한다.
+  MCU에 업로드하는 소스/바이너리는 수정하지 않는다.
+- 따라서 이 시험은 실제 Timer1 주변장치 설정에 대한 독립 검증이 아니다.
+- BIN만 로딩하며 ELF로더는 호출 시 시험을 중단한다. Windows libelf는 필요 없다.
+- 옵토커플러, RC스트레치, 트라이악 전류, 전원 노이즈는 모사하지 않는다.
+
+5. 배포 HEX 갱신
+
+검증 후에만 빌드 산출물을 프로젝트 루트에 복사한다:
+  Copy-Item .pio/build/attiny85/firmware.hex firmware.hex
+  Get-FileHash .pio/build/attiny85/firmware.hex,firmware.hex -Algorithm SHA256
+
+두 SHA256이 같아야 한다. 이전 버전은 backup/pre_50_60hz/에 있다.
+보드 검증 기준은 50Hz_60Hz_검증가이드.md를 따른다.
+
+추가 v4.4: ADC1023→61→1023 양방향 변화 시험으로50/60Hz ON/OFF 경계와 ON 범위의 연속 펄스를 검사한다.
+이 시험은 실제 부하의 저출력 무반응/급상승 현상 해결을 검증하지 않는다.
+
+v4.5 추가: 기존ON 기준899 및 저출력 위상308 복원 비교,176개 위상의 가변 펄스 폭과 최소4틱 여유 검사.
+단축된 다음 반주기+2틱 지터의 종료 여유 검사는 유지한다.
+AVR 바이너리 기존36조합에4390mV(ADC약898) ON 확인6조합을 더해42조합이다.
+펄스폭은 전체 범위에서500/600us 고정이 아니며,최저출력에서150/200us 예시다.
+실제 부하전류와 점화 성공 여부는 시뮬레이션 범위 밖이다.

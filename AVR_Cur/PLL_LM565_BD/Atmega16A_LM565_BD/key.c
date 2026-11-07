@@ -49,45 +49,17 @@ void sonic_off(void)
 //===========================================
 unsigned char auto_tun_flag;
 
-void funStSpKey_chk()      //
+void funStSpKey_chk()
 {
-   //
-   if(autotunkeyTest==0)
-   {
-//       if(!RemoteKeyTest){
-       if(auto_tun_flag){
-         if(ucPortdFlag==0){
-         if(tick == 1)uctuning_cut++;
-         if(uctuning_cut>=10){
-           if(SELKeyTest){              //
-               funPutChar(0x17);        //11-> 17 단계 별 지냉 삭제 로 변경 //
-               auto_tun_flag=0;         //tuning
-           }else{
-               funPutChar(0x17);
-               auto_tun_flag=0;         //tuning
-           }
-           uctuning_cut=0;
-         }
-//       }
-         }
-       }
-   }else{
-       if(auto_tun_flag==0){
-           if(SELKeyTest){
-               PWM_STEP_CNT++;              //단계별로 진행 을 활성화 하려면 여기를 지우고 위 를 17을 11로
-               if(PWM_STEP_CNT>=255){       //
-                 pl_disp_te();              //
-                 PWM_STEP_CNT=0;            //
-               }                            //
-           }else{
-               PWM_STEP_CNT++;
-               if(PWM_STEP_CNT>=255){
-                 pl_disp_te();
-                 PWM_STEP_CNT=0;
-               }
-           }
-       }
-       uctuning_cut=0;
+   unsigned char requested, saved = SREG;
+   __disable_interrupt();
+   requested = tuning_key_take();
+   SREG = saved;
+   if (requested && !autotunkeyTest && auto_tun_flag && !ucPortdFlag && RemoteKeyTest && !ErrorFlag) {
+      /* 튜닝 중 출력 설정을 고정한다. 압력/출력 변화와 위상 효과의 혼동을 줄인다. */
+      ready_notice_cancel();
+      auto_tun_flag = 0;
+      funPutChar(0x17);
    }
 }
 

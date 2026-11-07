@@ -14,54 +14,40 @@
 #pragma vector=INT1_vect
 __interrupt void int1_interrupt(void)
 {
-
-    _CLI();
-    f_data++;
-    _SEI();
-    ADC_DATA=0;
-    bit_set(PORTD,5);
-    DELAY_10US;
-    DELAY_1US;
-    bit_clear(PORTD,5);
-    ADC_DATA=funADC_Read();  //202008
-    t0_cnt++;
-    if(t0_cnt>150){t0_cnt=0;t2_cnt++;}
+   /* 에지 ISR에서는 계수만 한다. ADC 대기와 중첩 인터럽트를 제거했다. */
+   if (f_data != 65535U) ++f_data;
 }
 
-void funInit_ext1()
+void funInit_ext1(void)
 {
-  GICR |= 0x80;        //int1 enable
-  INT1_RISING_EDGE;//202008
+   INT1_RISING_EDGE;
+   GICR |= 0x80;
 }
 
-
-#pragma vector=TIMER0_OVF_vect                  //Make 100uS Step Interrupt
+#pragma vector=TIMER0_OVF_vect
 __interrupt void Timer0_OverFlow(void)
 {
-    TCNT0 = TIMER_RELOAD;
-    ready_notice_tick();
-//    _CLI();
-    f_cnt++;       //주파수 계산 변수 //test
-
-     if(f_cnt>=50){      // frequency count //
-        f_cnt=0;
-      //  t0_cnt++;
-        __disable_interrupt();
-       f_data2 = f_data;
-       f_data=0;
-     //
-        __enable_interrupt();
-     }
-      
-   //  if(t0_cnt>5){t0_cnt=0;t2_cnt=1;}
-     // delay_ms() function interface
- //    if (delay_int) {
- //       delay_int--;
- //       if (!delay_int) delay_done = 1;
- //    }
-	
-//     _SEI();
-
+   unsigned short value;
+   TCNT0 = TIMER_RELOAD;
+   ++pll_ticks;
+   ready_notice_tick();
+   if (++f_cnt >= 50) {
+      f_cnt = 0;
+      f_data2 = f_data;
+      f_data = 0;
+   }
+   if (ADCSR & (1 << ADIF)) {
+      value = ADC;
+      ADCSR |= (1 << ADIF);
+      ADC_DATA = value;
+      if (pll_active && value > PLL_ADC_TRIP) ucError_flag = 1;
+      if (adc_samples < PLL_SAMPLE_COUNT) {
+         adc_sum += value;
+         if (value < adc_minimum) adc_minimum = value;
+         if (value > adc_maximum) adc_maximum = value;
+         ++adc_samples;
+      }
+   }
 }
 
 /*
@@ -140,20 +126,12 @@ __interrupt void ADC_Complet(void)
 #pragma vector=USART_RXC_vect
 __interrupt void USART_RX_Complet(void)
 {
-    unsigned char status, data;
-    _CLI();
-
-    status = UCSRA;
-    data = UDR;
-    if (!(status & ((1 << FE) | (1 << DOR) | (1 << PE))) &&
-        (data == ATMEGA8_BOOT_ACK || data == ATMEGA8_STATUS_REQUEST ||
-         data == ATMEGA8_UPLOAD_ACK)) {
-       ready_notice_receive(data);
-    } else {
-       ucRxDATA = data;
-    }
-
-    _SEI();
+   unsigned char status = UCSRA;
+   unsigned char data = UDR;
+   if (status & ((1 << FE) | (1 << DOR) | (1 << PE))) return;
+   if (data == ATMEGA8_BOOT_ACK || data == ATMEGA8_STATUS_REQUEST || data == ATMEGA8_UPLOAD_ACK)
+      ready_notice_receive(data);
+   else if (data == 0x29 || ucRxDATA != 0x29) ucRxDATA = data;
 }
 
 #pragma vector=USART_TXC_vect

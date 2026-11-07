@@ -13,16 +13,17 @@
 unsigned filter[FILTER_SIZE];
 unsigned filtered;
 char filter_ptr;
-unsigned char ucFreqNew,ucFreqOld;
+unsigned short ucFreqNew,ucFreqOld;
 
 
 void frequency()
 {
    unsigned f_data3;
+   unsigned char saved = SREG;
 
    __disable_interrupt();
    f_data3 = f_data2;
-   __enable_interrupt();
+   SREG = saved;
 
  //  filtered = filtered - filter[filter_ptr] + f_data3;
  //  filter[filter_ptr] = f_data3;

@@ -150,7 +150,7 @@ unsigned t0_cnt=0;
 
 char f_cnt;
 
-unsigned f_data,f_data2;
+volatile unsigned f_data,f_data2;
 
 #define LCD_WIDTH    16
 
@@ -200,6 +200,7 @@ void disp_error();
 void init_ext0();
 void frequency();
 void error_chk();
+void control_error(unsigned char tuning);
 void disp_error2();
 //void sweep_process();
 void init_timer1();

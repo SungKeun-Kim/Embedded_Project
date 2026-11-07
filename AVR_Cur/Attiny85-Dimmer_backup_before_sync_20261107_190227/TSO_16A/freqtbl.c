@@ -1,0 +1,48 @@
+
+#define _FREQ_    11059200
+#define PRESCALE  64
+#define T1_FREQ_DIV2 (_FREQ_/PRESCALE/2)
+
+const unsigned freq_table[35] = {
+      T1_FREQ_DIV2/20,
+      T1_FREQ_DIV2/25,
+      T1_FREQ_DIV2/30,
+      T1_FREQ_DIV2/35,
+      T1_FREQ_DIV2/40,
+
+      T1_FREQ_DIV2/45,
+      T1_FREQ_DIV2/50,
+      T1_FREQ_DIV2/55,
+      T1_FREQ_DIV2/60,
+      T1_FREQ_DIV2/65,
+
+      T1_FREQ_DIV2/70,
+      T1_FREQ_DIV2/75,
+      T1_FREQ_DIV2/80,
+      T1_FREQ_DIV2/85,
+      T1_FREQ_DIV2/90,
+
+      T1_FREQ_DIV2/95,
+      T1_FREQ_DIV2/100,
+      T1_FREQ_DIV2/105,
+      T1_FREQ_DIV2/110,
+      T1_FREQ_DIV2/115,
+
+      T1_FREQ_DIV2/120,
+      T1_FREQ_DIV2/125,
+      T1_FREQ_DIV2/130,
+      T1_FREQ_DIV2/135,
+      T1_FREQ_DIV2/140,
+
+      T1_FREQ_DIV2/145,
+      T1_FREQ_DIV2/150,
+      T1_FREQ_DIV2/155,
+      T1_FREQ_DIV2/160,
+      T1_FREQ_DIV2/165,
+
+      T1_FREQ_DIV2/170,
+      T1_FREQ_DIV2/175,
+      T1_FREQ_DIV2/180,
+      T1_FREQ_DIV2/185,
+      T1_FREQ_DIV2/190,
+   };

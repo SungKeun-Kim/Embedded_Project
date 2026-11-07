@@ -93,7 +93,7 @@ for name, address in register_definitions:
     check(address.upper() in public_guide.upper(), f"배포 가이드에 {name} {address} 누락")
 
 check("Firmware | v1.2.0" in public_guide, "배포 가이드 Firmware 버전 불일치")
-check("문서 버전 | 1.3" in public_guide, "PLC 사용자 가이드 문서 버전이 1.3이 아님")
+check("문서 버전 | 1.5" in public_guide, "PLC 사용자 가이드 문서 버전이 1.5가 아님")
 check("기본값 |" not in public_guide or "9600" in public_guide,
       "배포 가이드 기본 Baud 누락")
 check("`0x0010~0x0012`" in public_guide and "쓸 수는 없다" in public_guide,
@@ -104,8 +104,8 @@ check("REG_ADDR_FREQUENCY_VALUE     0x0000" in reg_header,
       "발진 주파수 읽기 주소 불일치")
 check("REG_ADDR_OUTPUT_VALUE        0x0001" in reg_header,
       "기존 Protocol 출력 주소 불일치")
-check("REG_ADDR_DISPLAY_RANGE       0x0002" in reg_header,
-      "표시 출력 범위 주소 불일치")
+check("REG_ADDR_DISPLAY_OUTPUT      0x0002" in reg_header,
+      "LCD 현재 출력 표시값 주소 불일치")
 check("REG_ADDR_ERROR_CODE          0x0009" in reg_header and
       "REG_ADDR_RUN_SWITCH_STATUS   0x000A" in reg_header and
       "REG_ADDR_COMM_CONTROL_READY  0x000B" in reg_header,
@@ -159,11 +159,43 @@ check("return MODBUS_REG_OK;" in lock_validation and
 check("Modbus_IsCommunicationActive" in rtu and
       "MODBUS_COMM_DISPLAY_HOLD_MS" in rtu,
       "정상 RS485 Frame 통신 표시 Timer 누락")
-check("Menu_GetPowerRangeWatts" in regs,
-      "DISPLAY_OUTPUT_RANGE에 Supervisor 전력 범위 반영 누락")
+check("MenuScreen_GetDisplayedOutput()" in regs and
+      "Menu_GetPowerRangeWatts" not in regs,
+      "40003이 LCD 표시값 대신 Supervisor 최대 범위를 반환함")
 read_impl = regs.split("bool ModbusRegs_Read", 1)[1].split(
     "ModbusRegResult_t ModbusRegs_ValidateWrite", 1
 )[0]
+# 40004는 설정 지령/주파수 대신 LCD와 같은 CT 실측 전류를 제공해야 한다.
+check("REG_ADDR_MEASURED_CURRENT    0x0003" in reg_header,
+      "40004 실측 전류 주소 불일치")
+check("REG_ADDR_SWEEP_FREQUENCY" not in reg_header + regs,
+      "40004에 이전 Sweep 주파수 정의가 남아 있음")
+current_read = re.search(
+    r"case REG_ADDR_MEASURED_CURRENT:(.*?)break;", read_impl, re.S
+)
+check(current_read is not None, "실측 전류 읽기 경로 누락")
+if current_read:
+    current_body = re.sub(r"/\*.*?\*/", "", current_read[1], flags=re.S).strip()
+    check(current_body == "*value = ADC_Control_GetCurrentCentiAmp();",
+          "실측 전류가 배율 중복 또는 RUN/Sweep/Lock 조건으로 변형됨")
+check("ADC_Control_GetCurrentCentiAmp()" in screen,
+      "PLC와 LCD의 전류 계측 기준 불일치")
+read_only_body = validate_body.split("case REG_ADDR_FREQUENCY_VALUE:", 1)[1]
+check("case REG_ADDR_DISPLAY_OUTPUT:" in read_only_body and
+      "case REG_ADDR_DISPLAY_OUTPUT:" not in write_impl,
+      "40003 LCD 표시값 쓰기 거부 정책 누락")
+check("40003 | `DISPLAY_OUTPUT_VALUE` | R | W 또는 %" in public_guide,
+      "40003 LCD 표시값의 공개 사양 누락")
+check("case REG_ADDR_MEASURED_CURRENT:" in read_only_body and
+      "return MODBUS_REG_ILLEGAL_ADDRESS;" in read_only_body and
+      "case REG_ADDR_MEASURED_CURRENT:" not in write_impl,
+      "실측 전류 쓰기 거부 정책 누락")
+check("*value = g_us_state.output_command;" in read_impl and
+      "UltrasonicCtrl_SetOutputCommand(value);" in write_impl,
+      "기존 출력 지령 읽기/쓰기 경로 변경됨")
+check("40004 | `MEASURED_CURRENT` | R | 0.01 A" in public_guide and
+      "523 = 5.23 A" in public_guide and "정지 시 강제로 0" in public_guide,
+      "PLC 가이드에 실측 전류 주소/단위/정지 시 동작 누락")
 check("case REG_ADDR_SWEEP_STATUS:" in read_impl and
       "Menu_IsSweepActive()" in read_impl,
       "Sweep 상태가 물리 SWEEP_SW에서 읽히지 않음")
@@ -242,7 +274,7 @@ check("통신 단절 Watchdog이 없다" in public_guide,
 check("TRANSDUCER ERROR" in public_guide and
       "OVER CURRENT" in public_guide and
       "1초 평균 RMS 전류" in public_guide and
-      "7.00A" in public_guide and "약 5초" in public_guide,
+      "8.00A" in public_guide and "약 5초" in public_guide,
       "배포 가이드에 보호 조건과 상세 Error 코드 설명 누락")
 check("PLC 운전 Sequence" in public_guide and
       "Stop → Lock 해제" in public_guide,
@@ -311,6 +343,9 @@ def modbus_crc(frame: bytes) -> int:
 
 # 배포 가이드 Raw Frame CRC 재검증
 for frame_hex in (
+    "01 03 00 02 00 01 25 CA",
+    "01 03 00 03 00 01 74 0A",
+    "01 03 02 02 0B F8 E3",
     "01 03 00 10 00 03 04 0E",
     "01 03 00 00 00 0C 45 CF",
     "01 06 00 04 FF 00 89 FB",
@@ -335,3 +370,5 @@ print("[PASS] Modbus 설정 계약 테스트")
 print("  Slave ID=1, 9600 bps, 8-E-1")
 print("  Flash settings page=0x0800F800 (Bank 1, 2 KB)")
 print("  Baud table=9600/19200/38400/57600/115200")
+print("  40004=CT measured current (0.01 A), read-only; 40002 unchanged")
+print("  40003=LCD displayed output (W or %), read-only")

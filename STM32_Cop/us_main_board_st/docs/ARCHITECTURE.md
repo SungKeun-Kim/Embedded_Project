@@ -93,13 +93,24 @@ ultrasonic_ctrl이 호출하는 함수:
     - 출력 중 software update 금지: 진행 중인 PWM 주기를 자르지 않음
 
   UltrasonicPWM_SetDuty(uint16_t duty_01pct)
-    - 내부에서 CCR 계산: ccr = (arr * duty_01pct) / 1000
-    - 안전 클램핑: ccr ≤ (arr * DUTY_CLAMP_MAX) / 1000
-    - 반환값 없음, 즉시 TIM1->CCR1 반영
+    - 운전 중 내부 0~90% 지령을 PA7의 5~100%로 변환하여 TIM3->CCR2 반영
+    - 정지/초기화 실패 상태에서는 지령과 무관하게 PA7 LOW 유지
+    - 정지 중 PB1/PLC 지령은 상위 제어에서 다음 Start 목표값으로만 저장
 
   UltrasonicPWM_Start() / Stop()
-    - Start: HRTIM Timer A count 및 TA1/TA2 output enable
-    - Stop: TA1/TA2 output disable 후 Timer A count 정지
+    - Start: HRTIM 시작 성공 후 PA7 5%, SONIC_ON HIGH; 성공 여부 bool 반환
+    - 실패: 전체 차단, 상위에서 OUTPUT ERROR latch 설정
+    - Stop: SONIC_ON LOW → PA7 forced inactive/CCR2=0 → HRTIM 출력/카운터 정지
+    - HRTIM 정지는 HAL lock과 무관하게 ODISR/MCR에 직접 적용
+    - PA7 채널은 활성 상태로 LOW를 구동하여 Hi-Z를 피함
+
+  UltrasonicPWM_StopNormal()
+    - 일반 Stop/운전시간 만료 전용; 상위에서 Sweep ISR 정지 후 호출
+    - PA7 LOW → Timer A rollover 검출 직후 TA1/TA2 IDLE LOW → 200 us → Stop()
+    - 경계 검출 동안만 IRQ 비활성, DWT 기준 100 us timeout 및 유한 반복 제한
+    - 늦은 경계 검출/시간 기준 미준비/ISR 호출 등은 즉시 Stop()으로 전환
+    - 200 us는 현장 시험 시작값. GDT/게이트 실측으로 효과 확인 필요
+    - EmergencyStop, 오류 Reset, 시작 실패는 이 경로를 사용하지 않음
 
   UltrasonicPWM_GetARR()
     - 현재 HRTIM Timer A period 값 반환 (검증용)
@@ -170,7 +181,7 @@ ModbusRegs_Write() 내부에서:
 ModbusRegs_Read() 내부에서:
   REG 0x0000 읽기 → g_us_state.current_freq 반환
   REG 0x0001 읽기 → Output command 0~500 반환
-  REG 0x0002 읽기 → 표시 출력 범위 100 반환
+  REG 0x0002 읽기 → LCD 현재 출력 표시 숫자(W 또는 %) 반환
   REG 0x0003~0x0008 읽기 → Sweep/Local/Run/외부입력/Error 상태
   REG 0x000C~0x000E 읽기 → 설정 중심주파수/Sweep 폭/Sweep 속도
   REG 0x0010~0x0012 읽기 → 현재 Slave ID/Baud index/고정 Even 반환

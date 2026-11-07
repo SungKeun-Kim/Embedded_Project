@@ -12,6 +12,7 @@
  */
 
 #include "selftest.h"
+#include "config.h"
 #include "params.h"
 #include "stm32g4xx_hal.h"
 #include "ultrasonic_ctrl.h"
@@ -28,6 +29,9 @@
  * 반환값: ×0.1 kHz (예: 280 = 28.0 kHz)
  */
 static uint16_t ReadbackFrequency(void) {
+  if (hhrtim1.Instance == NULL) {
+    return 0U;
+  }
   uint32_t period =
       hhrtim1.Instance->sTimerxRegs[HRTIM_TIMERINDEX_TIMER_A].PERxR;
   if (period == 0)
@@ -48,6 +52,9 @@ static uint16_t ReadbackFrequency(void) {
  * 반환값: ×0.1 % (예: 450 = 45.0%)
  */
 static uint16_t ReadbackPwmOutputDuty(void) {
+  if (htim3_phase.Instance == NULL) {
+    return 0U;
+  }
   uint32_t period = __HAL_TIM_GET_AUTORELOAD(&htim3_phase) + 1U;
   uint32_t ccr = __HAL_TIM_GET_COMPARE(&htim3_phase, TIM_CHANNEL_2);
   if (period == 0)
@@ -72,9 +79,24 @@ static uint16_t PwmOutputDutyFromInternal(uint16_t duty_01pct) {
  * @brief HRTIM Timer A 두 출력 Enable 상태 읽기
  */
 static bool ReadbackOutputsEnabled(void) {
+  if (hhrtim1.Instance == NULL) {
+    return false;
+  }
   uint32_t enabled = hhrtim1.Instance->sCommonRegs.OENR &
                      (HRTIM_OENR_TA1OEN | HRTIM_OENR_TA2OEN);
   return enabled == (HRTIM_OENR_TA1OEN | HRTIM_OENR_TA2OEN);
+}
+
+static bool CheckOutputState(void) {
+  if (g_us_state.running) {
+    return ReadbackOutputsEnabled() &&
+           HAL_GPIO_ReadPin(SONIC_ON_PORT, SONIC_ON_PIN) == GPIO_PIN_SET;
+  }
+  /* 정지 시에는 한 채널만 남아 있는 경우도 이상으로 검출한다. */
+  return (hhrtim1.Instance == NULL ||
+          (hhrtim1.Instance->sCommonRegs.OENR &
+           (HRTIM_OENR_TA1OEN | HRTIM_OENR_TA2OEN)) == 0U) &&
+         HAL_GPIO_ReadPin(SONIC_ON_PORT, SONIC_ON_PIN) == GPIO_PIN_RESET;
 }
 
 /* ── 검증 함수 구현 ── */
@@ -97,8 +119,22 @@ bool SelfTest_CheckFrequency(void) {
 }
 
 bool SelfTest_CheckDuty(void) {
-  if (!g_us_state.running)
-    return true;
+  if (!g_us_state.running) {
+    return ReadbackPwmOutputDuty() == 0U &&
+           (htim3_phase.Instance == NULL ||
+            (htim3_phase.Instance->CCMR1 &
+             (TIM_CCMR1_OC2M | TIM_CCMR1_OC2M_3)) ==
+                (TIM_OCMODE_FORCED_INACTIVE << 8U));
+  }
+
+  /* Pulse OFF의 실제 0%는 운전 최소 지령 5%와 구분한다. */
+  if (g_us_state.mode == MODE_PULSE && !g_us_state.soft_starting &&
+      g_us_state.current_duty == 0U && htim3_phase.Instance != NULL &&
+      (htim3_phase.Instance->CCMR1 &
+       (TIM_CCMR1_OC2M | TIM_CCMR1_OC2M_3)) ==
+          (TIM_OCMODE_FORCED_INACTIVE << 8U)) {
+    return ReadbackPwmOutputDuty() == 0U;
+  }
 
   uint16_t sw_duty = PwmOutputDutyFromInternal(g_us_state.current_duty);
   uint16_t hw_duty = ReadbackPwmOutputDuty();
@@ -129,12 +165,9 @@ bool SelfTest_CheckSafetyLimits(void) {
   }
 
   /* 3) 출력 상태 일관성 — running이면 TA1/TA2가 모두 Enable */
-  bool outputs_enabled = ReadbackOutputsEnabled();
-  if (g_us_state.running && !outputs_enabled) {
-    return false; /* 소프트웨어는 동작 중이라 하는데 출력이 꺼져 있음 */
-  }
-  if (!g_us_state.running && outputs_enabled) {
-    return false; /* 소프트웨어는 멈췄다 하는데 출력이 켜져 있음 */
+  if (!CheckOutputState() ||
+      (!g_us_state.running && !SelfTest_CheckDuty())) {
+    return false;
   }
 
   return true;
@@ -144,8 +177,9 @@ uint8_t SelfTest_RunAll(void) {
   uint8_t result = SELFTEST_OK;
 
   /* PER=0 먼저 체크 (역산 불가능) */
-  if (hhrtim1.Instance->sTimerxRegs[HRTIM_TIMERINDEX_TIMER_A].PERxR == 0 &&
-      g_us_state.running) {
+  if (g_us_state.running &&
+      (hhrtim1.Instance == NULL ||
+       hhrtim1.Instance->sTimerxRegs[HRTIM_TIMERINDEX_TIMER_A].PERxR == 0U)) {
     return SELFTEST_ARR_ZERO;
   }
 
@@ -170,9 +204,7 @@ uint8_t SelfTest_RunAll(void) {
     }
   }
 
-  bool outputs_enabled = ReadbackOutputsEnabled();
-  if ((g_us_state.running && !outputs_enabled) ||
-      (!g_us_state.running && outputs_enabled)) {
+  if (!CheckOutputState()) {
     result |= SELFTEST_MOE_ANOMALY;
   }
 

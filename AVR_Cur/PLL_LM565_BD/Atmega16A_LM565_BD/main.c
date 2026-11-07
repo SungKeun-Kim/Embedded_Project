@@ -2,6 +2,7 @@
 #include "ready_notice.h"
 #include "init_disp.c"
 #include "init_adc.c"
+#include "tuning_key.c"
 #include "key.c"
 #include "error.c"
 #include "init_time.c"
@@ -110,7 +111,8 @@ void process_buzzer(void)
 
 void main()
 {
-    unsigned char ucImoc2;
+    unsigned char tick_now, command, saved, tune_seen = 0;
+    unsigned short tune_ticks = 0;
 
    init_port();
    init_timer0();
@@ -143,65 +145,39 @@ void main()
 
    while(1)
    {
-     if(auto_tun_flag){
-       if(tick == 1){//17.12
-         funKey_scan();
-         ready_notice_poll();
-         tick = 0;
-         adc_process(0);      //chann0번을 ad해서 ad_data[0]에 저장 //
-  //     adc_process(1);      //          "        //
-         adc_process(2);      //       "        // ad_data[2]
+      saved = SREG;
+      __disable_interrupt();
+      tick_now = tick;
+      tick = 0;
+      command = ucRxDATA;
+      ucRxDATA = 0;
+      SREG = saved;
+      if (command == 0x12 || command == ATMEGA8_CONTROL_FAULT) control_error(1);
+
+      if (tick_now) {
+         /* 튜닝 중에도 같은 과전류 검사 경로를 실행한다. */
+         adc_process(0);
+         adc_process(2);
+         if (adc_fault) control_error(0);
          error_chk();
-       }
-     }
-
-     if(ErrorFlag)while(1);
-     funKey_scan();       //run key scan //
-     ready_notice_process();
-
-     if(ucRxDATA==0x12){
-         ucRxDATA=0x19;
-         display(0,1);
-         delay_ms(100);      //error out
-         delay_ms(100);
-         delay_ms(100);
-         delay_ms(100);
-         delay_ms(100);
-     }
-
-     if(ucRxDATA==0x13){
-         display(0,2);
-         OCR2=0x8c; //55%  //55=0x8c, 65=0xa6,  75=0xc0, 100=f9 //PWM 60%=0x9a, 70%=0xb3,  80%=0xcc, 90%=0xe6  ,100%=0xfd
-         ucRxDATA=0;
-     }
-     if(ucRxDATA==0x14){
-         display(0,3);
-         OCR2=0xa6; //65%
-         ucRxDATA=0;
-     }
-     if(ucRxDATA==0x15){
-         display(0,6);
-         OCR2=0xc0; //75%
-         ucRxDATA=0;
-     }
-     if(ucRxDATA==0x16){
-         display(0,7);
-         OCR2=0xfd; //100%
-         ucRxDATA=0;
-     }
-
-     if(ucRxDATA==0x17){
-         display(0,8);
-         ucRxDATA=0;
-     }
-
-     if(ucRxDATA==0x19){
-
-        ResetInit();      //end
-        auto_tun_flag=1;
-        disp_start();
-        ucRxDATA=0;
-        OCR2=77;    //30% pwm
-     }
+         ready_notice_poll();
+         if (!auto_tun_flag) {
+            ++tune_ticks;
+            if ((!tune_seen && tune_ticks >= 20) || tune_ticks >= 700) control_error(1);
+         } else { tune_ticks = 0; tune_seen = 0; }
+      }
+      if (ErrorFlag) {
+         ready_notice_process();
+         continue;
+      }
+      if (!auto_tun_flag) {
+         if (command == 0x17) { tune_seen = 1; display(0,8); }
+         if (command == 0x19 && tune_seen) {
+            ResetInit();
+            disp_start();
+         }
+      }
+      funKey_scan();
+      ready_notice_process();
    }
 }

@@ -4,7 +4,9 @@
 #include <avr/power.h>
 #include <util/atomic.h>
 
-// AC 조광기 v4.5: 기존 저출력 위상 범위/ON 임계 복원, 낮은 출력에서 게이트 폭 제한.
+// AC 조광기 v4.11 현장시험: v4.5 입력 곡선 유지, 최대출력 점화만 153기준틱으로 제한.
+// 사용자 요청으로 v4.10(155)보다2기준틱 이르게 점화. 보정2 유지.
+// 50/60Hz 모두 실측 반주기 비례 적용. 변경/시험 범위는 v4_11_153틱_수정.md 참고.
 // ATtiny85, 내부 RC 8MHz, 저항 + EL354N 제로크로스 검출
 // PB0(5번): MOC3021, PB1(6번): 디버그, PB2(7번): ZC, PB3(2번): ADC3
 // 퓨즈: E2/DF/FF. DF는 BOD 비활성화이며 2.7V BOD 설정이 아니다.
@@ -28,7 +30,8 @@ const uint8_t ZC_WIDTH_DIVISOR = 4;         // ZC HIGH 허용 상한: 실측 반
 // 기존 60Hz 실측 설정에서 최대/최소 출력 경계에 추가 여유를 둔다. 작은 지연 = 큰 출력.
 // offset, 게이트 폭, 경계 여유까지 모두 측정 반주기에 비례한다.
 const uint16_t ZC_PERIOD_REF = 332;
-const uint16_t MIN_DIM_BASE = 133;          // 최대 출력: v4.3의136에서 3틱 단축, 최초128보다 5틱 여유
+const uint16_t MIN_DIM_BASE = 153;          // v4.10보다2기준틱 이르게, v4.5보다20기준틱 늦게 점화
+const uint16_t INPUT_MIN_DIM_BASE = 133;    // v4.5 입력 곡선 유지. 계산 후153보다 이른 점화만 제한
 const uint8_t ZC_OFFSET_BASE = 2;           // 기존 50us 시험 보정에 해당
 const uint8_t TRIGGER_PULSE_BASE = 20;      // 기본 폭: 60Hz 약500us, 50Hz 약600us. 낮은 출력에서는 단축
 const uint8_t END_GUARD_BASE = 16;          // 종료 여유: 60Hz 약400us / 50Hz 약480us (최초2보다 확보)
@@ -45,6 +48,7 @@ const int ADC_OFF = 900;                    // 약 4.4V 이상: OFF
 const int ADC_ON = ADC_OFF - 1;             // 기존처럼900 미만에서 ON. 추가한890 진입 문턱 제거
 
 static_assert(MIN_DIM_BASE < MAX_DIM_BASE, "Invalid phase limits");
+static_assert(INPUT_MIN_DIM_BASE <= MIN_DIM_BASE, "Output cap must not advance firing");
 static_assert(MAX_DIM_BASE + ZC_OFFSET_BASE + END_GUARD_BASE < ZC_PERIOD_REF,
               "No room for low-output gate pulse");
 static_assert(MIN_PULSE_BASE >= 6, "Low-output gate pulse is too short");
@@ -278,10 +282,12 @@ static void updateInput(int potValue) {
     return;
   }
 
-  if (potValue <= ADC_MIN) targetPhase = MIN_DIM_BASE;
+  if (potValue <= ADC_MIN) targetPhase = INPUT_MIN_DIM_BASE;
   else if (potValue >= ADC_MAX) targetPhase = MAX_DIM_BASE;
-  else targetPhase = MIN_DIM_BASE + (uint32_t)(potValue - ADC_MIN)
-                * (MAX_DIM_BASE - MIN_DIM_BASE) / (ADC_MAX - ADC_MIN);
+  else targetPhase = INPUT_MIN_DIM_BASE + (uint32_t)(potValue - ADC_MIN)
+                * (MAX_DIM_BASE - INPUT_MIN_DIM_BASE) / (ADC_MAX - ADC_MIN);
+  // 상단만 제한하여 v4.5의 저출력/중출력 입력 관계를 유지한다.
+  if (targetPhase < MIN_DIM_BASE) targetPhase = MIN_DIM_BASE;
 }
 
 void loop() {

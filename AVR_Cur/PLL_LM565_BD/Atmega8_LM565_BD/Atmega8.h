@@ -1,3 +1,4 @@
+#include "../pll_control_config.h"
 //#include "Slave.h"
 #include <iom8.h>
 
@@ -159,9 +160,14 @@
 #define TIMER_RELOAD       0xb0//62->fe
 
 
-extern unsigned short ADC_DATA;
-extern unsigned char f_cnt,f_data,f_data2,t0_cnt,t2_cnt;
-extern unsigned char ucOrgpt,ucRxDATA,ucTxDATA,ucError_flag;
+extern volatile unsigned short ADC_DATA;
+extern volatile unsigned char f_cnt,t0_cnt,t2_cnt;
+extern volatile unsigned short f_data,f_data2,pll_ticks;
+extern volatile unsigned short adc_samples,adc_minimum,adc_maximum;
+extern volatile unsigned long adc_sum;
+extern volatile unsigned char pll_active;
+extern unsigned char ucOrgpt,ucTxDATA;
+extern volatile unsigned char ucRxDATA,ucError_flag;
 
 extern void funAtmega8_PortInit(void);
 extern void funAtmega8_UartInit(void);
@@ -175,7 +181,7 @@ extern void funAtmega8_Timer1Init(void);
 extern void funAtmega8_Timer2Init(void);
 extern void funAtmega8_Init(void);
 
-extern void TWI_data( unsigned char data);
+extern unsigned char TWI_data(unsigned char data);
 extern void TWI_init_master (void);
 extern void funAtmega8_Timer0Init(void);
 

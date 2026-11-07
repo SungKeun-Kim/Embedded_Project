@@ -181,20 +181,19 @@ if(PYTHON_EXE)
         COMMENT "=== CubeProgrammer 양산용 Factory HEX 생성 ==="
     )
 
-    if(CMAKE_BUILD_TYPE STREQUAL "Release")
-        # 디버그 이미지가 현장 배포용 production HEX를 덮어쓰지 않게 한다.
-        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E make_directory
-                "${CMAKE_CURRENT_SOURCE_DIR}/production"
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${PROJECT_NAME}.hex"
-                "${CMAKE_CURRENT_SOURCE_DIR}/production/US_MAIN_BOARD_UPDATE_V${PROJECT_VERSION}.hex"
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${PROJECT_NAME}_factory.hex"
-                "${CMAKE_CURRENT_SOURCE_DIR}/production/US_MAIN_BOARD_FACTORY_V${PROJECT_VERSION}.hex"
-            COMMENT "=== CubeProgrammer UPDATE/FACTORY HEX 배포 ==="
-        )
-    endif()
+    # CubeProgrammer 배포 파일을 production 폴더에 항상 최신 상태로 복사한다.
+    # UPDATE는 설정 Page를 제외하고, FACTORY는 출하 기본 설정을 포함한다.
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory
+            "${CMAKE_CURRENT_SOURCE_DIR}/production"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${PROJECT_NAME}.hex"
+            "${CMAKE_CURRENT_SOURCE_DIR}/production/US_MAIN_BOARD_UPDATE_V${PROJECT_VERSION}.hex"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${PROJECT_NAME}_factory.hex"
+            "${CMAKE_CURRENT_SOURCE_DIR}/production/US_MAIN_BOARD_FACTORY_V${PROJECT_VERSION}.hex"
+        COMMENT "=== CubeProgrammer UPDATE/FACTORY HEX 배포 ==="
+    )
 endif()
 
 # ---------- 커스텀 타겟: Flash 업로드 (ST-Link) ----------
@@ -228,6 +227,8 @@ if(PYTHON_EXE)
         COMMAND ${PYTHON_EXE} -X utf8 "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_buzzer_hrtim_sync.py"
         COMMAND ${PYTHON_EXE} -X utf8 "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_modbus_config.py"
         COMMAND ${PYTHON_EXE} -X utf8 "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_operation_manual.py"
+        COMMAND ${PYTHON_EXE} -X utf8 "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_output_shutdown.py"
+        COMMAND ${PYTHON_EXE} -X utf8 "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_gdt_stop.py"
         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
         COMMENT "=== 호스트 단위 테스트 실행 ==="
     )

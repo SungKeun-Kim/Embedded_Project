@@ -48,7 +48,9 @@ void cycles(unsigned period, unsigned count, bool noise = false, unsigned loopIn
             unsigned width = 3) {
   for (unsigned n = 0; n < count; ++n)
     for (unsigned p = 0; p < period; ++p)
-      tick(p < width || (noise && (p == 100 || p == 200 || p == period / 2)),
+      // 정상 연속 점화 시험의 노이즈는 점화 이전에 배치한다.
+      // 점화 순간 HIGH 차단은 noiseAtFiring()에서 따로 검증한다.
+      tick(p < width || (noise && (p == period / 8 || p == period / 4 || p == period / 3)),
            ticks % loopInterval == 0);
 }
 
@@ -95,6 +97,10 @@ void matrix() {
         auto initial = pulses.size();
         unsigned base = ticks;
         cycles(period, 100, true, 8);       // loop 처리가 200us 간격이어도 점화 가능
+        if (pulses.size() != initial + 100)
+          std::fprintf(stderr, "matrix mismatch: hz=%.1f clock=%.2f period=%u adc=%d phase=%u fire=%u pulses=%u\n",
+                       hz, clock, period, adc, unsigned(outputPhase), unsigned(fireAt),
+                       unsigned(pulses.size() - initial));
         assert(pulses.size() == initial + 100);
         for (unsigned n = 0; n < 100; ++n) {
           const auto &pulse = pulses[initial + n];
@@ -346,6 +352,58 @@ void legacyLowRange() {
   std::puts("PASS: same ADC low-range mapping within 2 reference ticks of legacy; 310->316 gate");
 }
 
+void maximumOutputCap() {
+  reset();
+  waitPower();
+  cycles(332, 10);
+  // 독립적인 v4.5 입력 곡선과 전체 ADC 범위를 비교한다.
+  // 하단 곡선은 동일하고, 최대출력만153으로 제한되어야 한다.
+  for (int adc = 0; adc <= 1023; ++adc) {
+    updateInput(adc);
+    if (adc >= 900) {
+      assert(inputOff && targetPhase == DIM_OFF && state == S_IDLE);
+      continue;
+    }
+    unsigned oldPhase = adc <= 61 ? 133 : adc >= 880 ? 308
+      : 133 + unsigned(adc - 61) * 175 / 819;
+    unsigned expected = oldPhase < 153 ? 153 : oldPhase;
+    assert(!inputOff && targetPhase == expected);
+    assert(targetPhase >= 153 && targetPhase <= 308);
+    if (oldPhase >= 153) assert(targetPhase == oldPhase);
+  }
+  // 실제 출력의 상한, 입력을 계속 높여도 점화가 앞당겨지지 않는지 확인.
+  for (unsigned period : {333u, 400u}) {
+    reset();
+    settle(period, 0);
+    assert(outputPhase == 153);
+    assert(fireAt == (period == 333 ? 155 : 187));
+    auto before = pulses.size();
+    cycles(period, 20);
+    assert(pulses.size() == before + 20);
+    for (unsigned n = before; n < pulses.size(); ++n)
+      assert(pulses[n].end - pulses[n].start == (period == 333 ? 20u : 24u));
+  }
+  std::puts("PASS: v4.11 cap153, all1024 ADC codes, v4.5 lower curve retained, 50/60Hz max gate");
+}
+
+void noiseAtFiring() {
+  // 과거 시험의 고정200틱 노이즈가140위상의 점화 순간과 겹쳤던468틱도 포함.
+  for (unsigned period : {333u, 400u, 468u}) {
+    reset();
+    settle(period, ADC_MIN);
+    auto before = pulses.size();
+    for (unsigned p = 0; p < period; ++p) {
+      bool noise = p > 3 && p == fireAt;
+      tick(p < 3 || noise);
+      if (noise) assert(state == S_IDLE && !gate);
+    }
+    assert(pulses.size() == before && synchronized);
+    cycles(period, 1);
+    assert(pulses.size() == before + 1);
+  }
+  std::puts("PASS: noise HIGH at firing cancels that half-cycle; next clean half-cycle recovers");
+}
+
 void pulseWidths() {
   unsigned cases = 0;
   for (unsigned period : {250u, 283u, 333u, 400u, 460u, 500u}) {
@@ -402,6 +460,8 @@ int main() {
   responseLatency();
   slowInputSweep();
   legacyLowRange();
+  maximumOutputCap();
+  noiseAtFiring();
   pulseWidths();
   std::puts("All timing regression tests passed.");
 }

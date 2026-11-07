@@ -2,7 +2,7 @@ unsigned char ocrdata_cnt,PWM_STEP,PWM_STEP_CNT,DISP_RUN;
 
 void init_adc()
 {
-   ADCSRA = 0x85;   //adc enable ,ck/32=345.6khz
+   ADCSRA = 0x87;   // 16 MHz / 128 = 125 kHz
 // ADMUX = 0x00;
 }
 
@@ -14,15 +14,23 @@ void init_adc()
 #define adc_start()     ADC_START = 1
 #define adc_complete()  ADC_EOC
 
+unsigned char adc_fault;
+
 void adc_process(char chan)
 {
-// byte i;
-   //REFS1 REFS0 ADLAR MUX4 MUX3 MUX2 MUX1 MUX0 = ADMUX//
-   ADMUX = (ADMUX & ~ADMUX_MASK) | (chan & ADMUX_MASK);  //ad pin select ..
-   adc_start();      //start flag set
-   while(!adc_complete());//AD 완료 확인 //
-
-   ad_data[chan] = ADC;
+   unsigned short limit;
+   unsigned char pass;
+   ADMUX = (ADMUX & ~ADMUX_MASK) | (chan & ADMUX_MASK);
+   /* 채널 변경 직후 첫 변환은 버리고, 새 변환 완료를 ADSC로 확인한다. */
+   for (pass = 0; pass < 2; ++pass) {
+      ADCSRA |= (1 << ADIF);
+      adc_start();
+      limit = 60000U;
+      while (ADCSRA & (1 << ADSC)) {
+         if (--limit == 0) { adc_fault = 1; return; }
+      }
+      ad_data[chan] = ADC;
+   }
 }
 
 unsigned char sonic_state;

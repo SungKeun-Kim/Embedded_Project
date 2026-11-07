@@ -38,6 +38,16 @@ echo Programmer: %PROGRAMMER%
 echo Firmware  : %FIRMWARE%
 echo.
 
+REM Writing 전에 초음파 출력을 정지하고 외부 시작 입력을 OFF로 둔다.
+echo 초음파 출력을 STOP하고 REMOTE 및 PLC RUN 명령을 OFF로 설정하세요.
+echo 업데이트 후 Reset/Run으로 MCU가 다시 실행됩니다.
+choice /C YN /N /M "Output stopped and external RUN off? [Y/N]: "
+if errorlevel 2 goto cancelled
+if errorlevel 1 goto output_stopped
+goto cancelled
+
+:output_stopped
+
 "%PROGRAMMER%" -c port=SWD mode=UR reset=HWrst freq=100 -d "%FIRMWARE%" -v -rst -run
 if errorlevel 1 goto failed
 
@@ -46,6 +56,11 @@ echo [PASS] Update, Verify, Reset and Run completed.
 echo 기존 주파수, Sweep, 통신 설정은 유지됩니다.
 pause
 exit /b 0
+
+:cancelled
+echo [CANCEL] 출력을 정지한 뒤 다시 실행하세요. Writing은 실행하지 않았습니다.
+pause
+exit /b 1
 
 :programmer_missing
 echo.

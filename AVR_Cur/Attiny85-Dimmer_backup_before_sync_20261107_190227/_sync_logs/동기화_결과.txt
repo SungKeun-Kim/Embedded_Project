@@ -1,0 +1,11 @@
+원본: \\Note2\01_data\03_Embedded_Proj\Attiny85-Dimmer
+대상: D:\01_AllData\06_Embedded_Proj\AVR_Cur\Attiny85-Dimmer
+백업: D:\01_AllData\06_Embedded_Proj\AVR_Cur\Attiny85-Dimmer_backup_before_sync_20261107_190227
+최신 버전: v4.11 (153 기준틱)
+SHA256 검증: 11,468개 파일 일치, 불일치 0개.
+기존 Git 이력은 보존하고 작업 파일만 반영함. Git 저장소 인식 정상 확인.
+원본 복사 제외: .git, Thumbs.db. 대상 전용 파일은 삭제하지 않고 보존.
+프로젝트 파일 비교(.pio 제외): 신규 188개, 변경 8개.
+상세 해시 비교: SHA256_verification.csv
+펌웨어 재빌드, 장치 업로드, Git 커밋은 수행하지 않음.
+

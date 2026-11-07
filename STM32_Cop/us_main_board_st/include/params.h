@@ -46,6 +46,11 @@ extern "C" {
 #define HRTIM_GDT_DEADTIME_HIGH_NS 800U
 #define HRTIM_GDT_DEADTIME_HIGH_COUNTS 136U
 
+/* 일반 STOP 전용 시험값: PA7은 즉시 차단하고 GDT 1차 0 V 상태를 잠시 유지.
+ * 200 us는 소자/트랜스 실측으로 확정할 값이며 Fault 정지에는 적용하지 않는다. */
+#define GDT_STOP_CLAMP_US 200U
+#define GDT_STOP_SYNC_TIMEOUT_US 100U /* 최저 15 kHz의 한 주기(66.7 us)보다 큼 */
+
 /* ================================================================
    초음파 주파수 (×0.1 kHz 단위)
    ================================================================ */
@@ -211,13 +216,15 @@ typedef enum {
 #define CT_CURRENT_RANGE_CENTIAMP 700U /* 정상 계측범위 0.00~7.00 A */
 
 /* 운전 보호: LCD와 동일한 1초 평균 RMS 전류와 PWM 출력 지령을 감시한다. */
-#define TRANSDUCER_SIGNAL_LOSS_HOLD_MS 1000U
+#define TRANSDUCER_SIGNAL_LOSS_HOLD_MS 2500U /* 출력 50% 이상에서 무신호 2.5초 */
 #define TRANSDUCER_CHECK_OUTPUT_01PCT 500U /* PA7 출력 50.0% 이상 */
 #define TRANSDUCER_MIN_PEAK_COUNTS 50U /* DC 중심 기준 약 40 mV 진폭 */
+/* 200 ms 계측 주기로 올림하여 설정 시간보다 짧게 감지하지 않는다. */
 #define TRANSDUCER_SIGNAL_LOSS_WINDOWS                                  \
-  (TRANSDUCER_SIGNAL_LOSS_HOLD_MS /                                    \
+  ((TRANSDUCER_SIGNAL_LOSS_HOLD_MS +                                   \
+    ((CT_RMS_WINDOW_SAMPLES * 1000U) / CT_ADC_SAMPLE_RATE_HZ) - 1U) /    \
    ((CT_RMS_WINDOW_SAMPLES * 1000U) / CT_ADC_SAMPLE_RATE_HZ))
-#define CT_OVERCURRENT_LIMIT_CENTIAMP 700U /* 7.00 A RMS */
+#define CT_OVERCURRENT_LIMIT_CENTIAMP 800U /* 8.00 A RMS */
 #define CT_OVERCURRENT_HOLD_MS 5000U
 #define CT_OVERCURRENT_WINDOWS                                          \
   (CT_OVERCURRENT_HOLD_MS /                                             \

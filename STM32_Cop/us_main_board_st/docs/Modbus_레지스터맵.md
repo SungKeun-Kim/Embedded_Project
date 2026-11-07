@@ -5,7 +5,7 @@
 | Firmware  | v1.2.0                                   |
 | 기준 문서 | 기존 `통신 Protocol.pdf`의 3번 명령 항목 |
 | 공개 문서 | `PLC_Modbus_RTU_사용자_가이드.md`        |
-| 갱신일    | 2026-10-08                               |
+| 갱신일    | 2026-10-16                               |
 
 ## 1. 설계 원칙
 
@@ -28,14 +28,14 @@
 | -------: | ----------------------- | :--: | --------------------------- | ----------------------------- |
 | `0x0000` | `FREQUENCY_VALUE`       |  R   | `g_us_state.current_freq`   | ×0.1 kHz                      |
 | `0x0001` | `OUTPUT_VALUE`          | R/W  | `g_us_state.output_command` | 0~500                         |
-| `0x0002` | `DISPLAY_OUTPUT_RANGE`  |  R   | Supervisor 표시 범위        | 100 또는 300~2500            |
-| `0x0003` | `SWEEP_FREQUENCY_VALUE` |  R   | Sweep 중 `current_freq`     | ×0.1 kHz, 미동작=0            |
+| `0x0002` | `DISPLAY_OUTPUT_VALUE`  |  R   | `MenuScreen_GetDisplayedOutput()` | LCD 현재 출력 숫자, W 또는 % |
+| `0x0003` | `MEASURED_CURRENT`      |  R   | `ADC_Control_GetCurrentCentiAmp()` | 0.01 A, PA6 CT 1초 평균 RMS |
 | `0x0004` | `LOCAL_INPUT_LOCK`      | R/W  | `s_local_input_locked`      | `0000/FF00`                   |
 | `0x0005` | `RUN_STATUS_CONTROL`    | R/W  | `g_us_state.running`        | `0000/FF00`                   |
 | `0x0006` | `EXTERNAL_INPUT_STATUS` |  R   | `REMOTE` Active LOW         | `0000/FF00`                   |
 | `0x0007` | `SWEEP_SWITCH_STATUS`   |  R   | PA12/SWEEP_SW               | `0000`=OFF, `FF00`=ON         |
 | `0x0008` | `ERROR_STATUS_RESET`    | R/W  | `error_active`              | Read status, True write reset |
-| `0x0009` | `ERROR_CODE`            |  R   | `error_code`                | 0=None, 1=Transducer, 2=Over current |
+| `0x0009` | `ERROR_CODE`            |  R   | `error_code`                | 0=None, 1=Transducer, 2=Over current, 3=Output |
 | `0x000A` | `RUN_SWITCH_STATUS`     |  R   | PA11/RUN_SW                 | `0000`=OFF, `FF00`=ON         |
 | `0x000B` | `COMM_CONTROL_READY`    |  R   | 통신 제어 허용 조건         | `0000/FF00`                   |
 | `0x000C` | `CENTER_FREQUENCY`      |  R   | 설정 중심주파수             | ×0.1 kHz                      |
@@ -51,8 +51,8 @@
 | --------: | ------------------- | -------: |
 |  `0x0100` | 발진 주파수         | `0x0000` |
 |  `0x0102` | 출력                | `0x0001` |
-|  `0x0103` | 표시 출력 범위      | `0x0002` |
-|  `0x0104` | Sweep 주파수        | `0x0003` |
+|  `0x0103` | LCD 현재 출력 표시값으로 변경 | `0x0002` |
+|  `0x0104` | Sweep 주파수 (폐지) | 대체: `0x0000` |
 |  `0x0200` | Local 입력 금지     | `0x0004` |
 |  `0x0201` | 출력 동작 상태      | `0x0005` |
 |  `0x0202` | 외부 입력 동작 상태 | `0x0006` |
@@ -60,6 +60,13 @@
 |  `0x0204` | Error 상태/Reset    | `0x0008` |
 
 ## 4. Write 정책
+
+40004(`0x0003`)는 2026-10-16부터 실측 전류 읽기 전용으로 사용한다.
+PA6 CT 입력 소비전류를 LCD와 동일한 1초 평균 RMS로 반환하며 200 ms마다
+갱신한다. 이미 A ×100 정수이므로 추가 배율을 적용하지 않는다(523 = 5.23 A).
+RUN/정지/Sweep/Lock 상태와 무관하게 최근 측정값을 반환하므로 정지 시에도
+평균값이 남거나 대기 소비전류가 읽힐 수 있다. FC06/FC10 쓰기는 Exception
+`0x02`로 거부한다. 기존 40002 출력 지령 읽기/쓰기는 변경하지 않는다.
 
 |           주소 | 허용 조건                              | 동작                 |
 | -------------: | -------------------------------------- | -------------------- |
@@ -107,8 +114,14 @@ Sweep 사용 여부는 본체의 `PA12/SWEEP_SW` 물리 스위치로만 선택�
 거부한다.
 
 `ERROR_STATUS_RESET`은 오류 유무와 Reset을 담당한다. 원인은 `ERROR_CODE`에서
-`0=None`, `1=TRANSDUCER ERROR`, `2=OVER CURRENT`로 구분한다. Reset은 출력 정지
+`0=None`, `1=TRANSDUCER ERROR`, `2=OVER CURRENT`, `3=OUTPUT ERROR`로 구분한다.
+코드 3은 출력 초기화/시작 실패이며 2026-10-14 정지 PWM 차단 수정본부터 추가됐다.
+Reset은 출력 정지
 상태에서 주소 `0x0008`에 `0xFF00`을 쓴다.
+
+정지 중 OUTPUT_VALUE/PB1/Local Lock 변경은 목표값만 저장하며 PA7은 0%(LOW)를
+유지한다. Error Reset만으로 PA7을 켜지 않는다. 다음 Start가 성공한 경우에만
+PA7의 운전 범위 5~100%를 적용한다.
 
 통신 Run은 `UltrasonicCtrl_StartUntimed()`를 사용한다. 따라서 보드에 저장된
 M/S/CONT 운전시간과 관계없이 `0x0005=False`, 비상 정지 또는 전원 차단 전까지
@@ -150,7 +163,9 @@ Lock이 False이므로 요청을 거부한다. PLC는 Lock을 별도 FC06으로 
   현재 PB1 위치를 먼저 인계한다. 이후 PB1을 약 5% 움직이면 수동으로 인계되어
   작은 변화도 연속 반영하고, PLC가 다시 쓰면 PLC 값이 우선된다. RUN OFF 뒤에도 최신 명령을
   유지하며, Lock 해제 시 최신 PB1 위치의 Local 출력으로 복귀한다.
-- `DISPLAY_OUTPUT_RANGE`는 PERCENT 설정이면 100, W 설정이면 300~2500을 반환한다.
+- `DISPLAY_OUTPUT_VALUE`는 LCD에 출력한 W 또는 % 숫자를 반환한다. Supervisor
+  최대 범위가 아니다. LCD의 반올림/안정화가 적용된 값을 읽으며 읽기로 표시
+  필터를 다시 실행하지 않는다. PL 표시가 없는 화면은 0, VR 미리보기는 해당 %다.
 - 통신 준비/OFF 화면에서는 출력 Level과 주파수를 숨기고, Modbus RUN ON 중에만
   `PL`과 주파수를 표시한다.
 - Transducer 신호 손실과 Over current 보호는 같은 Error latch를 사용하고,

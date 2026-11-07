@@ -12,9 +12,14 @@ TIM_HandleTypeDef htim3_phase;
 
 static volatile uint32_t s_period;
 static bool s_ready;
+static bool s_phase_ready;
+static bool s_stop_clock_ready;
 static volatile bool s_output_running;
 static uint16_t s_requested_deadtime_counts;
 static uint16_t s_applied_deadtime_counts;
+/* 디버거에서 일반 정지 경계 검출/즉시 차단 전환 횟수를 확인할 수 있다. */
+static volatile uint32_t s_gdt_stop_clamped_count;
+static volatile uint32_t s_gdt_stop_fallback_count;
 
 _Static_assert(HRTIM_GDT_DEADTIME_LOW_COUNTS <= 0x1FFU &&
                    HRTIM_GDT_DEADTIME_HIGH_COUNTS <= 0x1FFU,
@@ -26,11 +31,17 @@ _Static_assert((HRTIM_GDT_DEADTIME_LOW_COUNTS * 1000000000ULL) /
                            HRTIM_CLOCK_HZ ==
                        HRTIM_GDT_DEADTIME_HIGH_NS,
                "HRTIM dead-time ns/count constants must agree");
+_Static_assert(GDT_STOP_SYNC_TIMEOUT_US > 1000000U / (FREQ_MIN * 100U),
+               "Stop timeout must exceed the slowest PWM period");
+_Static_assert(GDT_STOP_CLAMP_US > 0U && GDT_STOP_CLAMP_US <= 1000U,
+               "Normal stop clamp must be bounded to at most 1 ms");
 
 static uint32_t FrequencyToPeriod(uint32_t frequency_hz);
 static void WriteFrequencyPeriod(uint32_t period);
 static uint16_t DeadTimeCountsForFrequency(uint16_t freq_01khz);
 static bool ApplyDeadTime(uint16_t deadtime_counts);
+static bool ClampAtPeriodBoundary(void);
+static void HoldGdtClamp(void);
 
 void UltrasonicPWM_Init(void) {
   HRTIM_TimeBaseCfgTypeDef timebase_cfg = {0};
@@ -39,8 +50,11 @@ void UltrasonicPWM_Init(void) {
   HRTIM_CompareCfgTypeDef compare_cfg = {0};
   HRTIM_OutputCfgTypeDef output_cfg = {0};
   TIM_OC_InitTypeDef phase_pwm_cfg = {0};
+  GPIO_InitTypeDef phase_gpio = {0};
 
   s_ready = false;
+  s_phase_ready = false;
+  s_stop_clock_ready = false;
   s_output_running = false;
   s_requested_deadtime_counts = HRTIM_GDT_DEADTIME_LOW_COUNTS;
   s_applied_deadtime_counts = 0U;
@@ -156,9 +170,8 @@ void UltrasonicPWM_Init(void) {
   }
 
   phase_pwm_cfg.OCMode = TIM_OCMODE_PWM1;
-  /* 부팅 직후에도 외부 제어기의 정지 지령인 5%를 유지한다. */
-  phase_pwm_cfg.Pulse =
-      (PHASE_PWM_PERIOD_COUNTS * PWM_OUTPUT_DUTY_MIN) / 1000U;
+  /* 명시적인 Start 전에는 PA7에 최소 5% 펄스도 내보내지 않는다. */
+  phase_pwm_cfg.Pulse = 0U;
   phase_pwm_cfg.OCPolarity = TIM_OCPOLARITY_HIGH;
   phase_pwm_cfg.OCFastMode = TIM_OCFAST_DISABLE;
   if (HAL_TIM_PWM_ConfigChannel(&htim3_phase, &phase_pwm_cfg, TIM_CHANNEL_2) !=
@@ -167,6 +180,25 @@ void UltrasonicPWM_Init(void) {
     return;
   }
 
+  s_phase_ready = true;
+  UltrasonicPWM_ForceControlOutputOff();
+  /* 타이머의 LOW 출력이 준비된 뒤에만 GPIO에서 AF로 넘긴다. */
+  phase_gpio.Pin = PHASE_PWM_PIN;
+  phase_gpio.Mode = GPIO_MODE_AF_PP;
+  phase_gpio.Pull = GPIO_PULLDOWN;
+  phase_gpio.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  phase_gpio.Alternate = GPIO_AF2_TIM3;
+  HAL_GPIO_Init(PHASE_PWM_PORT, &phase_gpio);
+
+  /* IRQ를 잠시 막아도 진행하는 cycle counter. SysTick/HAL_Delay에 의존하지 않는다. */
+  SET_BIT(CoreDebug->DEMCR, CoreDebug_DEMCR_TRCENA_Msk);
+  if ((DWT->CTRL & DWT_CTRL_NOCYCCNT_Msk) == 0U) {
+    SET_BIT(DWT->CTRL, DWT_CTRL_CYCCNTENA_Msk);
+    const uint32_t before = DWT->CYCCNT;
+    __DSB();
+    __ISB();
+    s_stop_clock_ready = DWT->CYCCNT != before;
+  }
   s_period = timebase_cfg.Period;
   s_ready = true;
 }
@@ -274,6 +306,11 @@ static void WriteFrequencyPeriod(uint32_t period) {
 }
 
 void UltrasonicPWM_SetDuty(uint16_t duty_01pct) {
+  /* 상위 지령이 갱신되어도 Stop 이후에는 PA7을 다시 켜지 않는다. */
+  if (!s_ready || !s_output_running) {
+    UltrasonicPWM_ForceControlOutputOff();
+    return;
+  }
   if (duty_01pct > DUTY_CLAMP_MAX)
     duty_01pct = DUTY_CLAMP_MAX;
 
@@ -289,42 +326,158 @@ void UltrasonicPWM_SetDuty(uint16_t duty_01pct) {
   uint32_t ccr = (PHASE_PWM_PERIOD_COUNTS * pwm_output_duty) / 1000U;
 
   __HAL_TIM_SET_COMPARE(&htim3_phase, TIM_CHANNEL_2, ccr);
+  if ((htim3_phase.Instance->CCMR1 & TIM_CCMR1_OC2M) !=
+      (TIM_OCMODE_PWM1 << 8U)) {
+    /* LOW 강제 해제 전에 새 CCR을 반영해 이전 듀티의 펄스를 방지한다. */
+    htim3_phase.Instance->EGR = TIM_EGR_UG;
+    MODIFY_REG(htim3_phase.Instance->CCMR1,
+               TIM_CCMR1_OC2M | TIM_CCMR1_OC2M_3,
+               TIM_OCMODE_PWM1 << 8U);
+  }
 }
 
 void UltrasonicPWM_ForceControlOutputOff(void) {
+  if (!s_phase_ready) {
+    return;
+  }
+  /* CCR preload의 다음 주기를 기다리지 않고 PA7을 즉시 LOW로 구동한다.
+   * 채널은 켜 두어 핀이 Hi-Z가 되지 않도록 한다. TIM3은 PA7 전용이다. */
+  MODIFY_REG(htim3_phase.Instance->CCMR1,
+             TIM_CCMR1_OC2M | TIM_CCMR1_OC2M_3,
+             TIM_OCMODE_FORCED_INACTIVE << 8U);
   __HAL_TIM_SET_COMPARE(&htim3_phase, TIM_CHANNEL_2, 0U);
+  htim3_phase.Instance->EGR = TIM_EGR_UG;
+  __DSB();
 }
 
-void UltrasonicPWM_Start(void) {
-  if (!s_ready)
-    return;
+bool UltrasonicPWM_Start(void) {
+  if (!s_ready) {
+    UltrasonicPWM_Stop();
+    return false;
+  }
+  if (s_output_running) {
+    return true;
+  }
 
   /* 출력이 정지된 상태에서 선택된 중심주파수 대역의 값을 확정한다. */
   if (s_requested_deadtime_counts != s_applied_deadtime_counts &&
       !ApplyDeadTime(s_requested_deadtime_counts)) {
-    return;
+    UltrasonicPWM_Stop();
+    return false;
   }
 
   /* 정지 중 적재한 PER/CMP1을 확정한 뒤 두 출력을 함께 시작한다. */
   SET_BIT(hhrtim1.Instance->sCommonRegs.CR2, HRTIM_TIMERUPDATE_A);
+  __HAL_HRTIM_SETCOUNTER(&hhrtim1, HRTIM_TIMERINDEX_TIMER_A, 0U);
   if (HAL_HRTIM_WaveformCountStart(&hhrtim1, HRTIM_TIMERID_TIMER_A) != HAL_OK) {
-    return;
+    UltrasonicPWM_Stop();
+    return false;
   }
   if (HAL_HRTIM_WaveformOutputStart(
           &hhrtim1, HRTIM_OUTPUT_TA1 | HRTIM_OUTPUT_TA2) != HAL_OK) {
-    (void)HAL_HRTIM_WaveformCountStop(&hhrtim1, HRTIM_TIMERID_TIMER_A);
-    return;
+    UltrasonicPWM_Stop();
+    return false;
   }
   s_output_running = true;
+  /* 재시작마다 5%에서 소프트 스타트하며 정지 전의 듀티는 복원하지 않는다. */
+  UltrasonicPWM_SetDuty(0U);
   HAL_GPIO_WritePin(SONIC_ON_PORT, SONIC_ON_PIN, GPIO_PIN_SET);
+  return true;
 }
 
 void UltrasonicPWM_Stop(void) {
   HAL_GPIO_WritePin(SONIC_ON_PORT, SONIC_ON_PIN, GPIO_PIN_RESET);
-  (void)HAL_HRTIM_WaveformOutputStop(
-      &hhrtim1, HRTIM_OUTPUT_TA1 | HRTIM_OUTPUT_TA2);
-  (void)HAL_HRTIM_WaveformCountStop(&hhrtim1, HRTIM_TIMERID_TIMER_A);
   s_output_running = false;
+  UltrasonicPWM_ForceControlOutputOff();
+  if (hhrtim1.Instance != NULL) {
+    /* 정지는 HAL lock/HAL_BUSY 여부와 무관하게 반드시 실행한다. */
+    hhrtim1.Instance->sCommonRegs.ODISR = HRTIM_OUTPUT_TA1 | HRTIM_OUTPUT_TA2;
+    CLEAR_BIT(hhrtim1.Instance->sMasterRegs.MCR, HRTIM_TIMERID_TIMER_A);
+    __DSB();
+  }
+}
+
+/* 호출 중 IRQ는 비활성이다. rollover 직후 dead-time 앞부분에서 두 출력을
+ * 함께 IDLE LOW로 바꾼다. SD는 아직 HIGH이므로 두 앞단 low-side가 ON된다.
+ * 이는 GDT 1차 양 끝을 0 V로 잡는 상태이며, IRFP460을 직접 켜는 동작이 아니다. */
+static bool ClampAtPeriodBoundary(void) {
+  const uint32_t timeout_cycles =
+      (SYS_CLOCK_HZ / 1000000U) * GDT_STOP_SYNC_TIMEOUT_US;
+  const uint32_t window_counts =
+      (s_applied_deadtime_counts *
+       (HRTIM_COUNTER_CLOCK_HZ / HRTIM_CLOCK_HZ)) / 2U;
+  const uint32_t started = DWT->CYCCNT;
+  uint32_t previous =
+      hhrtim1.Instance->sTimerxRegs[HRTIM_TIMERINDEX_TIMER_A].CNTxR;
+  /* DWT가 멈추더라도 루프 자체가 유한해야 한다. */
+  uint32_t attempts = timeout_cycles;
+
+  while (attempts-- != 0U) {
+    const uint32_t current =
+        hhrtim1.Instance->sTimerxRegs[HRTIM_TIMERINDEX_TIMER_A].CNTxR;
+    if (current < previous) {
+      if (current >= window_counts) {
+        return false; /* 늦게 관측한 경계에서는 펄스를 유지하지 않고 즉시 차단 */
+      }
+      hhrtim1.Instance->sCommonRegs.ODISR = HRTIM_OUTPUT_TA1 | HRTIM_OUTPUT_TA2;
+      CLEAR_BIT(hhrtim1.Instance->sMasterRegs.MCR, HRTIM_TIMERID_TIMER_A);
+      __DSB();
+      return true;
+    }
+    if ((uint32_t)(DWT->CYCCNT - started) >= timeout_cycles) {
+      return false;
+    }
+    previous = current;
+  }
+  return false;
+}
+
+static void HoldGdtClamp(void) {
+  const uint32_t hold_cycles = (SYS_CLOCK_HZ / 1000000U) * GDT_STOP_CLAMP_US;
+  const uint32_t started = DWT->CYCCNT;
+  uint32_t attempts = hold_cycles;
+  /* IRQ는 허용한다. 다른 보호 경로가 SD를 내리면 지연도 바로 끝낸다.
+   * IRQ 수행 시간은 경과시간에 포함되며, 이 함수는 SD를 다시 올리지 않는다. */
+  while ((uint32_t)(DWT->CYCCNT - started) < hold_cycles &&
+         attempts-- != 0U) {
+    if (HAL_GPIO_ReadPin(SONIC_ON_PORT, SONIC_ON_PIN) == GPIO_PIN_RESET) {
+      break;
+    }
+  }
+}
+
+void UltrasonicPWM_StopNormal(void) {
+  /* 출력 지령은 경계 대기 전 차단한다. 일반 정지 동안 재출력도 금지한다. */
+  UltrasonicPWM_ForceControlOutputOff();
+  const bool was_running = s_output_running;
+  s_output_running = false;
+
+  if (!s_ready || !was_running || !s_stop_clock_ready ||
+      __get_IPSR() != 0U || __get_PRIMASK() != 0U ||
+      (CoreDebug->DEMCR & CoreDebug_DEMCR_TRCENA_Msk) == 0U ||
+      (DWT->CTRL & DWT_CTRL_CYCCNTENA_Msk) == 0U ||
+      (hhrtim1.Instance->sMasterRegs.MCR & HRTIM_TIMERID_TIMER_A) == 0U ||
+      HAL_GPIO_ReadPin(SONIC_ON_PORT, SONIC_ON_PIN) != GPIO_PIN_SET) {
+    UltrasonicPWM_Stop();
+    return;
+  }
+
+  /* IRQ 지연으로 dead-time 구간을 놓치지 않도록 경계 검출 동안만 잠근다.
+   * 정상 15~128 kHz에서 대기는 최대 한 주기, 타이머 이상 시 100 us timeout. */
+  __disable_irq();
+  const bool clamped = ClampAtPeriodBoundary();
+  if (!clamped) {
+    UltrasonicPWM_Stop();
+  }
+  __enable_irq();
+
+  if (clamped) {
+    HoldGdtClamp();
+    UltrasonicPWM_Stop();
+    s_gdt_stop_clamped_count++;
+  } else {
+    s_gdt_stop_fallback_count++;
+  }
 }
 
 uint32_t UltrasonicPWM_GetARR(void) { return s_period; }

@@ -1,5 +1,35 @@
-v4.5 검증 재실행 안내
+v4.11 검증 재실행 안내
 ==================
+
+2026-10-16 v4.11: 노트북에 호스트 컴파일러와 simavr 개발 라이브러리 준비 완료.
+아래 명령은 프로젝트 루트 PowerShell에서 실행한다. 각 단계가 성공한 뒤 다음 단계로 진행한다.
+
+  powershell -NoProfile -ExecutionPolicy Bypass -File .\build-field.ps1 -Clean
+  $env:PATH = "$PWD\.pio\host-tools\w64devkit\bin;" + $env:PATH
+  g++ -std=c++17 -O2 -Wall -Wextra -Werror -Itest/host test/test_timing.cpp -o .pio/test_timing_v4_11.exe
+  .pio/test_timing_v4_11.exe
+  $avrTools = "$PWD/.pio/core/packages/toolchain-atmelavr/bin"
+  $simavrPath = "$PWD/.pio/core/packages/tool-simavr"
+  & "$avrTools/avr-objcopy.exe" -O binary .pio/build/attiny85/firmware.elf .pio/build/attiny85/firmware.bin
+  g++ -std=c++17 -O2 -Wall -Wextra -Werror "-I$simavrPath/include/simavr" test/simavr_timing.cpp "-L$simavrPath/lib" -lsimavr -lws2_32 -o .pio/simavr_timing_v4_11.exe
+  .pio/simavr_timing_v4_11.exe .pio/build/attiny85/firmware.bin
+
+사용 도구: w64devkit2.8.0/GCC16.1.0, simavr1.10700.241009.
+v4.11은 최대출력153+2, 저출력308+2이다. simavr 기대값도155/332로 변경했다.
+호스트 시험은ADC1024단계의 상단 제한과 v4.5 하단곡선 보존,156개 위상을 검사한다.
+이전 v4.5 실행 파일 대신 위 명령으로 재컴파일한 시험을 사용한다.
+도구는 .pio에 있으므로 Git만으로 복사하면 포함되지 않는다.
+
+140기준틱에서 고정200틱 시험노이즈와 점화가 겹치는 조건을 확인했다.
+정상 점화 행렬의 노이즈는 점화 전으로 배치하고,점화 순간 HIGH는 해당 반주기 차단/다음 반주기 복구를 별도로 검사한다.
+
+이하 v4.5 당시 기록(이전 PC 경로 포함):
+
+2026-10-16 노트북 이전 점검:
+  프로젝트 루트에서 powershell -NoProfile -ExecutionPolicy Bypass -File .\build-field.ps1 -Clean
+  명령으로 빌드와 새 ELF의 ISR 시간 검사를 재실행할 수 있다.
+  아래 MSYS2/simavr 경로는 이전 PC 기준이다. 노트북의 도구 누락 및 시험 범위는
+  ../노트북_이전점검_20261016.md를 참고한다. 기존 test_timing.exe는 소스 변경을 반영하지 않는다.
 
 1. 펌웨어 빌드
 

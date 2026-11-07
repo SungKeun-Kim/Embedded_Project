@@ -11,6 +11,7 @@ extern "C" {
 
 #include "stm32g4xx_hal.h"
 #include <stdint.h>
+#include <stdbool.h>
 
 /** @brief HRTIM1 핸들 (외부 참조용) */
 extern HRTIM_HandleTypeDef hhrtim1;
@@ -43,18 +44,26 @@ void UltrasonicPWM_SetFrequencyHzFast(uint32_t frequency_hz);
 
 /**
  * @brief 위상제어 PWM 듀티비 설정
- * @param duty_01pct 내부 지령 (×0.1% 단위). PA7 PWM_OUTPUT은 5~100%로 변환한다.
+ * @param duty_01pct 내부 지령 (×0.1% 단위). 운전 중 PA7은 5~100%로 변환한다.
+ * @note 정지 상태에서는 지령과 무관하게 PA7 LOW를 유지한다.
  */
 void UltrasonicPWM_SetDuty(uint16_t duty_01pct);
 
-/** @brief 보호 정지 시 PA7 제어 PWM을 실제 0%로 즉시 차단 */
+/** @brief PA7 제어 PWM을 실제 0%로 즉시 차단 (LOW 강제) */
 void UltrasonicPWM_ForceControlOutputOff(void);
 
-/** @brief HRTIM TA1/TA2와 SONIC_ON 출력 시작 */
-void UltrasonicPWM_Start(void);
+/** @brief HRTIM/PA7/SONIC_ON 시작. 실패하면 전체 차단 후 false 반환 */
+bool UltrasonicPWM_Start(void);
 
-/** @brief HRTIM 출력과 SONIC_ON 즉시 정지 */
+/** @brief SONIC_ON, PA7, HRTIM 출력 즉시 정지 */
 void UltrasonicPWM_Stop(void);
+
+/**
+ * @brief 일반 STOP: PA7 차단 → 주기 경계 검출/양 출력 LOW → 200 us 유지 → SD 차단
+ * @note main 전용. 호출 전 Sweep ISR을 정지해야 한다. 실패 시 즉시 Stop으로 전환.
+ *       보호/오류 정지는 대기 없는 UltrasonicPWM_Stop()을 사용한다.
+ */
+void UltrasonicPWM_StopNormal(void);
 
 /** @brief 현재 HRTIM Timer A period 값 반환 */
 uint32_t UltrasonicPWM_GetARR(void);

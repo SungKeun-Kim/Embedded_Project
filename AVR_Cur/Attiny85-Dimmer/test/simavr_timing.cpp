@@ -96,7 +96,8 @@ void run(const std::vector<uint8_t> &code, unsigned frequency, unsigned hz, unsi
   Probe p;
   p.avr = avr;
   p.period = double(frequency) / (2 * hz);
-  p.phase = double(mv < 1000 ? 135 : 310) / 332;
+  // v4.11: 최대출력153+offset2. 저출력308+offset2는 v4.5와 같다.
+  p.phase = double(mv < 1000 ? 155 : 310) / 332;
   p.voltage = 5000;                         // 먼저 OFF 상태로 부팅/동기화
   avr_irq_register_notify(avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('B'), 0), gateChanged, &p);
   avr_irq_register_notify(avr_io_getirq(avr, AVR_IOCTL_ADC_GETIRQ, ADC_IRQ_OUT_TRIGGER), adcTrigger, &p);

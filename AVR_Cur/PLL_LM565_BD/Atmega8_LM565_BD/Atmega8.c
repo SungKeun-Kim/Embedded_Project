@@ -9,7 +9,7 @@
 #include "Uart.h"
 
 
-unsigned short ADC_DATA;
+volatile unsigned short ADC_DATA;
 
 void TWI_init_master (void) // 마스터 초기화 기능
 {
@@ -18,30 +18,54 @@ void TWI_init_master (void) // 마스터 초기화 기능
     // SCL 주파수 = F_CPU / (16 + 2 (TWBR) .4 ^ TWPS)
 }
 
-void TWI_data( unsigned char data)
+/* 전송 완료와 상태를 분리해서 검사한다. NACK에서는 즉시 실패한다. */
+static unsigned char twi_wait(unsigned char expected)
 {
-  TWCR = (1<<TWINT)|(1<<TWSTA)|(0<<TWSTO)|(1<<TWEN);
-  while((TWCR_Bit7==0)||((TWSR & 0xf8) != 0x08));
-
-  TWDR = 0x58;
-  TWCR = (1<<TWINT)|(0<<TWSTA)|(0<<TWSTO)|(1<<TWEN);
-  while((TWCR_Bit7==0)||((TWSR & 0xf8) != 0x18));
-
-  TWDR = 0x00;
-  TWCR = (1<<TWINT)|(0<<TWSTA)|(0<<TWSTO)|(1<<TWEN);
-  while((TWCR_Bit7==0)||((TWSR & 0xf8) != 0x28));
-
-  TWDR = data;
-  TWCR = (1<<TWINT)|(0<<TWSTA)|(0<<TWSTO)|(1<<TWEN);
-  while((TWCR_Bit7==0)||((TWSR & 0xf8) != 0x28));
-
-  TWCR = (1<<TWINT)|(0<<TWSTA)|(1<<TWSTO)|(1<<TWEN);
-
-  DELAY_100MS;
-  DELAY_100MS;
+   unsigned short limit = 60000U;
+   while (!(TWCR & (1 << TWINT))) if (--limit == 0) return 0;
+   return (TWSR & 0xF8) == expected;
 }
 
+static unsigned char twi_stop(void)
+{
+   unsigned short limit = 60000U;
+   TWCR = (1 << TWINT) | (1 << TWSTO) | (1 << TWEN);
+   while (TWCR & (1 << TWSTO)) {
+      if (--limit == 0) { TWCR = 0; return 0; }
+   }
+   return 1;
+}
 
+unsigned char TWI_data(unsigned char data)
+{
+   unsigned char actual;
+   if (data < PLL_POT_MIN || data > PLL_POT_MAX) return 0;
+   TWCR = (1 << TWINT) | (1 << TWSTA) | (1 << TWEN);
+   if (!twi_wait(0x08)) goto failed;
+   TWDR = 0x58;
+   TWCR = (1 << TWINT) | (1 << TWEN);
+   if (!twi_wait(0x18)) goto failed;
+   TWDR = 0;
+   TWCR = (1 << TWINT) | (1 << TWEN);
+   if (!twi_wait(0x28)) goto failed;
+   TWDR = data;
+   TWCR = (1 << TWINT) | (1 << TWEN);
+   if (!twi_wait(0x28)) goto failed;
+   /* 반복 START로 RDAC 값을 읽어, ACK만 받은 상태와 실제 설정을 구분한다. */
+   TWCR = (1 << TWINT) | (1 << TWSTA) | (1 << TWEN);
+   if (!twi_wait(0x10)) goto failed;
+   TWDR = 0x59;
+   TWCR = (1 << TWINT) | (1 << TWEN);
+   if (!twi_wait(0x40)) goto failed;
+   TWCR = (1 << TWINT) | (1 << TWEN);
+   if (!twi_wait(0x58)) goto failed;
+   actual = TWDR;
+   if (!twi_stop()) return 0;
+   return actual == data;
+failed:
+   (void)twi_stop();
+   return 0;
+}
 
 void funAtmega8_PortInit(void)
 {
@@ -68,7 +92,7 @@ void funAtmega8_Timer0Init(void)
     //Timer0_Value = (unsigned char)Timer0_SetValue(50);
     TCNT0 = TIMER_RELOAD;
  //   TCNT0 = 0;
-    TCCR0 = T0_MODE_CTC+T0_PRESCALE_1024;//256->64
+    TCCR0 = T0_PRESCALE_1024;//256->64
 }
 
 void funAtmega8_Timer1Init(void)
@@ -94,16 +118,17 @@ void funAtmega8_Timer1Init(void)
 
 void funEEprom_Write(unsigned short adr, unsigned char eeData)
 {
-    if (adr > 0x1fff)_NOP();
-    else
-    {
-        while(EECR & (1 << EEWE))__watchdog_reset();
-        EEAR = adr;
-        EEDR = eeData;
-        EECR = (1 << EEMWE);
-        EECR = (1 << EEWE);
-        _NOP();
-    }
+   unsigned char saved;
+   if (adr >= 512U) return;
+   while (EECR & (1 << EEWE));
+   saved = SREG;
+   _CLI();
+   EEAR = adr;
+   EEDR = eeData;
+   /* EEMWE 다음 EEWE를 4클록 안에 설정하도록 인터럽트로부터 보호한다. */
+   EECR = (1 << EEMWE);
+   EECR = (1 << EEWE);
+   SREG = saved;
 }
 
 unsigned char funEEprom_Read(unsigned short adr)
@@ -118,11 +143,11 @@ unsigned char funEEprom_Read(unsigned short adr)
 //////////////////////////////////////////////////////////////////////
 void funAtmega8_ADC_Init(void)
 {
-    ADC_REFERNCE_AVCC;
-    ADCSR |= ((1 << ADEN) | (1 << ADFR) | (0 << ADIE));
-    ADC_PRESCALER(128);
-    ADC = 0;
-
+   ADC_REFERNCE_AVCC;
+   ADC_CH(0);
+   /* ADC는 계속 변환하고 Timer0에서 최신 완료값을 수집한다. */
+   ADCSR = (1 << ADEN) | (1 << ADFR) | (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);
+   ADC_START;
 }
 
 void eep_write_word(unsigned offset, unsigned dat)
@@ -135,20 +160,13 @@ void eep_write_word(unsigned offset, unsigned dat)
 //////////////////////////////////////////////////////////////////////
 unsigned short funADC_Read(void)
 {
-    unsigned short usAdcData;
-    ADC = 0;
-    ADC_CH(0);  //ADC Channel 1
-	ADC_START;
-
-    while(!(ADCSR & 0x10));
-	usAdcData = ADCL;
-    usAdcData += (ADCH << 8);
-    if(usAdcData>450) ucError_flag=1;
-	return (usAdcData);
-
+   unsigned short value;
+   unsigned char saved = SREG;
+   _CLI();
+   value = ADC_DATA;
+   SREG = saved;
+   return value;
 }
-
-
 
 void funUPscan()
 {

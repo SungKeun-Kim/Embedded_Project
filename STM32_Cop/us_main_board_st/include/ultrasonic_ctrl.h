@@ -17,7 +17,8 @@ extern "C" {
 typedef enum {
   ULTRASONIC_ERROR_NONE = 0,
   ULTRASONIC_ERROR_TRANSDUCER,
-  ULTRASONIC_ERROR_OVER_CURRENT
+  ULTRASONIC_ERROR_OVER_CURRENT,
+  ULTRASONIC_ERROR_OUTPUT /* 출력 초기화/시작 실패 */
 } UltrasonicErrorCode_t;
 
 /** @brief 초음파 동작 상태 */
@@ -67,7 +68,7 @@ void UltrasonicCtrl_Start(void);
 /** @brief REMOTE/Modbus 운전 시작 (타이머를 사용하지 않음) */
 void UltrasonicCtrl_StartUntimed(void);
 
-/** @brief 출력 정지 (즉시) */
+/** @brief 일반 정지 (PA7 즉시 차단, 주기 경계에서 GDT 0 V 유지 후 SD 차단) */
 void UltrasonicCtrl_Stop(void);
 
 /** @brief 비상 정지 — 즉시 PWM 차단 */
@@ -91,7 +92,7 @@ void UltrasonicCtrl_SetFrequency(uint16_t freq_01khz);
 /** @brief Auto-Tuning용 실제 Hz 단위 주파수 설정 */
 void UltrasonicCtrl_SetFrequencyHz(uint32_t frequency_hz);
 
-/** @brief PB1 기반 듀티비 설정 (정지 중에도 PA7에 즉시 적용, 안전 상한 포함) */
+/** @brief PB1 기반 목표 듀티비 설정 (정지 중에는 저장만, 안전 상한 포함) */
 void UltrasonicCtrl_SetDuty(uint16_t duty_01pct);
 
 /** @brief Auto-Tuning 동안 가변저항 대신 고정 Duty를 적용 */

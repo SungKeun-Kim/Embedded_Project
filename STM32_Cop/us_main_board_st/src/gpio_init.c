@@ -20,8 +20,8 @@ void GPIO_Init_All(void) {
   gpio.Mode = GPIO_MODE_OUTPUT_PP;
   gpio.Pull = GPIO_NOPULL;
   gpio.Speed = GPIO_SPEED_FREQ_HIGH;
-  HAL_GPIO_Init(SONIC_ON_PORT, &gpio);
   HAL_GPIO_WritePin(SONIC_ON_PORT, SONIC_ON_PIN, GPIO_PIN_RESET);
+  HAL_GPIO_Init(SONIC_ON_PORT, &gpio);
 
   /* ---- 상태/알림 출력: 회로도 PA4, PC13/PC14 ---- */
   gpio.Pin = RUN_LED_PIN;
@@ -116,16 +116,18 @@ void GPIO_Init_All(void) {
   gpio.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(PWM_VR_PORT, &gpio);
 
-  /* ---- 3 kHz PWM_OUTPUT: TIM3_CH2 (PA7, AF2) ---- */
+  /* ---- PA7: TIM3 초기화 성공 전에는 GPIO LOW로 확실히 차단 ---- */
   gpio.Pin = PHASE_PWM_PIN;
-  gpio.Mode = GPIO_MODE_AF_PP;
+  gpio.Mode = GPIO_MODE_OUTPUT_PP;
+  gpio.Pull = GPIO_PULLDOWN;
   gpio.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-  gpio.Alternate = GPIO_AF2_TIM3;
+  HAL_GPIO_WritePin(PHASE_PWM_PORT, PHASE_PWM_PIN, GPIO_PIN_RESET);
   HAL_GPIO_Init(PHASE_PWM_PORT, &gpio);
 
   /* ---- HRTIM1 Timer A 출력 (PA8/PA9, AF13) ---- */
   gpio.Pin = US_PWM_A_PIN | US_PWM_B_PIN;
   gpio.Mode = GPIO_MODE_AF_PP;
+  gpio.Pull = GPIO_PULLDOWN;
   gpio.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
   gpio.Alternate = GPIO_AF13_HRTIM1;
   HAL_GPIO_Init(GPIOA, &gpio);

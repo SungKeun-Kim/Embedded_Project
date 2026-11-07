@@ -24,6 +24,8 @@ static uint16_t s_power_display_candidate;
 static uint8_t s_power_display_candidate_count;
 static uint32_t s_local_vr_display_until_tick;
 static uint32_t s_last_pot_override_counter;
+/* PLC는 표시 필터를 다시 실행하지 않고 LCD에 사용한 숫자만 읽는다. */
+static uint16_t s_displayed_output;
 static char s_line0[LCD_COLS + 1U];
 static char s_line1[LCD_COLS + 1U];
 
@@ -53,18 +55,22 @@ static uint16_t MapCommandToOutputPercent(uint16_t command_percent);
 static bool IsLocalVrPreviewActive(void);
 
 void MenuScreen_ShowSplash(void) {
+  s_displayed_output = 0U;
   SetLine(s_line0, "   ULTRASONIC");
   SetLine(s_line1, "    K-SONICS");
   WriteLines();
 }
 
 void MenuScreen_ShowSupervisorSplash(void) {
+  s_displayed_output = 0U;
   SetLine(s_line0, "SUPERVISOR MODE");
   SetLine(s_line1, "MODE: SETTINGS");
   WriteLines();
 }
 
 void MenuScreen_ForceRefresh(void) { s_need_refresh = 1U; }
+
+uint16_t MenuScreen_GetDisplayedOutput(void) { return s_displayed_output; }
 
 void MenuScreen_Refresh(void) {
   const uint32_t now = HAL_GetTick();
@@ -79,12 +85,16 @@ void MenuScreen_Refresh(void) {
 
   s_last_refresh_tick = now;
   s_need_refresh = 0U;
+  /* 대기/설정/오류 화면에는 PL 숫자가 없으므로 지난 운전값을 남기지 않는다. */
+  s_displayed_output = 0U;
 
   if (g_us_state.error_active) {
     SetLine(s_line0,
             g_us_state.error_code == ULTRASONIC_ERROR_OVER_CURRENT
                 ? "OVER CURRENT"
-                : "TRANSDUCER ERROR");
+                : g_us_state.error_code == ULTRASONIC_ERROR_OUTPUT
+                      ? "OUTPUT ERROR"
+                      : "TRANSDUCER ERROR");
     SetLine(s_line1, "RUN OFF TO RESET");
     WriteLines();
     return;
@@ -398,6 +408,7 @@ static void FormatStatusLine(char *line) {
   const uint16_t power = GetStablePowerPercent();
   if (IsLocalVrPreviewActive()) {
     char vr_formatted[24];
+    s_displayed_output = s_power_display_percent;
     snprintf(vr_formatted, sizeof(vr_formatted), "VR:%3u%% MANUAL",
              s_power_display_percent);
     SetLine(line, vr_formatted);
@@ -412,10 +423,12 @@ static void FormatStatusLine(char *line) {
   }
   const uint16_t full_scale_watts = Menu_GetPowerRangeWatts();
   if (full_scale_watts == 0U) {
+    s_displayed_output = power;
     snprintf(power_text, sizeof(power_text), "PL:%3u%%", power);
   } else {
     const uint16_t watts =
         (uint16_t)(((uint32_t)power * full_scale_watts + 50U) / 100U);
+    s_displayed_output = watts;
     snprintf(power_text, sizeof(power_text), "PL:%4uW", watts);
   }
   snprintf(frequency_text, sizeof(frequency_text), "%02u.%1ukHz",

@@ -70,7 +70,7 @@ Auto-Tuning 화면에서 3초 유지할 때 탐색을 시작하는 용도로 예
 ### 3.2 Error latch와 Hardware Interlock
 
 `UltrasonicCtrl_EmergencyStop()`과 `ERROR_STATUS_RESET(0x0008)` 경로에는 PA6
-입력전류 보호가 연결되어 있다. LCD와 동일한 1초 평균 RMS 전류가 7.00 A 이상인
+입력전류 보호가 연결되어 있다. LCD와 동일한 1초 평균 RMS 전류가 8.00 A 이상인
 상태가 약 5초 지속되면 PWM과 Signal 출력을 정지하고 `OVER CURRENT` Error latch를
 설정한다. 단일 ADC peak와 짧은 스위칭 spike는 과전류 유지시간에 포함하지 않는다.
 실제 설비의 비상정지는 Firmware 입력만 의존하지 말고 별도의 Hardware Interlock으로

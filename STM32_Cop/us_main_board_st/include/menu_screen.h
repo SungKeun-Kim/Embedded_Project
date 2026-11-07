@@ -22,6 +22,9 @@ void MenuScreen_Refresh(void);
  */
 void MenuScreen_ForceRefresh(void);
 
+/** @brief 마지막 LCD 출력 표시 숫자(W 또는 %). 출력 표시가 없는 화면은 0. */
+uint16_t MenuScreen_GetDisplayedOutput(void);
+
 /** @brief 전원 인가 직후 2초간 표시할 모델/업체 화면 */
 void MenuScreen_ShowSplash(void);
 

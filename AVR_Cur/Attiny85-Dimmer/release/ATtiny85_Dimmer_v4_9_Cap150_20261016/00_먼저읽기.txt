@@ -1,0 +1,17 @@
+ATtiny85 Dimmer v4.9 — 최대출력 150기준틱
+2026-10-16
+
+SmartProg에 기록할 파일: R_Type_2+150Tick_Cap_Min308_Guard16_50_60Hz_v4_9.HEX
+최대출력 점화 하한을 143에서 150으로 변경했습니다. 보정 2는 유지합니다.
+50/60Hz 실측 반주기에 비례하는 기존 보정 및 보호 기능은 동일합니다.
+PB2 상승엣지 기준, 명목 25us 타이머 예시:
+- 약 60Hz/333틱: 최대출력 3.800ms (152틱).
+- 50Hz/400틱: 최대출력 4.575ms (183틱).
+
+SmartProg에서 ATtiny85를 선택하고 이 폴더 최상위 v4_9 / 150Tick HEX를 불러오세요.
+기존 퓨즈 E2/DF/FF는 유지합니다. HEX에는 퓨즈 설정이 포함되지 않습니다.
+Flash Program 후 Verify(읽기 비교)를 확인하세요.
+실제 MCU 기록 및 부하 시험은 수행하지 않았습니다.
+
+source: 수정 소스 / validation: 검증 로그 / reference: 변경 근거
+rollback_v4_8: 이전 143틱 HEX / SHA256SUMS.txt: 파일별 해시

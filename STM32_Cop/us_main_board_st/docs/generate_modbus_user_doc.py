@@ -15,7 +15,7 @@ from docx.shared import Cm, Pt, RGBColor
 
 DOC_DIR = Path(__file__).resolve().parent
 SOURCE = DOC_DIR / "PLC_Modbus_RTU_사용자_가이드.md"
-OUTPUT = DOC_DIR / "STM32G474CBT6_Modbus_RTU_PLC_사용자_가이드_v1.3.docx"
+OUTPUT = DOC_DIR / "STM32G474CBT6_Modbus_RTU_PLC_사용자_가이드_v1.5.docx"
 CANONICAL_OUTPUT = DOC_DIR / "STM32G474CBT6_Modbus_RTU_PLC_사용자_가이드.docx"
 
 

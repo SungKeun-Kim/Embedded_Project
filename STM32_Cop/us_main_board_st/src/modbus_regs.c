@@ -4,8 +4,10 @@
  */
 #include "modbus_regs.h"
 
+#include "adc_control.h"
 #include "config.h"
 #include "menu.h"
+#include "menu_screen.h"
 #include "modbus_rtu.h"
 #include "params.h"
 #include "stm32g4xx_hal.h"
@@ -45,16 +47,13 @@ bool ModbusRegs_Read(uint16_t addr, uint16_t *value) {
   case REG_ADDR_OUTPUT_VALUE:
     *value = g_us_state.output_command;
     break;
-  case REG_ADDR_DISPLAY_RANGE:
-    *value = Menu_GetPowerRangeWatts();
-    if (*value == 0U) {
-      *value = DISPLAY_OUTPUT_RANGE;
-    }
+  case REG_ADDR_DISPLAY_OUTPUT:
+    /* LCD와 같은 갱신 시점/반올림/안정화가 적용된 표시 숫자다. */
+    *value = MenuScreen_GetDisplayedOutput();
     break;
-  case REG_ADDR_SWEEP_FREQUENCY:
-    *value = (g_us_state.mode == MODE_SWEEP && g_us_state.running)
-                 ? g_us_state.current_freq
-                 : 0U;
+  case REG_ADDR_MEASURED_CURRENT:
+    /* LCD와 동일한 PA6 CT 1초 평균 RMS이며 이미 전류(A) ×100 단위다. */
+    *value = ADC_Control_GetCurrentCentiAmp();
     break;
   case REG_ADDR_LOCAL_INPUT_LOCK:
     *value = ToProtocolBool(s_local_input_locked);
@@ -150,8 +149,8 @@ ModbusRegResult_t ModbusRegs_ValidateWrite(uint16_t addr, uint16_t value) {
 
   /* Board 설정값, 상태값과 통신 설정은 PLC Read-only다. */
   case REG_ADDR_FREQUENCY_VALUE:
-  case REG_ADDR_DISPLAY_RANGE:
-  case REG_ADDR_SWEEP_FREQUENCY:
+  case REG_ADDR_DISPLAY_OUTPUT:
+  case REG_ADDR_MEASURED_CURRENT:
   case REG_ADDR_EXTERNAL_INPUT:
   case REG_ADDR_SWEEP_STATUS:
   case REG_ADDR_ERROR_CODE:

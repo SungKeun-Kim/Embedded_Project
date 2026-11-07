@@ -6,8 +6,8 @@
 | 대상 | PLC/HMI/SCADA 프로그램 작성자 |
 | 통신 | RS-485 2-wire, Modbus RTU |
 | Firmware | v1.2.0 |
-| 문서 버전 | 1.3 |
-| 작성일 | 2026-10-08 |
+| 문서 버전 | 1.5 |
+| 작성일 | 2026-10-16 |
 
 ## 1. 문서 범위
 
@@ -18,8 +18,8 @@ PLC에 공개하는 항목은 다음으로 제한한다.
 
 - 발진 주파수 읽기
 - 출력값 읽기/지정
-- 표시 출력 범위 읽기
-- Sweep 주파수 읽기
+- LCD 현재 출력 표시값(W 또는 %) 읽기
+- CT 실측 전류 읽기 (전류 A ×100)
 - PLC 제어 허가 및 외부 REMOTE 입력 차단 상태 읽기/지정
 - 출력 동작 상태 읽기/지정
 - 외부 입력 동작 상태 읽기
@@ -206,14 +206,14 @@ offset**을 뜻한다. Slave ID나 전체 RTU Frame 주소를 뜻하지 않는�
 | ---: | ---: | --- | :---: | --- | --- |
 | `0x0000` | 40001 | `FREQUENCY_VALUE` | R | ×0.1 kHz | 현재 적용 발진 주파수 |
 | `0x0001` | 40002 | `OUTPUT_VALUE` | R/W | 0~500 | 기존 Protocol 정규화 출력값 |
-| `0x0002` | 40003 | `DISPLAY_OUTPUT_RANGE` | R | 100 또는 300~2500 | PERCENT이면 100, W 설정이면 최대 W |
-| `0x0003` | 40004 | `SWEEP_FREQUENCY_VALUE` | R | ×0.1 kHz | Sweep 운전 중 현재 주파수, 아니면 0 |
+| `0x0002` | 40003 | `DISPLAY_OUTPUT_VALUE` | R | W 또는 % | LCD에 표시된 현재 출력 숫자, 출력 표시가 없는 화면은 0 |
+| `0x0003` | 40004 | `MEASURED_CURRENT` | R | 0.01 A | PA6 CT 입력 소비전류, LCD와 동일한 1초 평균 RMS |
 | `0x0004` | 40005 | `LOCAL_INPUT_LOCK` | R/W | Boolean | PLC 제어 허가, PA10 REMOTE 차단 |
 | `0x0005` | 40006 | `RUN_STATUS_CONTROL` | R/W | Boolean | 출력 Stop/Run, ON은 OFF 명령까지 유지 |
 | `0x0006` | 40007 | `EXTERNAL_INPUT_STATUS` | R | Boolean | 외부 Remote 입력 상태 |
 | `0x0007` | 40008 | `SWEEP_SWITCH_STATUS` | R | Boolean | 본체 SWEEP_SW 상태, 정지 중에도 읽기 가능 |
 | `0x0008` | 40009 | `ERROR_STATUS_RESET` | R/W | Boolean | 읽기=Error 상태, True 쓰기=Reset |
-| `0x0009` | 40010 | `ERROR_CODE` | R | 0~2 | 0=None, 1=Transducer, 2=Over current |
+| `0x0009` | 40010 | `ERROR_CODE` | R | 0~3 | 0=None, 1=Transducer, 2=Over current, 3=Output |
 | `0x000A` | 40011 | `RUN_SWITCH_STATUS` | R | Boolean | `0000`=RUN_SW OFF, `FF00`=ON |
 | `0x000B` | 40012 | `COMM_CONTROL_READY` | R | Boolean | Lock/RUN 제어 명령 허용 상태 |
 | `0x000C` | 40013 | `CENTER_FREQUENCY` | R | ×0.1 kHz | Local 메뉴에 저장된 설정 중심주파수 |
@@ -316,8 +316,8 @@ Hardware Interlock을 함께 사용한다.
 - Sweep가 선택된 정지 상태에서는 다음 운전을 위해 `중심주파수-Sweep 폭`을
   HRTIM에 미리 적용한다. 예를 들어 중심 39.1 kHz, 폭 500 Hz이면 정지 상태의
   `FREQUENCY_VALUE`가 `386`(38.6 kHz)으로 읽힐 수 있으며 정상 동작이다.
-- `SWEEP_FREQUENCY_VALUE(0x0003)`도 Sweep 운전 중 순간 주파수를 반환하고,
-  Sweep 정지 또는 Continuous 운전 중에는 `0`을 반환한다.
+- `MEASURED_CURRENT(0x0003, 40004)`는 CT 실측 전류를 반환한다. 상세 환산과
+  읽기 예시는 아래 '40004 실측 전류 읽기'를 참고한다.
 - `CENTER_FREQUENCY(0x000C)`는 Local 보호 메뉴에 저장된 중심주파수다. 단위는
   `×0.1 kHz`이며 `391`은 39.1 kHz다.
 - `SWEEP_WIDTH(0x000D)`는 중심주파수 기준 한쪽 폭을 Hz로 반환한다. `500`이면
@@ -335,8 +335,8 @@ Hardware Interlock을 함께 사용한다.
 - PLC 지정 출력으로 운전 중 PB1이 기준점에서 약 5% 이상 움직이면 Local 값으로
   수동 인계되고, 이후의 작은 PB1 변화도 연속 반영된다. PLC가 주소 1을 다시
   쓰면 PLC 값이 다시 우선된다.
-- 출력 명령은 정지 중에는 다음 Start 값에 즉시 반영되고, 운전 중에는 다음
-  제어 주기에 반영된다. 실제 적용 목표 Duty는 다음 제한식을 따른다.
+- 출력 명령은 정지 중에는 다음 Start의 목표값으로만 저장하고 PA7은 실제 0%(LOW)를
+  유지한다. 운전 중에는 다음 제어 주기에 반영된다. 실제 적용 목표 Duty는 다음 제한식을 따른다.
 
 ```text
 통신 적용 목표 Duty = 안전 Duty 상한(90.0%) × OUTPUT_VALUE / 500
@@ -347,6 +347,80 @@ RUN OFF 후에도 통신 제어 지령을 유지하고, Local Lock을 해제할 
 다시 갱신된다. 실제 출력 표시는 보드의 `PL`을 사용하며, PA6 CT 입력은 별도의
 전류 측정 및 보호 입력이다.
 
+#### 40003 LCD 현재 출력 표시값 읽기
+
+2026-10-16 v1.5 가이드 적용 빌드부터 40003은 Supervisor의 최대 출력 범위가
+아니라 LCD에 표시된 현재 출력 숫자를 반환한다. 예를 들어 LCD가 `PL: 800W`이면
+PLC는 정수 `800`, `PL: 65%`이면 정수 `65`를 읽는다. 별도의 배율 환산은 없다.
+
+| 항목 | 설정 또는 의미 |
+| --- | --- |
+| Function Code | FC03 (Read Holding Registers) |
+| Holding Register / PDU 주소 | 40003 / `0x0002` (0-based 시작 주소 2) |
+| 읽기 수량 / 자료형 | 1 Register / 부호 없는 16-bit 정수 |
+| W 모드 | 현재 LCD의 W 숫자. Supervisor 최대 W 자체를 반환하지 않는다 |
+| PERCENT 모드 | 현재 LCD의 정수 % 숫자 |
+| 갱신 시점 | LCD 출력 표시 갱신 시점과 동일, 메인 화면 약 200 ms |
+| 접근 | 읽기 전용, Local Lock 불필요, FC06/FC10 쓰기는 Exception `0x02` |
+
+REMOTE 운전 모니터링은 RUN_SW=OFF, LOCAL_INPUT_LOCK=OFF 상태에서 REMOTE를
+ON하고 전면 PWM 볼륨을 조절하면 된다. PLC는 40003을 읽어 LCD와 숫자를
+비교한다. D100부터 주소 0을 연속 읽는 프로그램이면 세 번째 Word D102가 이 값이다.
+40002의 `0~500` 출력 지령 읽기/쓰기 및 40004의 전류(A ×100)는 그대로 유지한다.
+
+LCD는 출력 비율을 정수 %로 표시한 뒤 최대 W를 곱한다. 최대 1200W 설정이면
+66%는 792W, 67%는 804W가 된다. 따라서 이 설정에서는 정확히 800W가 표시되지
+않을 수 있으며 PLC도 LCD와 같은 792 또는 804를 읽는다. 이번 변경은 기존
+LCD의 표시 간격, 반올림, 안정화 또는 출력 제어를 바꾸지 않는다.
+
+W 숫자는 PWM 출력 지령을 환산한 표시이며 실측 전력이 아니다. 숫자만으로
+W/%를 자동 판별할 수 없으므로 PLC의 단위는 본체 Supervisor 설정에 맞춘다.
+통신 운전 중 볼륨을 직접 조작해 LCD가 잠시 `VR: nn% MANUAL`로 바뀌면
+40003도 그 화면의 `nn`을 반환한다(약 1.5초 동안 %, W 설정 중에도 동일).
+일반 REMOTE 운전에서는 이 통신 수동 인계 미리보기가 표시되지 않는다.
+대기/통신 준비/설정/오류 화면 등 출력 숫자가 없는 화면은 0이다. 자동 운전의
+정지 화면처럼 PL 숫자가 남아 있으면 그 숫자를 반환하므로 운전 여부는
+40006(`0x0005`)으로 확인한다. 40003 읽기는 화면 갱신이나 출력에 영향을 주지 않는다.
+
+Slave ID=1, 40003 1개 읽기 요청(CRC 포함):
+
+```text
+01 03 00 02 00 01 25 CA
+```
+
+#### 40004 실측 전류 읽기
+
+2026-10-16 변경본부터 기존 40004의 Sweep 주파수를 `MEASURED_CURRENT`로
+교체한다. 기존 PLC에서 이 주소를 주파수로 사용했다면 전류로 해석하도록
+수정해야 한다. Sweep 순간 주파수는 40001(`0x0000`)에서 계속 읽을 수 있다.
+
+| 항목 | 설정 또는 의미 |
+| --- | --- |
+| Function Code | FC03 (Read Holding Registers) |
+| Holding Register / PDU 주소 | 40004 / `0x0003` (0-based 시작 주소 3) |
+| 읽기 수량 / 자료형 | 1 Register / 부호 없는 16-bit 정수 |
+| 전류 환산 | 수신 정수 ÷ 100.0 = 전류(A), 예: 523 = 5.23 A |
+| 측정 대상 | PA6 CT의 입력 소비전류, LCD와 동일한 1초 평균 RMS |
+| 갱신 | 200 ms RMS 결과 5개의 이동평균, 200 ms마다 갱신 |
+| 접근 | 읽기 전용, FC06/FC10 쓰기는 Exception `0x02` |
+
+이 값은 PWM 볼륨 설정값이나 초음파 출력단의 고주파 전류가 아니다.
+기존 출력 지령 40002(`0x0001`, 0~500)의 읽기/쓰기는 그대로 사용한다.
+읽기에는 Local Lock이 필요하지 않으며 운전 모드와 관계없이 최근 측정값을
+반환한다. 정지 시 강제로 0으로 만들지 않으므로 정지 직후 평균값과 대기
+소비전류가 읽힐 수 있다. 운전 여부는 40006(`0x0005`)으로 판단한다.
+
+Slave ID=1일 때 요청과 5.23 A 응답 예시(CRC 포함):
+
+```text
+요청: 01 03 00 03 00 01 74 0A
+응답: 01 03 02 02 0B F8 E3
+```
+
+응답 데이터 `02 0B`는 상위 바이트부터 전송되며 `0x020B = 523`이다.
+기존 주소 0부터 연속 읽기도 동일하게 사용할 수 있다. PLC 수신 영역이
+D100부터라면 네 번째 Word D103을 전류(A ×100)로 해석한다.
+
 ### 7.4 Error 상태
 
 Firmware v1.2.0에서 Error latch는 보드의 비상 정지 동작을 나타낸다.
@@ -354,11 +428,17 @@ Firmware v1.2.0에서 Error latch는 보드의 비상 정지 동작을 나타낸
 | ERROR_CODE | LCD 표시 | 발생 조건 | 동작 |
 | ---: | --- | --- | --- |
 | 0 | 없음 | 정상 | 운전 허용 |
-| 1 | `TRANSDUCER ERROR` | PA7 출력 50% 이상에서 PA6 CT 신호가 약 1초간 기준 이하 | PWM과 Signal 출력 정지, Error latch |
-| 2 | `OVER CURRENT` | LCD와 동일한 1초 평균 RMS 전류가 7.00A 이상인 상태가 약 5초 지속 | PWM과 Signal 출력 정지, Error latch |
+| 1 | `TRANSDUCER ERROR` | PA7 출력 50% 이상에서 PA6 CT 신호가 기준 이하로 지속: 2.5초 설정, 200ms 주기로 올림해 약 2.6초 감지 | PWM과 Signal 출력 정지, Error latch |
+| 2 | `OVER CURRENT` | LCD와 동일한 1초 평균 RMS 전류가 8.00A 이상인 상태가 약 5초 지속 | PWM과 Signal 출력 정지, Error latch |
+| 3 | `OUTPUT ERROR` | 출력 초기화 또는 HRTIM 시작 실패 | PA7/SONIC_ON/HRTIM 차단, RUN 진입 금지, Error latch |
+
+코드 3과 정지 중 PA7 0% 유지는 2026-10-14 정지 PWM 차단 수정본부터 적용한다.
+Error Reset은 출력 재개 명령이 아니며, 다음 Start가 성공해야 출력이 시작된다.
 
 두 보호 기능은 Local 운전과 PLC 운전 모두에 적용된다. `TRANSDUCER ERROR`는
-시작 후뿐 아니라 운전 중에도 감시한다. 실제 전류 환산은 CT와 부담저항 오차의
+시작 후뿐 아니라 운전 중에도 감시한다. Soft Start 중 실제 출력이 50% 미만이면
+무신호 시간을 누적하지 않으므로 START 버튼을 누른 순간부터 정확히 2.5초 후에
+오류가 발생한다는 뜻은 아니다. 실제 전류 환산은 CT와 부담저항 오차의
 영향을 받으므로 출하 시험에서 외부 전류계와 함께 확인한다.
 
 1. `ERROR_STATUS_RESET`을 읽어 `0xFF00`인지 확인한다.
@@ -366,6 +446,7 @@ Firmware v1.2.0에서 Error latch는 보드의 비상 정지 동작을 나타낸
    - `0`: 오류 없음
    - `1`: `TRANSDUCER ERROR`
    - `2`: `OVER CURRENT`
+   - `3`: `OUTPUT ERROR` (출력 초기화/시작 실패)
 3. 먼저 `RUN_STATUS_CONTROL=0x0000`으로 정지한다.
 4. 원인을 제거한다.
 5. `ERROR_STATUS_RESET=0xFF00`을 써서 Reset한다.
@@ -538,8 +619,8 @@ Response Timeout으로 처리한다. Broadcast ID 0은 FC06/FC10 쓰기만 처�
 | ---: | --- | ---: | --- |
 | `0x0100` | 발진 주파수 | `0x0000` | 읽기 전용, ×0.1 kHz 유지 |
 | `0x0102` | 출력 | `0x0001` | R/W, 0~500 유지 |
-| `0x0103` | 표시 출력 범위 | `0x0002` | 읽기 전용, 100% 또는 설정된 300~2500W |
-| `0x0104` | Sweep 주파수 | `0x0003` | 운전 중 현재값 제공 |
+| `0x0103` | 표시 출력 범위 | `0x0002` | 의미 변경: LCD 현재 출력 숫자(W 또는 %) 읽기 전용 |
+| `0x0104` | Sweep 주파수 | 폐지 | 40004는 실측 전류로 변경, 순간 주파수는 `0x0000` 사용 |
 | `0x0200` | Local 입력 금지 | `0x0004` | R/W, Boolean 유지 |
 | `0x0201` | 출력 동작 상태 | `0x0005` | R/W, Boolean 유지 |
 | `0x0202` | 외부 입력 상태 | `0x0006` | 읽기 전용 |
@@ -571,6 +652,8 @@ Modbus Register는 High byte 먼저이며 CRC-16/Modbus는 CRC Low byte를 먼�
 | --- | --- | --- |
 | 1.2 | 2026-09-14 | Modbus RTU 기본 운전과 레지스터맵 정리 |
 | 1.3 | 2026-10-08 | Error/RUN_SW 복귀, 보호 절차, Sweep 설정 읽기, Local 볼륨 기본 통신 출력과 PB1 5% 수동 인계 추가 |
+| 1.4 | 2026-10-16 | 40004를 CT 실측 전류(A ×100) 읽기로 변경, 기존 40002 출력 지령 읽기/쓰기 유지 |
+| 1.5 | 2026-10-16 | 40003을 LCD 현재 출력 표시 숫자(W 또는 %)로 변경, 40002/40004 유지 |
 
 ## 14. 표준 참고
 

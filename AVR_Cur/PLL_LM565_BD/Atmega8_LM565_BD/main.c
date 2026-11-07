@@ -1,375 +1,191 @@
-
 #include <iom8.h>
 #include <stdio.h>
 #include <inavr.h>
 #include <comp_a90.h>
 #include <string.h>
-
-
 #include "Atmega8.h"
 #include "TSO8.H"
 #include "Uart.h"
 #include "ready_notice.c"
+#include "tuning_store.c"
+#include "phase_search.c"
 
+volatile unsigned char f_cnt,t0_cnt,t2_cnt;
+volatile unsigned short f_data,f_data2,pll_ticks;
+volatile unsigned short adc_samples,adc_minimum=1023,adc_maximum;
+volatile unsigned long adc_sum;
+volatile unsigned char pll_active,ucRxDATA,ucError_flag;
+unsigned char ucOrgpt,ucTxDATA,ucRUNFlag;
+static unsigned char control_fault,operation_active;
+#if PLL_RUNTIME_TRACKING_ENABLED
+static unsigned char active_code;
+#endif
+static unsigned short operation_start;
 
+static unsigned short now_ticks(void)
+{
+   unsigned short value;
+   unsigned char saved = SREG;
+   _CLI(); value = pll_ticks; SREG = saved;
+   return value;
+}
 
-
-#define MINOHM  221 //237
-#define MAXOHM  249 //253
-#define AVEOHM  233 //245
-#define INCREASE 1
-#define DECREASE 2
-#define IDLE     3
-#define STOP     0
-#define FIRST    0
-#define SECOND   1
-#define THIRD    2
-
-#define FREQSTEP  2
-
-#define ORGIN_REGADDR 0x0002
-#define ORGIN_FRIQADDR 0x0003
-
-#define EEP_CHK 0x00ff
-
-
-
-unsigned char f_cnt,f_data,f_data2,t0_cnt,t2_cnt;
-unsigned char ucOrgpt,ucRxDATA,ucTxDATA,ucError_flag,ucRUNFlag,ucFriqDel;
-unsigned  usADCfchk;
+static unsigned char take_command(void)
+{
+   unsigned char value, saved = SREG;
+   _CLI(); value = ucRxDATA; ucRxDATA = 0; SREG = saved;
+   return value;
+}
 
 void ready_notice_clear_upload_marker(void)
 {
    unsigned char i;
-   for (i = 0; i < ATMEGA8_UPLOAD_MARKER_LENGTH; i++) {
-      funEEprom_Read(ATMEGA8_UPLOAD_MARKER_ADDRESS + i);
-      _CLI();
-      funEEprom_Write(ATMEGA8_UPLOAD_MARKER_ADDRESS + i, 0xff);
-      _SEI();
-   }
-   funEEprom_Read(ATMEGA8_UPLOAD_MARKER_ADDRESS + ATMEGA8_UPLOAD_MARKER_LENGTH - 1);
+   for (i = 0; i < ATMEGA8_UPLOAD_MARKER_LENGTH; ++i)
+      funEEprom_Write(ATMEGA8_UPLOAD_MARKER_ADDRESS + i, 0xFF);
+   (void)funEEprom_Read(ATMEGA8_UPLOAD_MARKER_ADDRESS + ATMEGA8_UPLOAD_MARKER_LENGTH - 1);
 }
 
-void funEeprom_reload()
+static unsigned char apply_code(unsigned char code)
 {
-   if(funEEprom_Read(EEP_CHK)==0x55){
-      ucOrgpt=funEEprom_Read(ORGIN_REGADDR);
-      if(ucOrgpt<MINOHM){ucOrgpt=AVEOHM;funEEprom_Write(ORGIN_REGADDR,ucOrgpt);}
-      if(ucOrgpt>MAXOHM){ucOrgpt=AVEOHM;funEEprom_Write(ORGIN_REGADDR,ucOrgpt);}
-      ucFreqOld=funEEprom_Read(ORGIN_FRIQADDR);
-   }else{
-     ucOrgpt=AVEOHM; //2k
-     ucFreqOld=0x7d;
-     funEEprom_Write(EEP_CHK,0x55);
-     funEEprom_Write(ORGIN_REGADDR,AVEOHM);
-     funEEprom_Write(ORGIN_FRIQADDR,ucFreqOld);
-   }
+   if (!TWI_data(code)) { control_fault = 1; return 0; }
+#if PLL_RUNTIME_TRACKING_ENABLED
+   active_code = code;
+#endif
+   return 1;
 }
 
-
-static unsigned short usDAC[3];
-
-void funFrequecy_scan()
-  {
-    unsigned char  ucRegCnt=0;
-    
-    if(ucRUNFlag){
-            //  bit_set(PORTD,6);
-        ucFriqDel++;
-        if(ucFriqDel==10){
-           ucFriqDel=0;
-           frequency();
-        //     eep_write_word(0x0c,ucFreqNew);
-           if((ucFreqNew>=0x60) && (ucFreqNew<=0x84)){
-               if(ucFreqOld>=ucFreqNew){ucRegCnt=((ucFreqOld-ucFreqNew)/FREQSTEP)+1;}
-               if(ucFreqOld<=ucFreqNew){ucRegCnt=1;}
-                 switch(ucRegCnt){
-                   case 1:
-
-                     TWI_data(ucOrgpt);
-                     DELAY_100MS;
-                     break;
-                   case 2:
-                 //    DELAY_1S;
-                     if(ucOrgpt<MINOHM)ucOrgpt=MINOHM;
-                     TWI_data(ucOrgpt-1);
-                  //   DELAY_100MS;
-                 //    DELAY_100MS;
-                     break;
-                   case 3:
-                 //    DELAY_1S;
-                     if(ucOrgpt<MINOHM)ucOrgpt=MINOHM;
-                     TWI_data(ucOrgpt-2);
-                  //   DELAY_100MS;
-                 //    DELAY_100MS;
-                     break;
-                   case 4:
-                //     DELAY_1S;
-                     if(ucOrgpt<MINOHM)ucOrgpt=MINOHM;
-                     TWI_data(ucOrgpt-3);
-                 //    DELAY_100MS;
-                 //    DELAY_100MS;
-                     break;
-                   case 5:
-               //      DELAY_1S;
-                     if(ucOrgpt<MINOHM)ucOrgpt=MINOHM;
-                     TWI_data(ucOrgpt-4);
-                  //   DELAY_100MS;
-                  //   DELAY_100MS;
-                     break;
-                   case 6:
-              //       DELAY_1S;
-                     if(ucOrgpt<MINOHM)ucOrgpt=MINOHM;
-                     TWI_data(ucOrgpt-5);
-                 //    DELAY_100MS;
-                 //    DELAY_100MS;
-                     break;
-                   case 7:
-              //       DELAY_1S;
-                     if(ucOrgpt<MINOHM)ucOrgpt=MINOHM;
-                     TWI_data(ucOrgpt-6);
-                   //  DELAY_100MS;
-                   //  DELAY_100MS;
-                     break;
-                   case 8:
-              //       DELAY_1S;
-                     if(ucOrgpt<MINOHM)ucOrgpt=MINOHM;
-                     TWI_data(ucOrgpt-7);
-                 //    DELAY_100MS;
-                 //    DELAY_100MS;
-                     break;
-                   case 9:
-              //       DELAY_1S;
-                     if(ucOrgpt<MINOHM)ucOrgpt=MINOHM;
-                     TWI_data(ucOrgpt-8);
-                  //   DELAY_100MS;
-                 //    DELAY_100MS;
-                     break;
-                   case 10:
-              //       DELAY_1S;
-                     if(ucOrgpt<MINOHM)ucOrgpt=MINOHM;
-                     TWI_data(ucOrgpt-9);
-                  //   DELAY_100MS;
-                  //   DELAY_100MS;
-                     break;
-                   default:
-                     break;
-                 }
-           }
-
-        }
-    }else{
-      ucFriqDel=0;
-
-    }
-  }
-
-
-
-//=================================
-int main( void )
+static unsigned char service_control(void)
 {
+   ready_notice_process();
+   if (ucError_flag) { control_fault = 1; return 0; }
+   if (control_fault || ucRxDATA == 0x29 || ucRxDATA == 0x21) return 0;
+   if (operation_active && (unsigned short)(now_ticks() - operation_start) >= PLL_TUNE_TIMEOUT_TICKS) return 0;
+   return 1;
+}
 
-    static unsigned char ucOnschk,ucPortd;
-    static unsigned char ucRegsDir=0,ucloopcnt=0;
+static unsigned char wait_ticks(unsigned short ticks)
+{
+   unsigned short started = now_ticks();
+   while ((unsigned short)(now_ticks() - started) < ticks)
+      if (!service_control()) return 0;
+   return service_control();
+}
 
+static unsigned char measure_code(unsigned char code, unsigned short *current, unsigned short *frequency_count)
+{
+   unsigned char saved;
+   unsigned short samples, low, high, count;
+   unsigned long sum;
+   unsigned short started;
+   if (!service_control() || !apply_code(code) || !wait_ticks(PLL_SETTLE_TICKS)) return 0;
+   saved = SREG;
+   _CLI(); adc_samples = 0; adc_sum = 0; adc_minimum = 1023; adc_maximum = 0; SREG = saved;
+   started = now_ticks();
+   do {
+      if (!service_control()) return 0;
+      saved = SREG; _CLI(); samples = adc_samples; SREG = saved;
+      if ((unsigned short)(now_ticks() - started) > PLL_SAMPLE_COUNT + 20U) return 0;
+   } while (samples < PLL_SAMPLE_COUNT);
+   saved = SREG;
+   _CLI(); sum = adc_sum; low = adc_minimum; high = adc_maximum; count = f_data2; SREG = saved;
+   /* CNT는 발진기 출력이다. 이 검사만으로 실제 브릿지 피드백 유무를 알 수는 없다. */
+   if (!count || count == 65535U || low < 4 || high - low > PLL_CURRENT_SPREAD_MAX) return 0;
+   if ((PLL_FREQ_COUNT_MIN && count < PLL_FREQ_COUNT_MIN) ||
+       (PLL_FREQ_COUNT_MAX && count > PLL_FREQ_COUNT_MAX)) return 0;
+   *current = (unsigned short)sum; /* 평균의 소수 정보를 보존: ADC 32개 합계 */
+   *frequency_count = count;
+   return 1;
+}
 
-    funAtmega8_PortInit();
-    funAtmega8_ADC_Init();
-    funAtmega8_Timer0Init(); //add 202009
-    TWI_init_master();
-    funInit_ext1();
-    funAtmega8_UartInit();
+static void manual_tune(unsigned char command)
+{
+   unsigned char result = ucOrgpt;
+   unsigned short frequency_count;
+   (void)command;
+   /* 이전 0x11 단계 출력 상승도 같은 제한 탐색으로 처리한다. */
+   ucError_flag = 0;
+   pll_active = 1;
+   operation_active = 1;
+   operation_start = now_ticks();
+   funPutChar(0x17);
+   if (phase_find_minimum(ucOrgpt, &result, &frequency_count, measure_code) &&
+       service_control() && tuning_store_save(result, frequency_count) && service_control()) {
+      ucOrgpt = result;
+      ucFreqOld = frequency_count;
+      /* EEPROM 완료 및 읽기 검증 뒤에만 완료를 알린다. */
+      funPutChar(0x19);
+   } else {
+      funPutChar(0x12);
+      (void)apply_code(ucOrgpt);
+   }
+   operation_active = 0;
+   pll_active = ucRUNFlag;
+}
 
-//    INT0_RISING_EDGE;
-	_SEI();
-//    INT0_ENABLE;
-    TCNT0 = TIMER_RELOAD;
-    TIMER0_ENABLE;
-    funEeprom_reload();
+int main(void)
+{
+   unsigned char command;
+   unsigned short fault_sent = 0;
+#if PLL_RUNTIME_TRACKING_ENABLED
+   unsigned char next, low, high;
+   signed char direction = 1;
+   unsigned short track_at = 0;
+#endif
+   funAtmega8_PortInit();
+   funAtmega8_ADC_Init();
+   funAtmega8_Timer0Init();
+   TWI_init_master();
+   funInit_ext1();
+   funAtmega8_UartInit();
+   (void)tuning_store_load(&ucOrgpt, &ucFreqOld);
+   _SEI();
+   TIMER0_ENABLE;
+   (void)apply_code(ucOrgpt);
+   ready_notice_start();
 
-
-    DELAY_100MS;
-    ready_notice_start();
-    ucloopcnt=0;
-    ucOnschk=0;
-    ucError_flag=0;
-    ucRegsDir=IDLE;
-    ucRUNFlag=0;
- //   DELAY_100MS;
-    TWI_data(ucOrgpt);//2k
-    ucFriqDel=0;
-    INT1_ENABLE;
- //                 ucOrgpt=238;//test
-
-    while(1){
+   while (1) {
       ready_notice_process();
-      INT1_ENABLE;
-      if(ucRxDATA == 0x11)     //step  tuning
-      {
-        ucRxDATA=0;
-        ucRegsDir=STOP;
-        ucOnschk=2;
+      if (ucError_flag) control_fault = 1;
+      if (control_fault) {
+         pll_active = 0;
+         ucRUNFlag = 0;
+         if ((unsigned short)(now_ticks() - fault_sent) >= 20U) {
+            fault_sent = now_ticks();
+            funPutChar(ATMEGA8_CONTROL_FAULT);
+         }
+         continue;
       }
-
-      if(ucRxDATA == 0x17)      // direct tuning
-      {
-        ucRxDATA=0;
-        ucRegsDir=STOP;
-        ucOnschk=7;
+      command = take_command();
+      if (command == 0x29) {
+         ucRUNFlag = 0;
+         pll_active = 0;
+         (void)apply_code(ucOrgpt);
+      } else if (command == 0x21) {
+         ucRUNFlag = 1;
+         pll_active = 1;
+#if PLL_RUNTIME_TRACKING_ENABLED
+         track_at = now_ticks();
+#endif
+      } else if ((command == 0x17 || command == 0x11) && !ucRUNFlag) {
+         manual_tune(command);
       }
-
-      if(ucRxDATA == 0x21){ucRUNFlag=1;ucRxDATA=0;ucRegsDir=IDLE;t0_cnt=0;}
-      if(ucRxDATA == 0x29){ucRUNFlag=0;ucRxDATA=0;ucRegsDir=IDLE;t0_cnt=0;}
-
-      if(ucPortd){
-        DELAY_1S;
-        ucPortd=0;
-
-          ucloopcnt=0;
-          TWI_data(ucOrgpt);
-          DELAY_100MS;DELAY_100MS;DELAY_100MS;DELAY_100MS;
-          DELAY_100MS;DELAY_100MS;
-
-          usDAC[FIRST]=ADC_DATA;
-
-          TWI_data(ucOrgpt+1);
-          DELAY_100MS;DELAY_100MS;DELAY_100MS;DELAY_100MS;
-          DELAY_100MS;DELAY_100MS;
-
-          usDAC[SECOND]=ADC_DATA;
-
-          if(usDAC[FIRST] > usDAC[SECOND]){
-            usDAC[THIRD]=usDAC[SECOND];
-            TWI_data(ucOrgpt-1);
-            ucRegsDir=INCREASE;
-          }else{
-            usDAC[THIRD]=usDAC[FIRST];
-            TWI_data(ucOrgpt);
-            ucRegsDir=DECREASE;
-          }
-
-        //  if(ucError_flag){ucRegsDir=STOP; ucOnschk=1;ucError_flag=0;}
-      }else{
-
-        switch(ucRegsDir){
-        case STOP:
-          ucOnschk++;
-
-          if(ucOnschk==2){
-            funPutChar(0x12);  //tuning  error
-            ucOnschk=0;
-            ucRegsDir=IDLE;       //end
-          }
-          if(ucOnschk==3){
-            ucPortd=1;
-            funPutChar(0x13);  //tuning 55
-            DELAY_1MS;
-          }
-          if(ucOnschk==4){
-            ucPortd=1;
-            funPutChar(0x14);  //tuning 65
-            DELAY_1MS;
-          }
-          if(ucOnschk==5){
-            ucPortd=1;
-            funPutChar(0x15);  //tuning 75
-            DELAY_1MS;
-          }
-          if(ucOnschk==6){
-            ucPortd=1;
-            funPutChar(0x16);  //tuning 100
-            DELAY_1MS;
-          }
-          if(ucOnschk==7 || ucOnschk==9){
-            funPutChar(0x19);  //tuning end
-            ucOnschk=0;
-            ucRegsDir=IDLE;
-           // ucOrgpt=ucOrgpt+2;
-           // TWI_data(ucOrgpt);
-
-            frequency();
-            ucFreqOld=ucFreqNew;
-            funEEprom_Write(ORGIN_REGADDR,ucOrgpt);
-            funEEprom_Write(ORGIN_FRIQADDR,ucFreqOld);
-          }
-          //==================
-         if(ucOnschk==8){
-            ucPortd=1;
-            funPutChar(0x17);  //tuning lav
-          }
-
-         ucloopcnt=0;
-
-        break;
-        case INCREASE:
-          ucloopcnt++;
-          if(ucOrgpt<MAXOHM)ucOrgpt++;
-         // ucOrgpt++;
-          TWI_data(ucOrgpt);
-          DELAY_100MS;DELAY_100MS;DELAY_100MS;DELAY_100MS;
-          DELAY_100MS;DELAY_100MS;
-          usDAC[FIRST]=ADC_DATA;
-
-          if(usDAC[THIRD] > usDAC[FIRST]){
-            ucRegsDir=INCREASE;
-            usDAC[THIRD]=usDAC[FIRST];
-          }else{
-            ucOrgpt--;
-            TWI_data(ucOrgpt);
-            ucRegsDir=STOP;
-          }
-          if(ucloopcnt>=20)ucRegsDir=STOP;
-       //   if(ucError_flag){ucRegsDir=STOP; ucOnschk=1;ucError_flag=0;}
-          break;
-
-        case DECREASE:
-          ucloopcnt++;
-          if(ucOrgpt>MINOHM)ucOrgpt--;
-         // ucOrgpt--;
-          TWI_data(ucOrgpt);
-          DELAY_100MS;DELAY_100MS;DELAY_100MS;DELAY_100MS;
-          DELAY_100MS;DELAY_100MS;
-          usDAC[FIRST]=ADC_DATA;
-
-          if(usDAC[THIRD] > usDAC[FIRST]){
-            ucRegsDir=DECREASE;
-            usDAC[THIRD]=usDAC[FIRST];
-          }else{
-            ucOrgpt++;
-            TWI_data(ucOrgpt);
-
-            ucRegsDir=STOP;
-          }
-          if(ucloopcnt>=20)ucRegsDir=STOP;
-        //  if(ucError_flag){ucRegsDir=STOP; ucOnschk=1;ucError_flag=0;}
-          break;
-          case IDLE:
-            if(t2_cnt>=1){
-              t2_cnt=0;
-            //  bit_set(PORTD,5);
-              funFrequecy_scan();
-            //  bit_clear(PORTD,5);
-            }
-        
-            break;
-
-        default:
-
-          break;
-        }
-
-
+#if PLL_RUNTIME_TRACKING_ENABLED
+      if (ucRUNFlag && (unsigned short)(now_ticks() - track_at) >= PLL_RUNTIME_INTERVAL_TICKS) {
+         low = ucOrgpt > PLL_POT_MIN + PLL_RUNTIME_RADIUS ? ucOrgpt - PLL_RUNTIME_RADIUS : PLL_POT_MIN;
+         high = ucOrgpt < PLL_POT_MAX - PLL_RUNTIME_RADIUS ? ucOrgpt + PLL_RUNTIME_RADIUS : PLL_POT_MAX;
+         next = active_code;
+         operation_start = now_ticks();
+         operation_active = 1;
+         if (phase_track_once(active_code, low, high, direction, &next, measure_code) && service_control())
+            (void)apply_code(next);
+         else if (!control_fault) (void)apply_code(next);
+         operation_active = 0;
+         direction = -direction;
+         track_at = now_ticks();
       }
-    }
+#endif
+   }
 }
-
-
-
-
-
-
- //==============================================================
 
 void spi_send_data8(unsigned char data1)
   {

@@ -74,34 +74,6 @@ cmake --build build
 
 > CubeMX 모드 감지 메시지: `-- [MODE] CubeMX 자동 생성 구성 사용` 확인
 
-### 0-4. VS Code 빌드·디버그·업로드
-
-STM32CubeCLT와 STM32CubeG4 펌웨어 팩이 설치된 Windows 개발 PC에서는 프로젝트 폴더
-(`us_main_board_st`)를 VS Code로 연다. `.vscode/`와 `CMakePresets.json`이 Debug/Release
-컴파일, Cortex-Debug, ST-LINK 업로드 작업을 제공한다.
-
-- **Debug 빌드**: `Ctrl+Shift+B` 또는 `Build Debug (STM32)` 작업
-- **Release 빌드**: `Build Release (STM32)` 작업
-- **호스트 시험**: `Run Host Tests` 작업
-- **디버그 및 프로그램 쓰기**: 실행 및 디버그에서 `Debug STM32G474 (ST-LINK)` 선택
-  (Debug 빌드를 마친 뒤 ST-LINK GDB 서버로 연결하고 `main`에서 멈춤)
-- **현장 업데이트**: `Upload UPDATE HEX (ST-LINK; stop output first)` 작업
-  (Release 빌드 후 UPDATE HEX 쓰기, Verify, Reset 실행)
-
-디버그/업로드 전에 초음파 출력을 정지하고 ST-LINK의 SWDIO, SWCLK, GND, NRST를
-연결한다. 업로드 작업은 설정 보존용 UPDATE HEX를 사용하며 mass erase를 실행하지 않는다.
-
-명령줄에서 직접 실행하려면 다음 preset을 사용한다.
-
-```powershell
-cmake --preset vscode-debug
-cmake --build --preset vscode-debug
-
-cmake --preset vscode-release
-cmake --build --preset vscode-release
-cmake --build --preset vscode-release --target test_host
-```
-
 ---
 
 ## Step 1 ~ 8: 에이전트 코딩 요청
@@ -324,7 +296,6 @@ copilot-instructions.md, docs/SAFETY.md를 먼저 읽어라.
 | `undefined reference to HAL_xxx` | CubeMX 모드 미감지           | `cmake/stm32cubemx/CMakeLists.txt` 존재 여부 확인 |
 | `multiple definition of`         | CubeMX 생성 파일과 src/ 중복 | CubeMX의 main.c 제거, src/main.c만 사용           |
 | `region FLASH overflowed`        | 코드 크기 초과 (128KB)       | 최적화 -Os 적용, 미사용 HAL 모듈 제거             |
-| `LOAD segment with RWX permissions` | Flash 초기화 배열의 쓰기 플래그 | 링커 스크립트의 Flash 초기화 배열을 `READONLY`로 선언 |
 | `hard fault at startup`          | 스택 오버플로                | 링커 스크립트 \_Min_Stack_Size 증가 (0x800 이상)  |
 
 ### 런타임 에러
