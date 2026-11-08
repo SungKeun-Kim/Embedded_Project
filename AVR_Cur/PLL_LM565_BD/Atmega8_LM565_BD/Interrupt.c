@@ -8,6 +8,8 @@
 #include "Uart.h"
 #include "TSO8.H"
 #include "ready_notice.h"
+#include "runtime_config.h"
+extern volatile unsigned char timeout_reset_requested, timeout_reset_capable;
 
 //#define TEST
 
@@ -30,6 +32,7 @@ __interrupt void Timer0_OverFlow(void)
    unsigned short value;
    TCNT0 = TIMER_RELOAD;
    ++pll_ticks;
+   if (runtime_permit_ticks) --runtime_permit_ticks;
    ready_notice_tick();
    if (++f_cnt >= 50) {
       f_cnt = 0;
@@ -40,6 +43,7 @@ __interrupt void Timer0_OverFlow(void)
       value = ADC;
       ADCSR |= (1 << ADIF);
       ADC_DATA = value;
+      adc_stamp = pll_ticks;
       if (pll_active && value > PLL_ADC_TRIP) ucError_flag = 1;
       if (adc_samples < PLL_SAMPLE_COUNT) {
          adc_sum += value;
@@ -131,7 +135,14 @@ __interrupt void USART_RX_Complet(void)
    if (status & ((1 << FE) | (1 << DOR) | (1 << PE))) return;
    if (data == ATMEGA8_BOOT_ACK || data == ATMEGA8_STATUS_REQUEST || data == ATMEGA8_UPLOAD_ACK)
       ready_notice_receive(data);
-   else if (data == 0x29 || ucRxDATA != 0x29) ucRxDATA = data;
+   else if (data == ATMEGA8_TIMEOUT_RESET) timeout_reset_requested = 1;
+   else if (data == ATMEGA16_TIMEOUT_RESET_CAPABLE) timeout_reset_capable = 1;
+   else if (data == ATMEGA8_RUNTIME_READY) runtime_permit_ticks = RT_PERMIT_TICKS;
+   else if (data == ATMEGA8_RUNTIME_HOLD) runtime_permit_ticks = 0;
+   else if (data == 0x29 || ucRxDATA != 0x29) {
+      if (data == 0x29) runtime_permit_ticks = 0;
+      ucRxDATA = data;
+   }
 }
 
 #pragma vector=USART_TXC_vect

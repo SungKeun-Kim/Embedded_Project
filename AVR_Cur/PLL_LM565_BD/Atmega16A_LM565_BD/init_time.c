@@ -51,7 +51,11 @@ __interrupt void TIMER0_COMP_interrupt(void)
    if(f_cnt>=100){      // frequency count //
       tick = 1;
       ready_notice_tick();
-      tuning_key_tick(!autotunkeyTest, auto_tun_flag && !ucPortdFlag && RemoteKeyTest && !ErrorFlag);
+      {
+         unsigned char pressed = !autotunkeyTest;
+         unsigned char allowed = auto_tun_flag && !ucPortdFlag && RemoteKeyTest && (!ErrorFlag || timeout_reset_allowed);
+         tuning_key_tick(pressed, allowed);
+      }
       f_cnt=0;
       t0_cnt++;
       f_data2 = f_data;
@@ -131,6 +135,8 @@ __interrupt void USART_RX_Complet(void)
    if (status & ((1 << FE) | (1 << DOR) | (1 << PE))) return;
    if (data == ATMEGA8_BOOT_NOTICE || data == ATMEGA8_STATUS_REPLY || data == ATMEGA8_UPLOAD_NOTICE)
       ready_notice_receive(data);
-   else if (data == 0x12 || data == ATMEGA8_CONTROL_FAULT ||
-            (ucRxDATA != 0x12 && ucRxDATA != ATMEGA8_CONTROL_FAULT)) ucRxDATA = data;
+   else if (data == 0x12 || data == ATMEGA8_CONTROL_FAULT) ucRxDATA = data;
+   else if (ucRxDATA != 0x12 && ucRxDATA != ATMEGA8_CONTROL_FAULT) {
+      if (data == ATMEGA8_TUNE_TIMEOUT || ucRxDATA != ATMEGA8_TUNE_TIMEOUT) ucRxDATA = data;
+   }
 }

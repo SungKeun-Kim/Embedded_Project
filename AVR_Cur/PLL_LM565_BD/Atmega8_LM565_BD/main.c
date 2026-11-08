@@ -7,20 +7,26 @@
 #include "TSO8.H"
 #include "Uart.h"
 #include "ready_notice.c"
+static unsigned char service_control(void);
+#define TUNING_STORE_CAN_COMMIT() service_control()
 #include "tuning_store.c"
 #include "phase_search.c"
+#include "runtime_control.c"
+#include "tuning_deadline.c"
 
 volatile unsigned char f_cnt,t0_cnt,t2_cnt;
-volatile unsigned short f_data,f_data2,pll_ticks;
+volatile unsigned short f_data,f_data2,pll_ticks,adc_stamp;
+volatile unsigned char runtime_permit_ticks;
+volatile unsigned char timeout_reset_requested, timeout_reset_capable;
 volatile unsigned short adc_samples,adc_minimum=1023,adc_maximum;
 volatile unsigned long adc_sum;
 volatile unsigned char pll_active,ucRxDATA,ucError_flag;
 unsigned char ucOrgpt,ucTxDATA,ucRUNFlag;
-static unsigned char control_fault,operation_active;
-#if PLL_RUNTIME_TRACKING_ENABLED
-static unsigned char active_code;
-#endif
-static unsigned short operation_start;
+static unsigned char control_fault,operation_active,settings_valid;
+static unsigned char timeout_fault, timeout_reset_ack;
+static unsigned char active_code, tune_prepared, tune_restore_code;
+static runtime_control runtime;
+static unsigned short progress_at;
 
 static unsigned short now_ticks(void)
 {
@@ -47,19 +53,21 @@ void ready_notice_clear_upload_marker(void)
 
 static unsigned char apply_code(unsigned char code)
 {
-   if (!TWI_data(code)) { control_fault = 1; return 0; }
-#if PLL_RUNTIME_TRACKING_ENABLED
+   if (!TWI_data(code)) { timeout_fault = 0; control_fault = 1; return 0; }
    active_code = code;
-#endif
    return 1;
 }
 
 static unsigned char service_control(void)
 {
    ready_notice_process();
-   if (ucError_flag) { control_fault = 1; return 0; }
+   if (ucError_flag) { timeout_fault = 0; control_fault = 1; return 0; }
    if (control_fault || ucRxDATA == 0x29 || ucRxDATA == 0x21) return 0;
-   if (operation_active && (unsigned short)(now_ticks() - operation_start) >= PLL_TUNE_TIMEOUT_TICKS) return 0;
+   if ((operation_active || tune_prepared) && !tune_clock_ok(now_ticks())) return 0;
+   if (operation_active && (unsigned short)(now_ticks() - progress_at) >= PLL_TUNE_PROGRESS_TICKS) {
+      progress_at = now_ticks();
+      funPutChar(ATMEGA8_TUNE_PROGRESS);
+   }
    return 1;
 }
 
@@ -89,7 +97,8 @@ static unsigned char measure_code(unsigned char code, unsigned short *current, u
    saved = SREG;
    _CLI(); sum = adc_sum; low = adc_minimum; high = adc_maximum; count = f_data2; SREG = saved;
    /* CNT는 발진기 출력이다. 이 검사만으로 실제 브릿지 피드백 유무를 알 수는 없다. */
-   if (!count || count == 65535U || low < 4 || high - low > PLL_CURRENT_SPREAD_MAX) return 0;
+   if (!count || count == 65535U || low < 4) return PHASE_MEASURE_FAILED;
+   if (high - low > PLL_CURRENT_SPREAD_MAX) return PHASE_MEASURE_RETRY;
    if ((PLL_FREQ_COUNT_MIN && count < PLL_FREQ_COUNT_MIN) ||
        (PLL_FREQ_COUNT_MAX && count > PLL_FREQ_COUNT_MAX)) return 0;
    *current = (unsigned short)sum; /* 평균의 소수 정보를 보존: ADC 32개 합계 */
@@ -97,93 +106,96 @@ static unsigned char measure_code(unsigned char code, unsigned short *current, u
    return 1;
 }
 
-static void manual_tune(unsigned char command)
+#include "control_sequence.c"
+#include "fault_recovery.c"
+
+/* 측정/통신/보호를 계속 처리하는 비차단 운전 보정 서비스. */
+static void runtime_service(void)
 {
-   unsigned char result = ucOrgpt;
-   unsigned short frequency_count;
-   (void)command;
-   /* 이전 0x11 단계 출력 상승도 같은 제한 탐색으로 처리한다. */
-   ucError_flag = 0;
-   pll_active = 1;
-   operation_active = 1;
-   operation_start = now_ticks();
-   funPutChar(0x17);
-   if (phase_find_minimum(ucOrgpt, &result, &frequency_count, measure_code) &&
-       service_control() && tuning_store_save(result, frequency_count) && service_control()) {
-      ucOrgpt = result;
-      ucFreqOld = frequency_count;
-      /* EEPROM 완료 및 읽기 검증 뒤에만 완료를 알린다. */
-      funPutChar(0x19);
-   } else {
-      funPutChar(0x12);
-      (void)apply_code(ucOrgpt);
+   static unsigned short last_stamp;
+   unsigned short stamp, sample, frequency, elapsed;
+   unsigned char saved = SREG, permitted;
+   _CLI();
+   stamp = adc_stamp; sample = ADC_DATA; frequency = f_data2;
+   permitted = runtime_permit_ticks;
+   SREG = saved;
+   if (stamp == last_stamp) {
+      if (ucRUNFlag && (unsigned short)(now_ticks() - stamp) > 20U) control_fault = 1;
+      return;
    }
-   operation_active = 0;
-   pll_active = ucRUNFlag;
+   elapsed = (unsigned short)(stamp - last_stamp);
+   last_stamp = stamp;
+   if (tune_prepared || operation_active) return;
+   if (runtime_sample(&runtime, sample, frequency, elapsed, ucRUNFlag,
+       permitted && PLL_RUNTIME_TRACKING_ENABLED)) control_fault = 1;
+   if (runtime.code != active_code) (void)apply_code(runtime.code);
 }
 
 int main(void)
 {
    unsigned char command;
    unsigned short fault_sent = 0;
-#if PLL_RUNTIME_TRACKING_ENABLED
-   unsigned char next, low, high;
-   signed char direction = 1;
-   unsigned short track_at = 0;
-#endif
    funAtmega8_PortInit();
    funAtmega8_ADC_Init();
    funAtmega8_Timer0Init();
    TWI_init_master();
    funInit_ext1();
    funAtmega8_UartInit();
-   (void)tuning_store_load(&ucOrgpt, &ucFreqOld);
+   settings_valid = tuning_store_load(&ucOrgpt, &ucFreqOld);
    _SEI();
    TIMER0_ENABLE;
    (void)apply_code(ucOrgpt);
+   runtime_init(&runtime, ucOrgpt);
    ready_notice_start();
 
    while (1) {
       ready_notice_process();
-      if (ucError_flag) control_fault = 1;
+      if (ucError_flag) { timeout_fault = 0; control_fault = 1; }
+      handle_timeout_reset();
       if (control_fault) {
          pll_active = 0;
          ucRUNFlag = 0;
          if ((unsigned short)(now_ticks() - fault_sent) >= 20U) {
             fault_sent = now_ticks();
-            funPutChar(ATMEGA8_CONTROL_FAULT);
+            funPutChar(timeout_fault && timeout_reset_capable ? ATMEGA8_TUNE_TIMEOUT : ATMEGA8_CONTROL_FAULT);
          }
+         continue;
+      }
+      if (tune_prepared && !tune_clock_ok(now_ticks())) {
+         tune_abort();
+         tune_prepared = 0;
          continue;
       }
       command = take_command();
       if (command == 0x29) {
          ucRUNFlag = 0;
          pll_active = 0;
-         (void)apply_code(ucOrgpt);
+         tune_prepared = 0;
+         rt_suspend(&runtime);
+         (void)apply_code(runtime.code);
+      } else if (command == ATMEGA8_TUNE_PREPARE && !ucRUNFlag) {
+         timeout_reset_ack = 0;
+         pll_active = 1;
+         if (!tune_prepared) {
+            rt_suspend(&runtime);
+            tune_restore_code = runtime.code;
+            tune_clock_start(now_ticks());
+            tune_prepared = 1;
+            (void)apply_code(tune_restore_code);
+         }
       } else if (command == 0x21) {
+         timeout_reset_ack = 0;
+         if (!settings_valid || tune_prepared) { control_fault = 1; continue; }
          ucRUNFlag = 1;
          pll_active = 1;
-#if PLL_RUNTIME_TRACKING_ENABLED
-         track_at = now_ticks();
-#endif
       } else if ((command == 0x17 || command == 0x11) && !ucRUNFlag) {
+         /* 구형 16A의 노브 출력에서 새 50% 튜닝을 실행하지 않는다. */
+         if (!tune_prepared) { funPutChar(0x12); control_fault = 1; continue; }
          manual_tune(command);
+         tune_prepared = 0;
+         if (!control_fault) runtime_init(&runtime, ucOrgpt);
       }
-#if PLL_RUNTIME_TRACKING_ENABLED
-      if (ucRUNFlag && (unsigned short)(now_ticks() - track_at) >= PLL_RUNTIME_INTERVAL_TICKS) {
-         low = ucOrgpt > PLL_POT_MIN + PLL_RUNTIME_RADIUS ? ucOrgpt - PLL_RUNTIME_RADIUS : PLL_POT_MIN;
-         high = ucOrgpt < PLL_POT_MAX - PLL_RUNTIME_RADIUS ? ucOrgpt + PLL_RUNTIME_RADIUS : PLL_POT_MAX;
-         next = active_code;
-         operation_start = now_ticks();
-         operation_active = 1;
-         if (phase_track_once(active_code, low, high, direction, &next, measure_code) && service_control())
-            (void)apply_code(next);
-         else if (!control_fault) (void)apply_code(next);
-         operation_active = 0;
-         direction = -direction;
-         track_at = now_ticks();
-      }
-#endif
+      if (!control_fault) runtime_service();
    }
 }
 

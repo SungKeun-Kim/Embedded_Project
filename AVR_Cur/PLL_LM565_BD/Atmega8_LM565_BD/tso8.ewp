@@ -63,7 +63,7 @@
         </option>
         <option>
           <name>SCCStackSize</name>
-          <state>0x20</state>
+          <state>0xC0</state>
         </option>
         <option>
           <name>SCExtCStack</name>
@@ -71,7 +71,7 @@
         </option>
         <option>
           <name>SCRStackSize</name>
-          <state>16</state>
+          <state>64</state>
         </option>
         <option>
           <name>SCExtRStack</name>
@@ -1025,7 +1025,7 @@
         </option>
         <option>
           <name>SCCStackSize</name>
-          <state>0x30</state>
+          <state>0xC0</state>
         </option>
         <option>
           <name>SCExtCStack</name>
@@ -1033,7 +1033,7 @@
         </option>
         <option>
           <name>SCRStackSize</name>
-          <state>32</state>
+          <state>64</state>
         </option>
         <option>
           <name>SCExtRStack</name>

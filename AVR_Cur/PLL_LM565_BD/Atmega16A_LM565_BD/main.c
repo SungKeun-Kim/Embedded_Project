@@ -3,6 +3,9 @@
 #include "init_disp.c"
 #include "init_adc.c"
 #include "tuning_key.c"
+#include "tuning_output.c"
+#include "tuning_watch.c"
+#include "runtime_link.c"
 #include "key.c"
 #include "error.c"
 #include "init_time.c"
@@ -47,12 +50,16 @@ static void ResetInit()
    ucFinish=1;                // timeover value
    PWM_STEP_CNT=2;  //2020207
    ErrorFlag=0;beeper_off();error_count=0;
+   timeout_reset_allowed = reset_wait = reset_ticks = 0;
+   tuning_key_block_until_release();
    auto_tun_flag=1;
    ucPwmmin=77;
    OCR2 = ucPwmmin;     //pwm off
    ucRunOnes=0;
 
 }
+
+#include "error_recovery.c"
 
 //=============================================================
 
@@ -111,8 +118,8 @@ void process_buzzer(void)
 
 void main()
 {
-    unsigned char tick_now, command, saved, tune_seen = 0;
-    unsigned short tune_ticks = 0;
+    unsigned char tick_now, command, saved, runtime_knob, runtime_target;
+    unsigned char runtime_running, runtime_allowed, runtime_pwm;
 
    init_port();
    init_timer0();
@@ -153,6 +160,7 @@ void main()
       ucRxDATA = 0;
       SREG = saved;
       if (command == 0x12 || command == ATMEGA8_CONTROL_FAULT) control_error(1);
+      else if (command == ATMEGA8_TUNE_TIMEOUT) control_error(2);
 
       if (tick_now) {
          /* 튜닝 중에도 같은 과전류 검사 경로를 실행한다. */
@@ -161,20 +169,29 @@ void main()
          if (adc_fault) control_error(0);
          error_chk();
          ready_notice_poll();
-         if (!auto_tun_flag) {
-            ++tune_ticks;
-            if ((!tune_seen && tune_ticks >= 20) || tune_ticks >= 700) control_error(1);
-         } else { tune_ticks = 0; tune_seen = 0; }
+         funPutChar(ATMEGA16_TIMEOUT_RESET_CAPABLE);
+         runtime_knob = ad_data[0] / 10;
+         if (runtime_knob > 90) runtime_knob = 90;
+         runtime_target = (unsigned short)runtime_knob * 173U / 90U + 77U;
+         runtime_running = !RemoteKeyTest;
+         if (!ucPortdFlag) runtime_running = 0;
+         runtime_allowed = auto_tun_flag;
+         if (ErrorFlag) runtime_allowed = 0;
+         runtime_pwm = OCR2;
+         funPutChar(runtime_link_tick(runtime_running, runtime_allowed, runtime_pwm, runtime_target));
+         if (!auto_tun_flag && !tuning_start_sent) tuning_output_tick();
       }
+      if (tuning_watch_update(!auto_tun_flag, tuning_start_sent, command, tick_now)) control_error(1);
       if (ErrorFlag) {
+         error_recovery_process(command, tick_now);
          ready_notice_process();
          continue;
       }
       if (!auto_tun_flag) {
-         if (command == 0x17) { tune_seen = 1; display(0,8); }
-         if (command == 0x19 && tune_seen) {
+         if (command == 0x17) display(0,8);
+         if (command == 0x19 && tuning_peer_seen) {
             ResetInit();
-            disp_start();
+            display(1,4);
          }
       }
       funKey_scan();

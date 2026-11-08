@@ -10,6 +10,18 @@
 
 /* 두 MCU를 함께 갱신해야 제어 오류를 운전 오류로 처리할 수 있다. */
 #define ATMEGA8_CONTROL_FAULT  0x1A
+#define ATMEGA8_TUNE_PREPARE   0x1C
+#define ATMEGA8_TUNE_PROGRESS  0x1D
+#define ATMEGA8_TUNE_TIMEOUT   0x1E
+
+/* 시간 초과만 해제한다. 기능 통지를 받지 못한 구형 패널에는 기존 오류를 보낸다. */
+#define ATMEGA8_TIMEOUT_RESET  0xB2
+#define ATMEGA8_TIMEOUT_RESET_ACK 0xB3
+#define ATMEGA16_TIMEOUT_RESET_CAPABLE 0xB4
+
+/* 새 16A가 100.8ms마다 송신. 8에서 약 512ms 후 만료된다. */
+#define ATMEGA8_RUNTIME_READY  0xB0
+#define ATMEGA8_RUNTIME_HOLD   0xB1
 
 #define ATMEGA8_UPLOAD_MARKER_ADDRESS 0x01F8
 #define ATMEGA8_UPLOAD_MARKER_LENGTH 8

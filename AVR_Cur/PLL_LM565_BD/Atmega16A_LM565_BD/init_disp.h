@@ -134,7 +134,8 @@ char ucOrgPL_L='0';
 char ucPL_H=0,ucPL_L=0;
 
 byte  ucTimerSetFlag=0,ucBitKeyOnes=0,KeyCnt=0;
-byte  Oldlin2=1,pinbb,pindd,TimeStSpFlag,ucPortdFlag=0,ucT0_min=0,ucFinish=0;
+byte  Oldlin2=1,pinbb,pindd,TimeStSpFlag,ucT0_min=0,ucFinish=0;
+volatile unsigned char ucPortdFlag;
 byte  TimeRemoteFlag,ucPwmmin;
 
 char OrgTimeData0 = '0';
@@ -143,7 +144,8 @@ char ucgErrorDelay = 0;
 
 byte  RemkeyOnlg=1,RemkeyOfflg=1,RemoteSele=0;
 
-byte  _ucOc1val,ucTcnt1hval,ErrorFlag=0,error_count;
+byte  _ucOc1val,ucTcnt1hval,error_count;
+volatile unsigned char ErrorFlag;
 
 unsigned ad_data[3];
 unsigned t0_cnt=0;

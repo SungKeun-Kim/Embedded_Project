@@ -47,7 +47,7 @@ void sonic_off(void)
 
 
 //===========================================
-unsigned char auto_tun_flag;
+volatile unsigned char auto_tun_flag;
 
 void funStSpKey_chk()
 {
@@ -59,7 +59,8 @@ void funStSpKey_chk()
       /* 튜닝 중 출력 설정을 고정한다. 압력/출력 변화와 위상 효과의 혼동을 줄인다. */
       ready_notice_cancel();
       auto_tun_flag = 0;
-      funPutChar(0x17);
+      display(0,8);
+      tuning_output_start();
    }
 }
 

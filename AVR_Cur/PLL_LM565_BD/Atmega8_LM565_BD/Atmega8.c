@@ -18,54 +18,7 @@ void TWI_init_master (void) // 마스터 초기화 기능
     // SCL 주파수 = F_CPU / (16 + 2 (TWBR) .4 ^ TWPS)
 }
 
-/* 전송 완료와 상태를 분리해서 검사한다. NACK에서는 즉시 실패한다. */
-static unsigned char twi_wait(unsigned char expected)
-{
-   unsigned short limit = 60000U;
-   while (!(TWCR & (1 << TWINT))) if (--limit == 0) return 0;
-   return (TWSR & 0xF8) == expected;
-}
-
-static unsigned char twi_stop(void)
-{
-   unsigned short limit = 60000U;
-   TWCR = (1 << TWINT) | (1 << TWSTO) | (1 << TWEN);
-   while (TWCR & (1 << TWSTO)) {
-      if (--limit == 0) { TWCR = 0; return 0; }
-   }
-   return 1;
-}
-
-unsigned char TWI_data(unsigned char data)
-{
-   unsigned char actual;
-   if (data < PLL_POT_MIN || data > PLL_POT_MAX) return 0;
-   TWCR = (1 << TWINT) | (1 << TWSTA) | (1 << TWEN);
-   if (!twi_wait(0x08)) goto failed;
-   TWDR = 0x58;
-   TWCR = (1 << TWINT) | (1 << TWEN);
-   if (!twi_wait(0x18)) goto failed;
-   TWDR = 0;
-   TWCR = (1 << TWINT) | (1 << TWEN);
-   if (!twi_wait(0x28)) goto failed;
-   TWDR = data;
-   TWCR = (1 << TWINT) | (1 << TWEN);
-   if (!twi_wait(0x28)) goto failed;
-   /* 반복 START로 RDAC 값을 읽어, ACK만 받은 상태와 실제 설정을 구분한다. */
-   TWCR = (1 << TWINT) | (1 << TWSTA) | (1 << TWEN);
-   if (!twi_wait(0x10)) goto failed;
-   TWDR = 0x59;
-   TWCR = (1 << TWINT) | (1 << TWEN);
-   if (!twi_wait(0x40)) goto failed;
-   TWCR = (1 << TWINT) | (1 << TWEN);
-   if (!twi_wait(0x58)) goto failed;
-   actual = TWDR;
-   if (!twi_stop()) return 0;
-   return actual == data;
-failed:
-   (void)twi_stop();
-   return 0;
-}
+#include "digipot.c"
 
 void funAtmega8_PortInit(void)
 {

@@ -215,7 +215,8 @@ extern void funRemote_off();
 //extern void funTuning();
 extern void funRemoteKey_prog();
 
-extern unsigned char auto_tun_flag,ucRunOnes,uctuning_cut;
+extern volatile unsigned char auto_tun_flag;
+extern unsigned char ucRunOnes,uctuning_cut;
 extern volatile unsigned char tick;
 
 

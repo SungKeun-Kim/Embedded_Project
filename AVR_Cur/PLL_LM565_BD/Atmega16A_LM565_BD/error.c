@@ -1,8 +1,22 @@
 #include <string.h>
 
+static volatile unsigned char timeout_reset_allowed;
+static unsigned char reset_wait, reset_ticks;
+
 void control_error(unsigned char tuning)
 {
-   if (ErrorFlag) return;
+   /* 2는 시간 초과, 0/1은 전원 재시작이 필요한 오류다. 심각한 오류가 우선한다. */
+   if (ErrorFlag) {
+      if (tuning != 2) {
+         timeout_reset_allowed = 0;
+         reset_wait = reset_ticks = 0;
+         if (!tuning) disp_error2();
+      }
+      return;
+   }
+   timeout_reset_allowed = tuning == 2;
+   reset_wait = reset_ticks = 0;
+   tuning_key_block_until_release();
    ErrorFlag = 1;
    auto_tun_flag = 1;
    ready_notice_cancel();
@@ -20,7 +34,7 @@ void control_error(unsigned char tuning)
 
 void error_chk()
 {
-   if (ErrorFlag) return;
+   if (ErrorFlag && !timeout_reset_allowed) return;
    if (ad_data[2] >= 500) {
       if (++error_count >= 5) control_error(0);
    } else error_count = 0;

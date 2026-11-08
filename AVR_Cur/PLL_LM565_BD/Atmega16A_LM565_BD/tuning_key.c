@@ -1,6 +1,13 @@
 #include "tuning_key.h"
 static volatile unsigned char tuning_hold, tuning_latched, tuning_request;
 
+/* 오류 진입/복구 때 누르고 있던 키를 새 3초 입력으로 해석하지 않는다. */
+void tuning_key_block_until_release(void)
+{
+   tuning_hold = tuning_request = 0;
+   tuning_latched = 1;
+}
+
 void tuning_key_tick(unsigned char pressed, unsigned char allowed)
 {
    if (!pressed) {

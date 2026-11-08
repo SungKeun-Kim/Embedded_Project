@@ -1,0 +1,46 @@
+{
+  "date": "2026-11-08",
+  "version": "START3S_RESET",
+  "boards": [
+    {
+      "device": "ATmega8",
+      "source_backup": ".build\\backups\\ATmega8_upload_20261108_005851_8e0f3607",
+      "verified_source_hex_sha256": "FFD92053C92DC90D68AC58B50DCF805E29C1EB1E1F69C7D2506A4D46EB376302",
+      "flash_file": "FLASH/ATmega8_FLASH_20261108_START3S_RESET.hex",
+      "flash_sha256": "D56266E25253C5C4912DCF9523B00228C956BFA2C6EACAC8CEF83D03789D6AF9",
+      "flash_programmed_bytes": 6443,
+      "flash_capacity_bytes": 8192,
+      "flash_memory_matches_verified_source": true,
+      "eeprom_backup_file": "EEPROM_BACKUP/ATmega8_EEPROM_BACKUP_20261108_005851.hex",
+      "eeprom_hex_sha256": "10DB0606EDF9CDD413899E7B2BA15427CD6A42DFFA480CAE6C3C8BDC249AE1CA",
+      "eeprom_bytes": 512,
+      "eeprom_binary_sha256": "C5CB53A63FE2C5B3E29A7B36D52AA1B6D751B25B09BE723F1DB870F2F819CB3C",
+      "eeprom_is_historical_backup_not_live_read": true,
+      "observed_fuses_do_not_automatically_write": {
+        "lfuse": "0xff",
+        "hfuse": "0xc9",
+        "lock": "0xff"
+      }
+    },
+    {
+      "device": "ATmega16A",
+      "source_backup": ".build\\backups\\ATmega16A_upload_20261108_010304_d2d10b02",
+      "verified_source_hex_sha256": "29191B00F9403800AD4C505977E5C5A14849458F74F4201570FDC3315A57408B",
+      "flash_file": "FLASH/ATmega16A_FLASH_20261108_START3S_RESET.hex",
+      "flash_sha256": "23E6D8E6D29CDA4135E248437A775737F897EDDE94B5F32C2574C20B84C5F97E",
+      "flash_programmed_bytes": 5486,
+      "flash_capacity_bytes": 16384,
+      "flash_memory_matches_verified_source": true,
+      "eeprom_backup_file": "EEPROM_BACKUP/ATmega16A_EEPROM_BACKUP_20261108_010304.hex",
+      "eeprom_hex_sha256": "B2EF804FEE0FBDA0E1A56C2A19B4DA0BEB815125A5BF153C8EDA52E4B112DCD9",
+      "eeprom_bytes": 512,
+      "eeprom_binary_sha256": "760BF413422BACAAB97CB20E59DBB25CB75EB156721F7731D4A690DFF6DC0612",
+      "eeprom_is_historical_backup_not_live_read": true,
+      "observed_fuses_do_not_automatically_write": {
+        "lfuse": "0xff",
+        "hfuse": "0xc9",
+        "lock": "0xff"
+      }
+    }
+  ]
+}

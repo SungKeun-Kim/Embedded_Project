@@ -1,0 +1,33 @@
+{
+  "date": "2026-11-08",
+  "device": "ATmega8",
+  "version": "CENTER220_RANGE185_255_START3S_RESET",
+  "config": {
+    "PLL_POT_MIN": 185,
+    "PLL_POT_MAX": 255,
+    "PLL_POT_DEFAULT": 220,
+    "PLL_RUNTIME_RADIUS": 3
+  },
+  "flash_file": "ATmega8_FLASH_CENTER220_RANGE185_255.hex",
+  "flash_sha256": "3B42855BFAF5C1481CCE19C9634C63A7765ABF8365932C4792DC4D66BFEF6524",
+  "build_hex_sha256": "F83E6EDBB38F8326A000D7A46EC4E5F6101A7A55E8AAB5228E80CA99F141E74E",
+  "flash_programmed_bytes": 6439,
+  "flash_capacity_bytes": 8192,
+  "flash_matches_build_byte_for_byte": true,
+  "eeprom_file": "ATmega8_EEPROM_INITIAL220.hex",
+  "eeprom_hex_sha256": "FAE8BFF4097E43DFC420C922FB2E03B9C894F38B08EC06E8A980126F0CF95EB5",
+  "eeprom_bytes": 512,
+  "eeprom_initial_values": {
+    "0x0002": 220,
+    "0x0003": 125,
+    "0x00FF": 85,
+    "all_other_bytes": 255
+  },
+  "existing_tuning_journal_is_cleared_by_initial_eeprom": true,
+  "atmega16a_image_unchanged_sha256": "29191B00F9403800AD4C505977E5C5A14849458F74F4201570FDC3315A57408B",
+  "host_test_suites_passed": 14,
+  "iar_errors": 0,
+  "iar_warnings": 0,
+  "hardware_uploaded": false,
+  "hardware_range_validation_completed": false
+}

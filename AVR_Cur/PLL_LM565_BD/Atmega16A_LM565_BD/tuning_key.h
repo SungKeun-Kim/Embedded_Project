@@ -4,4 +4,5 @@
 #define TUNING_HOLD_TICKS 31
 void tuning_key_tick(unsigned char pressed, unsigned char allowed);
 unsigned char tuning_key_take(void);
+void tuning_key_block_until_release(void);
 #endif

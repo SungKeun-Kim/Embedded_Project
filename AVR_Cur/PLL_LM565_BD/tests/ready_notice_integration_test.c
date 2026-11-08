@@ -12,6 +12,7 @@ char line2[5][LCD_WIDTH];
 static char lcd_line[LCD_WIDTH];
 static unsigned char cursor;
 static int drop_boot;
+static int drop_upload_notice, drop_upload_ack;
 static int peer_online = 1;
 static unsigned char eeprom[512];
 
@@ -56,11 +57,13 @@ void ready_notice_clear_upload_marker(void)
 
 void m16_send(unsigned char data)
 {
+   if (data == ATMEGA8_UPLOAD_ACK && drop_upload_ack) { drop_upload_ack = 0; return; }
    if (peer_online) m8_receive(data);
 }
 
 void m8_send(unsigned char data)
 {
+   if (data == ATMEGA8_UPLOAD_NOTICE && drop_upload_notice) { drop_upload_notice = 0; return; }
    if (data == ATMEGA8_BOOT_NOTICE && drop_boot) {
       drop_boot = 0;
    } else {
@@ -133,5 +136,24 @@ int main(void)
    for (i = 0; i < 20; i++) m16_tick();
    m16_process();
    assert(!m16_active);
+   /* 업로드 통지와 첫 ACK를 각각 잃어도 재전송하며, 화면 유지 시간은 늘리지 않는다. */
+   boot_acknowledged = upload_acknowledged = 0;
+   upload_ticks = upload_due = notices_sent = 0;
+   drop_upload_notice = drop_upload_ack = 1;
+   memcpy(eeprom + ATMEGA8_UPLOAD_MARKER_ADDRESS, upload_marker, sizeof(upload_marker));
+   m8_start();
+   m16_process();
+   for(i=0;i<100;++i) m8_tick();
+   m8_process(); m16_process(); m8_process();
+   assert(memcmp(lcd_line,"UPLOAD COMPLETE ",LCD_WIDTH)==0);
+   assert(!upload_acknowledged && eeprom[ATMEGA8_UPLOAD_MARKER_ADDRESS] != 0xff);
+   for(i=0;i<5;++i) m16_tick();
+   for(i=0;i<100;++i) m8_tick();
+   m8_process(); m16_process(); m8_process();
+   assert(upload_acknowledged && ready_notice_ticks==15);
+   assert(eeprom[ATMEGA8_UPLOAD_MARKER_ADDRESS]==0xff);
+   for(i=0;i<15;++i) m16_tick();
+   m16_process();
+   assert(!m16_active && memcmp(lcd_line,line2[4],LCD_WIDTH)==0);
    return 0;
 }

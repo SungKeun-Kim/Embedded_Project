@@ -70,7 +70,7 @@ unsigned char tuning_store_save(unsigned char code, unsigned short count)
 {
    unsigned char a[8], b[8], r[8], i, latest;
    unsigned short address;
-   if (code < PLL_POT_MIN || code > PLL_POT_MAX || count == 0) return 0;
+   if (code < PLL_POT_MIN || PLL_POT_CODE_ABOVE_MAX(code) || count == 0) return 0;
    latest = store_latest(a, b);
    if (latest) {
       unsigned char *old = latest == 1 ? a : b;

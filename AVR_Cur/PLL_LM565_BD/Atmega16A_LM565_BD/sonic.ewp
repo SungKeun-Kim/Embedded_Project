@@ -63,7 +63,7 @@
         </option>
         <option>
           <name>SCCStackSize</name>
-          <state>0x20</state>
+          <state>0x80</state>
         </option>
         <option>
           <name>SCExtCStack</name>
@@ -71,7 +71,7 @@
         </option>
         <option>
           <name>SCRStackSize</name>
-          <state>16</state>
+          <state>64</state>
         </option>
         <option>
           <name>SCExtRStack</name>
@@ -662,7 +662,7 @@
     <settings>
       <name>BICOMP</name>
       <archiveVersion>0</archiveVersion>
-      <data/>
+      <data />
     </settings>
     <settings>
       <name>BUILDACTION</name>
@@ -961,7 +961,7 @@
     <settings>
       <name>BILINK</name>
       <archiveVersion>0</archiveVersion>
-      <data/>
+      <data />
     </settings>
   </configuration>
   <configuration>
@@ -1025,7 +1025,7 @@
         </option>
         <option>
           <name>SCCStackSize</name>
-          <state>0x20</state>
+          <state>0x80</state>
         </option>
         <option>
           <name>SCExtCStack</name>
@@ -1033,7 +1033,7 @@
         </option>
         <option>
           <name>SCRStackSize</name>
-          <state>16</state>
+          <state>64</state>
         </option>
         <option>
           <name>SCExtRStack</name>
@@ -1624,7 +1624,7 @@
     <settings>
       <name>BICOMP</name>
       <archiveVersion>0</archiveVersion>
-      <data/>
+      <data />
     </settings>
     <settings>
       <name>BUILDACTION</name>
@@ -1923,7 +1923,7 @@
     <settings>
       <name>BILINK</name>
       <archiveVersion>0</archiveVersion>
-      <data/>
+      <data />
     </settings>
   </configuration>
   <file>

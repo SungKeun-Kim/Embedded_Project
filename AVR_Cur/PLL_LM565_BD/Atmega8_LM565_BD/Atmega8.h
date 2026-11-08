@@ -162,7 +162,8 @@
 
 extern volatile unsigned short ADC_DATA;
 extern volatile unsigned char f_cnt,t0_cnt,t2_cnt;
-extern volatile unsigned short f_data,f_data2,pll_ticks;
+extern volatile unsigned short f_data,f_data2,pll_ticks,adc_stamp;
+extern volatile unsigned char runtime_permit_ticks;
 extern volatile unsigned short adc_samples,adc_minimum,adc_maximum;
 extern volatile unsigned long adc_sum;
 extern volatile unsigned char pll_active;
